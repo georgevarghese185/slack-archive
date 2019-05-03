@@ -1,6 +1,8 @@
 {
   "name": "slack-archive",
-  "scripts": {},
+  "scripts": {
+    "backend": "node src/backend"
+  },
   "author": "George Varghese M",
   "license": "MIT",
   "dependencies": {
