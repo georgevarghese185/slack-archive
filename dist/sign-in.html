@@ -1,0 +1,15 @@
+<html>
+  <script>
+    window.addEventListener('DOMContentLoaded', function() {
+      document.querySelector('#sign-in').addEventListener('click', function() {
+        fetch('http://localhost:8080/api/slackOAuth/authUrl')
+          .then(r => r.json()).then(r => {
+            window.location.href = r.redirectUrl;
+          })
+      })
+    })
+  </script>
+  <body>
+    <button id="sign-in">Sign In</button>
+  </body>
+</html>

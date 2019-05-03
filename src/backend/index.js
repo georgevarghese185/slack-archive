@@ -6,6 +6,7 @@ const Routes = require('./routes');
 
 const ServerConfig = require('./config/server');
 const AppConfig = require('./config/app');
+const fetch = require('node-fetch');
 
 const app = express();
 
@@ -22,7 +23,8 @@ const start = async (app) => {
     config: {
       server: serverConfig,
       app: appConfig
-    }
+    },
+    fetch
   }
 
   console.log("\nSetting up Express");

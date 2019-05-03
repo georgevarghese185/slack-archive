@@ -1,5 +1,7 @@
 const {Response} = require('../utils/response');
+const {getQueryString} = require('../utils/request')
 const uuid = require('uuid/v4');
+const {aesEncrypt} = require('../utils/secure');
 
 const authorize = async (req, state) => {
   const slackAuthUrl = 'https://slack.com/oauth/authorize';
@@ -10,9 +12,7 @@ const authorize = async (req, state) => {
     team: state.config.app.team_id
   }
 
-  const redirectUrl = slackAuthUrl + '?' + Object.keys(parameters)
-    .map(key => `${key}=${encodeURIComponent(parameters[key])}`)
-    .join("&")
+  const redirectUrl = slackAuthUrl + '?' + getQueryString(parameters);
 
   const token = uuid();
 
@@ -20,7 +20,7 @@ const authorize = async (req, state) => {
     value: token,
     options: {
       httpOnly: true,
-      secure: true,
+      secure: !process.env.ENV == 'development',
       maxAge: 30 * 24 * 60 * 60 * 1000
     }
   }
@@ -32,6 +32,40 @@ const authorize = async (req, state) => {
   )
 }
 
+const exchange = async (req, state) => {
+  const Users = state.models.Users;
+  const fetch = state.fetch;
+  const token = req.cookies.token;
+  const codeExchangeUrl = 'https://slack.com/api/oauth.access';
+
+  const parameters = {
+    client_id: state.config.app.client_id,
+    client_secret: state.config.app.client_secret,
+    code: req.body.code
+  }
+
+  const response = await (await fetch(codeExchangeUrl + '?' + getQueryString(parameters))).json();
+
+  if(!response.ok) {
+    return new Response(300, {slackError: response})
+  }
+
+  const encrypted_auth_token = aesEncrypt(response.access_token, token);
+
+  const user = await Users.findOne({where: {user_id: response.user_id}});
+  if(!user) {
+    await Users.create({
+      user_id: response.user_id,
+      encrypted_auth_token
+    });
+  } else {
+    await user.update({ encrypted_auth_token });
+  }
+
+  return new Response(200, {status: 'success'});
+}
+
 module.exports = {
-  authorize
+  authorize,
+  exchange
 }

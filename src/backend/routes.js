@@ -1,5 +1,5 @@
 const {Response} = require('./utils/response')
-const {authorize} = require('./authorize/authorize')
+const {authorize, exchange} = require('./authorize/authorize');
 
 const routeHandler = (handler, state) => {
 
@@ -24,7 +24,8 @@ const routeHandler = (handler, state) => {
 
 const setupRoutes = (app, state) => {
   app.get('/hai', (req, resp) => resp.send("hai"));
-  app.get('/authorize', routeHandler(authorize, state))
+  app.get('/api/slackOAuth/authUrl', routeHandler(authorize, state));
+  app.post('/api/slackOAuth/exchangeCode', routeHandler(exchange, state));
 }
 
 module.exports = setupRoutes;

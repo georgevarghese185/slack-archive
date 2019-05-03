@@ -1,0 +1,19 @@
+<html>
+  <script>
+
+      var code = window.location.search.split('?')[1].split('&').reduce((params, a) => {
+          params[a.split('=')[0]] = a.split('=')[1];
+          return params;
+        }, {})['code'];
+      fetch('http://localhost:8080/api/slackOAuth/exchangeCode', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ code })
+      }).then(r => r.json()).then(console.log).catch(console.log);
+
+  </script>
+  <body>
+  </body>
+</html>
