@@ -1,5 +1,6 @@
 const morgan = require('morgan');
 const jsonParser = require('body-parser').json();
+const cookieParser = require('cookie-parser')();
 const urlEncodedParser = require('body-parser').urlencoded();
 
 const requestLogger = (req, resp, next) => {
@@ -10,6 +11,7 @@ const requestLogger = (req, resp, next) => {
 const setupMiddleware = (app) => {
   app.use(morgan('dev'));
   app.use(jsonParser);
+  app.use(cookieParser);
   app.use(urlEncodedParser);
   app.use(requestLogger);
 }

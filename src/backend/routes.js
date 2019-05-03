@@ -1,28 +1,30 @@
-const {HttpError} = require('./utils/error');
+const {Response} = require('./utils/response')
+const {authorize} = require('./authorize/authorize')
 
 const routeHandler = (handler, state) => {
 
-  let handleRoute = async (req, resp) => {
+  let handleRoute = async (req, res) => {
     let response = await handler(req, state);
-    resp.json(response);
+    if(response instanceof Response) {
+      response.respond(res)
+    } else {
+      res.json(response);
+    }
   }
 
-  return (req, resp) => {
-    handleRoute(req, resp)
+  return (req, res) => {
+    handleRoute(req, res)
       .catch(e => {
-        if(e instanceof HttpError) {
-          resp.status(e.code);
-          resp.json({errorMessage: e.message})
-        } else {
-          resp.status(500);
-          resp.json({errorMessage: e.message});
-        }
+        console.error(e)
+        res.status(500);
+        res.json({errorMessage: e.message});
       });
   }
 }
 
 const setupRoutes = (app, state) => {
   app.get('/hai', (req, resp) => resp.send("hai"));
+  app.get('/authorize', routeHandler(authorize, state))
 }
 
 module.exports = setupRoutes;

@@ -1,10 +1,9 @@
 const Sequelize = require('sequelize');
 const Models = require('./models');
-const {getConfig} = require('./config')
+const DBConfig = require('../config/db')
 
 const setupSequelize = async () => {
-  const dbConfig = getConfig();
-
+  const dbConfig = DBConfig();
   const sequelize = new Sequelize(
     dbConfig.database,
     dbConfig.username,

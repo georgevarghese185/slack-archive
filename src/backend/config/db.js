@@ -1,5 +1,3 @@
-const path = require('path');
-
 const DEFAULT = {
   "username": "slackarchive",
   "password": "slackarchive",
@@ -28,6 +26,4 @@ const getConfig = function() {
   }
 }
 
-module.exports = {
-  getConfig
-}
+module.exports = getConfig
