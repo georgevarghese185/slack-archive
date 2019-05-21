@@ -15,7 +15,7 @@ const UsersModel = (sequelize) => {
 }
 
 const MembersModel = (sequelize) => {
-  return sequelize.define('mebers', {
+  return sequelize.define('members', {
     user_id: {
       type: Sequelize.STRING,
       allowNull: false,
