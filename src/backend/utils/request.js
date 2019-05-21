@@ -4,6 +4,24 @@ const getQueryString = params => {
     .join("&")
 }
 
+const withRetry = async (makeRequest, onRetry) => {
+  const response = await makeRequest();
+  if(response.status == 429 && response.headers.get('Retry-After') != null) {
+    const retryAfter = parseInt(response.headers.get('Retry-After'));
+    if(onRetry) {
+      onRetry();
+    }
+    return await(new Promise(function(resolve, reject) {
+      setTimeout(function() {
+        makeRequest(makeRequest, onRetry).then(resolve).catch(reject);
+      }, retryAfter);
+    }));
+  } else {
+    return response;
+  }
+}
+
 module.exports = {
-  getQueryString
+  getQueryString,
+  withRetry
 }
