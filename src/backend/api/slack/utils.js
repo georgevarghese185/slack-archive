@@ -24,6 +24,7 @@ const withRetry = (fetch, onRetry) => {
   return async (url, options) => {
     const response = await fetch(url, options);
     if(response.status == 429 && response.headers.get('Retry-After') != null) {
+      const retryAfter = parseInt(response.headers.get('Retry-After'))
       if(onRetry) {
         onRetry();
       }
