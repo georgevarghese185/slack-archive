@@ -29,7 +29,7 @@ const withRetry = (fetch, onRetry) => {
       }
       return await(new Promise(function(resolve, reject) {
         setTimeout(function() {
-          fetch(arguments).then(resolve).catch(reject);
+          fetch(url, options).then(resolve).catch(reject);
         }, retryAfter);
       }));
     } else {
