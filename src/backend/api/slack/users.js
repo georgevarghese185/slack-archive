@@ -1,45 +1,31 @@
-const {getQueryString, withRetry} = require('../../utils/request');
+const {getQueryString} = require('../../utils/request');
+const {withRetry, paginatedRequest} = require('./utils');
 
 const listUsers = async (fetch, token, onRetry) => {
   const url = 'https://slack.com/api/users.list';
+  const makeRequest = (p) => {
+    return withRetry(fetch, onRetry)(url + '?' + getQueryString(p))
+  };
+  const params = { token };
 
-  const getUsers = async (nextCursor) => {
-    const params = {
-      token
+  const {response, next} = await paginatedRequest(makeRequest, params);
+  if(response.ok) {
+    const members = response.members.reduce((members, m) => {
+      members[m.id] = m;
+      return members;
+    }, {});
+
+    return {
+      error: false,
+      members,
+      next
     }
-
-    if(nextCursor) {
-      params.next_cursor = nextCursor;
-    }
-
-    const makeRequest = () => fetch(url + '?' + getQueryString(params));
-    const response = await (await withRetry(makeRequest, onRetry)).json();
-
-    if(response.ok) {
-      const members = response.members.reduce((members, m) => {
-        members[m.id] = m;
-        return members;
-      }, {});
-
-      let next;
-      if(response.response_metadata && response.response_metadata.next_cursor) {
-        next = getUsers(response.response_metadata.next_cursor);
-      }
-
-      return {
-        error: false,
-        members,
-        next
-      }
-    } else {
-      return {
-        error: true,
-        slackError: response
-      }
+  } else {
+    return {
+      error: true,
+      slackError: response
     }
   }
-
-  return await getUsers();
 }
 
 module.exports = {
