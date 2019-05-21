@@ -30,7 +30,7 @@ const withRetry = (fetch, onRetry) => {
       return await(new Promise(function(resolve, reject) {
         setTimeout(function() {
           fetch(url, options).then(resolve).catch(reject);
-        }, retryAfter);
+        }, retryAfter * 1000);
       }));
     } else {
       return response;
