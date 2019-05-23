@@ -1,10 +1,10 @@
 const {getQueryString} = require('../../utils/request');
 const {withRetry, paginatedRequest} = require('./utils');
 
-const listUsers = async (fetch, token, onRetry) => {
+const listUsers = async (fetch, token, onRateLimit) => {
   const url = 'https://slack.com/api/users.list';
   const makeRequest = (p) => {
-    return withRetry(fetch, onRetry)(url + '?' + getQueryString(p))
+    return withRetry(fetch, onRateLimit)(url + '?' + getQueryString(p))
   };
   const params = { token };
 

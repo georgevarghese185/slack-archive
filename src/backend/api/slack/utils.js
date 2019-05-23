@@ -20,7 +20,7 @@ const paginatedRequest = async (makeRequest, params) => {
   }
 }
 
-const withRetry = (fetch, onRetry) => {
+const withRetry = (fetch, onRateLimit) => {
   return async (url, options) => {
     const response = await fetch(url, options);
     if(response.status == 429 && response.headers.get('Retry-After') != null) {
@@ -30,8 +30,8 @@ const withRetry = (fetch, onRetry) => {
         const timeout = setTimeout(function() {
           fetch(url, options).then(resolve).catch(reject);
         }, retryAfter * 1000);
-        if(onRetry) {
-          onRetry(retryAfter, () => clearTimeout(timeout));
+        if(onRateLimit) {
+          onRateLimit(retryAfter, () => clearTimeout(timeout));
         }
       }));
     } else {

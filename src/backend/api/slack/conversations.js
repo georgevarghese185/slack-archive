@@ -1,10 +1,10 @@
 const {getQueryString} = require('../../utils/request');
 const {withRetry, paginatedRequest} = require('./utils');
 
-const listConversations = async (fetch, token, private, onRetry) => {
+const listConversations = async (fetch, token, private, onRateLimit) => {
   const url = 'https://slack.com/api/conversations.list';
   const makeRequest = (p) => {
-    return withRetry(fetch, onRetry)(url + '?' + getQueryString(p))
+    return withRetry(fetch, onRateLimit)(url + '?' + getQueryString(p))
   }
   const params = {
     token,
@@ -31,10 +31,10 @@ const listConversations = async (fetch, token, private, onRetry) => {
   }
 }
 
-const getConversationHistory = async (fetch, token, channelId, onRetry) => {
+const getConversationHistory = async (fetch, token, channelId, onRateLimit) => {
   const url = 'https://slack.com/api/conversations.history';
   const makeRequest = (p) => {
-    return withRetry(fetch, onRetry)(url + '?' + getQueryString(p))
+    return withRetry(fetch, onRateLimit)(url + '?' + getQueryString(p))
   }
   const params = {
     token,
@@ -60,10 +60,10 @@ const getConversationHistory = async (fetch, token, channelId, onRetry) => {
   }
 }
 
-const getConversationReplies = async (fetch, token, channelId, ts, onRetry) => {
+const getConversationReplies = async (fetch, token, channelId, ts, onRateLimit) => {
   const url = 'https://slack.com/api/conversations.replies';
   const makeRequest = (p) => {
-    return withRetry(fetch, onRetry)(url + '?' + getQueryString(p))
+    return withRetry(fetch, onRateLimit)(url + '?' + getQueryString(p))
   }
   const params = {
     token,
