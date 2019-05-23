@@ -31,6 +31,67 @@ const listConversations = async (fetch, token, private, onRetry) => {
   }
 }
 
+const getConversationHistory = async (fetch, token, channelId, onRetry) => {
+  const url = 'https://slack.com/api/conversations.history';
+  const makeRequest = (p) => {
+    return withRetry(fetch, onRetry)(url + '?' + getQueryString(p))
+  }
+  const params = {
+    token,
+    channel: channelId
+  }
+  const {response, next} = await paginatedRequest(makeRequest, params);
+  if(response.ok) {
+    const messages = response.messages.reduce((messages, m) => {
+      messages[m.ts] = m;
+      return messages;
+    }, {});
+
+    return {
+      error: false,
+      messages,
+      next
+    }
+  } else {
+    return {
+      error: true,
+      slackError: response
+    }
+  }
+}
+
+const getConversationReplies = async (fetch, token, channelId, ts, onRetry) => {
+  const url = 'https://slack.com/api/conversations.replies';
+  const makeRequest = (p) => {
+    return withRetry(fetch, onRetry)(url + '?' + getQueryString(p))
+  }
+  const params = {
+    token,
+    channel: channelId,
+    ts
+  }
+  const {response, next} = await paginatedRequest(makeRequest, params);
+  if(response.ok) {
+    const messages = response.messages.reduce((messages, m) => {
+      messages[m.ts] = m;
+      return messages;
+    }, {});
+
+    return {
+      error: false,
+      messages,
+      next
+    }
+  } else {
+    return {
+      error: true,
+      slackError: response
+    }
+  }
+}
+
 module.exports = {
-  listConversations
+  listConversations,
+  getConversationHistory,
+  getConversationReplies
 }
