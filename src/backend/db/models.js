@@ -7,6 +7,10 @@ const UsersModel = (sequelize) => {
       allowNull: false,
       primaryKey: true
     },
+    token_hash: {
+      type: Sequelize.STRING,
+      allowNull: false
+    },
     encrypted_auth_token: {
       type: Sequelize.STRING,
       allowNull: true

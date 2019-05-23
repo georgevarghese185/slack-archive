@@ -1,7 +1,7 @@
 const {Response} = require('../utils/response');
 const {getQueryString} = require('../utils/request')
 const uuid = require('uuid/v4');
-const {aesEncrypt} = require('../utils/secure');
+const {aesEncrypt, sha256Hash} = require('../utils/secure');
 const {exchangeAuthCode} = require('../api/slack/oauth');
 
 const authorize = async (req, state) => {
@@ -48,16 +48,18 @@ const exchange = async (req, state) => {
     return new Response(300, {slackError: response.slackError});
   }
 
+  const token_hash = sha256Hash(token);
   const encrypted_auth_token = aesEncrypt(response.accessToken, token);
 
   const user = await Users.findOne({where: {user_id: response.userId}});
   if(!user) {
     await Users.create({
       user_id: response.userId,
+      token_hash,
       encrypted_auth_token
     });
   } else {
-    await user.update({ encrypted_auth_token });
+    await user.update({ token_hash, encrypted_auth_token });
   }
 
   return new Response(200, {status: 'success'});
