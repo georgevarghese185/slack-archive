@@ -25,13 +25,14 @@ const withRetry = (fetch, onRetry) => {
     const response = await fetch(url, options);
     if(response.status == 429 && response.headers.get('Retry-After') != null) {
       const retryAfter = parseInt(response.headers.get('Retry-After'))
-      if(onRetry) {
-        onRetry();
-      }
+
       return await(new Promise(function(resolve, reject) {
-        setTimeout(function() {
+        const timeout = setTimeout(function() {
           fetch(url, options).then(resolve).catch(reject);
         }, retryAfter * 1000);
+        if(onRetry) {
+          onRetry(retryAfter, () => clearTimeout(timeout));
+        }
       }));
     } else {
       return response;
