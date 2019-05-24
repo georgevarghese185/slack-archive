@@ -68,12 +68,39 @@ const MessagesModel = (sequelize) => {
   });
 }
 
+const BackupTasksModel = (sequelize) => {
+  return sequelize.define('backup_tasks', {
+    id: {
+      type: Sequelize.STRING,
+      allowNull: false,
+      primaryKey: true
+    },
+    user_id: {
+      type: Sequelize.STRING,
+      allowNull: false
+    },
+    status: {
+      type: Sequelize.STRING,
+      allowNull: false
+    },
+    info: {
+      type: Sequelize.STRING,
+      allowNull: false
+    },
+    should_cancel: {
+      type: Sequelize.BOOLEAN,
+      allowNull: false
+    }
+  })
+}
+
 
 module.exports = function(sequelize) {
   return {
     Users: UsersModel(sequelize),
     Members: MembersModel(sequelize),
     Conversations: ConversationsModel(sequelize),
-    Messages: MessagesModel(sequelize)
+    Messages: MessagesModel(sequelize),
+    BackupTasks: BackupTasksModel(sequelize)
   }
 }
