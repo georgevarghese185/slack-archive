@@ -27,11 +27,13 @@ const withRetry = (fetch, onRateLimit) => {
       const retryAfter = parseInt(response.headers.get('Retry-After'))
 
       return await(new Promise(function(resolve, reject) {
+        let onResume;
         const timeout = setTimeout(function() {
           fetch(url, options).then(resolve).catch(reject);
+          if(onResume) onResume();
         }, retryAfter * 1000);
         if(onRateLimit) {
-          onRateLimit(retryAfter, () => clearTimeout(timeout));
+          onResume = onRateLimit(retryAfter, () => clearTimeout(timeout));
         }
       }));
     } else {
