@@ -18,7 +18,6 @@ const start = async (app) => {
   const appConfig = AppConfig(serverConfig);
 
   const state = {
-    sequelize,
     models,
     config: {
       server: serverConfig,
