@@ -1,5 +1,5 @@
 const {listUsers} = require('../api/slack/users');
-const {updateTask, shouldCancel, TaskCancelError} = require('./task')
+const {updateTask, shouldCancel, TaskCancelError, Status} = require('./task')
 
 const updateUsers = async (state, token, task) => {
   const Users = state.models.Users;
@@ -8,7 +8,7 @@ const updateUsers = async (state, token, task) => {
   const fetch = state.fetch;
 
   const onRateLimit = (retryAfter) => {
-    task.status = 'RATE_LIMITED';
+    task.status = Status.RATE_LIMITED;
     task.info.retry_after = retryAfter;
     updateTask(task).then();
     return () => {

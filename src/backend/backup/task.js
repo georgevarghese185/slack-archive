@@ -33,5 +33,12 @@ class TaskCancelError extends Error {
 module.exports = {
   updateTask,
   shouldCancel,
-  TaskCancelError
+  TaskCancelError,
+  Status: {
+    STARTED: 'STARTED',
+    CANCELLED: 'CANCELLED',
+    DONE: 'DONE',
+    FAILED: 'FAILED',
+    RATE_LIMITED: 'RATE_LIMITED'
+  }
 }

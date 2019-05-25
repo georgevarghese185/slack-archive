@@ -3,7 +3,7 @@ const {Response} = require('../utils/response');
 const {sha256Hash, aesDecrypt} = require('../utils/secure');
 const uuid = require('uuid/v4');
 const {updateUsers} = require('./users')
-const {updateTask, TaskCancelError} = require('./task');
+const {updateTask, TaskCancelError, Status} = require('./task');
 const Pages = require('../strings/pages');
 
 const backup = async (req, state) => {
@@ -33,7 +33,7 @@ const backup = async (req, state) => {
   const task = {
     id: taskId,
     user_id: user.user_id,
-    status: 'STARTED',
+    status: Status.STARTED,
     info: {
       messages_backed_up: 0
     },
@@ -48,9 +48,9 @@ const backup = async (req, state) => {
     } catch(e) {
       console.error(e);
       if(e instanceof TaskCancelError) {
-        task.status = 'CANCELLED';
+        task.status = Status.CANCELLED;
       } else {
-        task.status = 'FAILED';
+        task.status = Status.FAILED;
         task.info.errorMessage = e.toString();
       }
       await updateTask(BackupTasks, task);
@@ -70,7 +70,7 @@ const startBackup = async (state, token, task, backupPrivateChannels) => {
   // await updateChannels(state, token, task, backupPrivateChannels);
   // await updateMessages(state, token, task, backupPrivateChannels);
 
-  task.status = 'DONE';
+  task.status = Status.DONE;
   await updateTask(BackupTasks, task);
 }
 
