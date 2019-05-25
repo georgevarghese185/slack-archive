@@ -10,11 +10,11 @@ const updateUsers = async (state, token, task) => {
   const onRateLimit = (retryAfter) => {
     task.status = Status.RATE_LIMITED;
     task.info.retry_after = retryAfter;
-    updateTask(task).then();
+    updateTask(BackupTasks, task).then();
     return () => {
       task.info.status = 'ADDING_USERS';
       delete task.info.retry_after;
-      updateTask(task).then();
+      updateTask(BackuptTasks, task).then();
     }
   }
 
@@ -35,9 +35,9 @@ const updateUsers = async (state, token, task) => {
       await addMember(Members, userId, members[userId]);
     }
 
-    if(await shouldCancel(task)) {
       next = response.next;
     } else {
+    if(await shouldCancel(BackupTasks, task)) {
       throw new TaskCancelError();
     }
   } while(next);
