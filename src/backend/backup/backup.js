@@ -59,7 +59,7 @@ const backup = async (req, state) => {
 
   return new Response(
     200,
-    { status: 'success' }
+    { status: 'success', taskId }
   );
 }
 
