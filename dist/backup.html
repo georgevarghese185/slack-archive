@@ -5,12 +5,26 @@
         fetch('/api/slack/backup', {
           method: "POST",
           body: JSON.stringify({ backup_private_channels: false })
-        }).then(r => r.json()).then(r => console.log(JSON.stringify(r, null, 2))).catch(console.log);
+        }).then(r => r.json())
+        .then(r => console.log(JSON.stringify(r, null, 2)))
+        .then(() => {
+          const statusBlock = document.querySelector('#status');
+          const poll = () => {
+            fetch('/api/slack/backup/status')
+            .then(s => s.json())
+            .then(status => {
+              statusBlock.innerHTML = JSON.stringify(status, null, 2).replace(/\n/g, '<br/>');
+              setTimeout(poll, 1000);
+            });
+          }
+          poll();
+        })
+        .catch(console.log);
       })
     })
   </script>
   <body>
     <button id="public">Backup Public Channels</button>
-    <div id="status"></div>
+    <p id="status"></p>
   </body>
 </html>
