@@ -1,5 +1,5 @@
 const {listUsers} = require('../api/slack/users');
-const {updateTask} = require('./task')
+const {updateTask, shouldCancel, TaskCancelError} = require('./task')
 
 const updateUsers = async (state, token, task) => {
   const Users = state.models.Users;
@@ -27,7 +27,12 @@ const updateUsers = async (state, token, task) => {
       const userId = userIds[i];
       await addMember(Members, userId, members[userId]);
     }
-    next = response.next;
+
+    if(await shouldCancel(task)) {
+      next = response.next;
+    } else {
+      throw new TaskCancelError();
+    }
   } while(next);
 }
 
