@@ -2,7 +2,7 @@
   <script>
     window.addEventListener('DOMContentLoaded', function() {
       document.querySelector('#sign-in').addEventListener('click', function() {
-        fetch('http://localhost:8080/api/slackOAuth/authUrl')
+        fetch('http://localhost:8080/api/slack/OAuth/authUrl')
           .then(r => r.json()).then(r => {
             window.location.href = r.redirectUrl;
           })

@@ -5,7 +5,7 @@
           params[a.split('=')[0]] = a.split('=')[1];
           return params;
         }, {})['code'];
-      fetch('http://localhost:8080/api/slackOAuth/exchangeCode', {
+      fetch('http://localhost:8080/api/slack/OAuth/exchangeCode', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'

@@ -25,9 +25,9 @@ const routeHandler = (handler, state) => {
 
 const setupRoutes = (app, state) => {
   app.get('/hai', (req, resp) => resp.send("hai"));
-  app.get('/api/slackOAuth/authUrl', routeHandler(authorize, state));
-  app.post('/api/slackOAuth/exchangeCode', routeHandler(exchange, state));
-  app.post('/api/slackBackup', routeHandler(backup, state));
+  app.get('/api/slack/OAuth/authUrl', routeHandler(authorize, state));
+  app.post('/api/slack/OAuth/exchangeCode', routeHandler(exchange, state));
+  app.post('/api/slack/backup', routeHandler(backup, state));
 }
 
 module.exports = setupRoutes;
