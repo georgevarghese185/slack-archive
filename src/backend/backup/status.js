@@ -6,6 +6,7 @@ const Op = require('sequelize').Op
 
 const status = async (req, state) => {
   const token = req.cookies.token;
+  const taskId = req.query.taskId;
   const BackupTasks = state.models.BackupTasks;
   const signInResponse = new Response(
     401,
@@ -25,12 +26,20 @@ const status = async (req, state) => {
     return signInResponse;
   }
 
+
+  const conditions = [{
+    status: {
+      [Op.notIn]: [Status.DONE, Status.CANCELLED, Status.FAILED]
+    }
+  }];
+
+  if(taskId) {
+    conditions.push({id: taskId});
+  }
   const task = await BackupTasks.findOne({
     where: {
       user_id: user.user_id,
-      status: {
-        [Op.notIn]: [Status.DONE, Status.CANCELLED, Status.FAILED]
-      }
+      [Op.or]: conditions
     }
   });
 
