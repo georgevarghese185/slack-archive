@@ -7,8 +7,15 @@ const updateUsers = async (state, token, task) => {
   const Members = state.models.Members
   const fetch = state.fetch;
 
-  const onRateLimit = () => {
-    //TODO
+  const onRateLimit = (retryAfter) => {
+    task.status = 'RATE_LIMITED';
+    task.info.retry_after = retryAfter;
+    updateTask(task).then();
+    return () => {
+      task.info.status = 'ADDING_USERS';
+      delete task.info.retry_after;
+      updateTask(task).then();
+    }
   }
 
   task.status = 'ADDING_USERS';
