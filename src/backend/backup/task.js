@@ -23,7 +23,15 @@ const shouldCancel = async (BackupTasks, task) => {
     return false;
   }
 }
+
+class TaskCancelError extends Error {
+  constructor() {
+    super('Task cancelled');
+  }
+}
+
 module.exports = {
   updateTask,
-  shouldCancel
+  shouldCancel,
+  TaskCancelError
 }
