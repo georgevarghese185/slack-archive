@@ -1,3 +1,4 @@
+const {getUserAndAuthToken} = require('../authorize/authorize');
 const {Response} = require('../utils/response');
 const {sha256Hash, aesDecrypt} = require('../utils/secure');
 const uuid = require('uuid/v4');
@@ -21,14 +22,12 @@ const backup = async (req, state) => {
   if(!token) {
     return signInResponse;
   }
+  const {user, authToken} = await getUserAndAuthToken(token, state.models.Users);
 
-  const tokenHash = sha256Hash(token);
-  const user = await Users.findOne({where: {token_hash: tokenHash}});
-  if(!user) {
-    return signInResponse
+  if(!authToken) {
+    return signInResponse;
   }
 
-  const authToken = aesDecrypt(user.encrypted_auth_token, token);
   const taskId = uuid();
 
   const task = {
