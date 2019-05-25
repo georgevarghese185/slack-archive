@@ -35,10 +35,10 @@ const updateUsers = async (state, token, task) => {
       await addMember(Members, userId, members[userId]);
     }
 
-      next = response.next;
-    } else {
     if(await shouldCancel(BackupTasks, task)) {
       throw new TaskCancelError();
+    } else {
+      next = response.next;
     }
   } while(next);
 }
