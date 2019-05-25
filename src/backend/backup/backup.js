@@ -2,7 +2,7 @@ const {Response} = require('../utils/response');
 const {sha256Hash, aesDecrypt} = require('../utils/secure');
 const uuid = require('uuid/v4');
 const {updateUsers} = require('./users')
-const {updateTask} = require('./task');
+const {updateTask, TaskCancelError} = require('./task');
 const Pages = require('../strings/pages');
 
 const backup = async (req, state) => {
@@ -48,8 +48,12 @@ const backup = async (req, state) => {
       await startBackup(state, authToken, task, backupPrivateChannels);
     } catch(e) {
       console.error(e);
-      task.status = 'FAILED';
-      task.info.errorMessage = e.toString();
+      if(e instanceof TaskCancelError) {
+        task.status = 'CANCELLED';
+      } else {
+        task.status = 'FAILED';
+        task.info.errorMessage = e.toString();
+      }
       await updateTask(BackupTasks, task);
     }
   })().then();
