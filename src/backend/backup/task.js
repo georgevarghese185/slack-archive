@@ -15,6 +15,15 @@ const updateTask = async (BackupTasks, task) => {
   }
 }
 
+const shouldCancel = async (BackupTasks, task) => {
+  const taskEntry = await BackupTasks.findOne({where: {id: task.id}});
+  if(taskEntry) {
+    return taskEntry.should_cancel;
+  } else {
+    return false;
+  }
+}
 module.exports = {
-  updateTask
+  updateTask,
+  shouldCancel
 }
