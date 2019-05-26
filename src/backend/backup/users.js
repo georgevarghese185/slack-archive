@@ -44,12 +44,12 @@ const updateUsers = async (state, token, task) => {
 }
 
 const addMember = async (Members, userId, info) => {
-  const member = await Members.findOne({where: {user_id: userId}});
+  const member = await Members.findOne({where: {id: userId}});
   if(member) {
     await member.update({ info: JSON.stringify(info) });
   } else {
     await Members.create({
-      user_id: userId,
+      id: userId,
       info: JSON.stringify(info)
     })
   }

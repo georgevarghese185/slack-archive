@@ -20,7 +20,7 @@ const UsersModel = (sequelize) => {
 
 const MembersModel = (sequelize) => {
   return sequelize.define('members', {
-    user_id: {
+    id: {
       type: Sequelize.STRING,
       allowNull: false,
       primaryKey: true
