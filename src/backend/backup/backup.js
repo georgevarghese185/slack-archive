@@ -4,6 +4,7 @@ const {sha256Hash, aesDecrypt} = require('../utils/secure');
 const uuid = require('uuid/v4');
 const {updateUsers} = require('./users')
 const {updateConversations} = require('./conversations');
+const {updateMessages} = require('./messages');
 const {updateTask, TaskCancelError, Status} = require('./task');
 const Pages = require('../strings/pages');
 
@@ -69,7 +70,7 @@ const startBackup = async (state, token, task, backupPrivateChannels) => {
 
   await updateUsers(state, token, task);
   await updateConversations(state, token, task, backupPrivateChannels);
-  // await updateMessages(state, token, task, backupPrivateChannels);
+  await updateMessages(state, token, task);
 
   task.status = Status.DONE;
   await updateTask(BackupTasks, task);
