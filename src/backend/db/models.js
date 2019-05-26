@@ -34,7 +34,7 @@ const MembersModel = (sequelize) => {
 
 const ConversationsModel = (sequelize) => {
   return sequelize.define('conversations', {
-    channel_id: {
+    id: {
       type: Sequelize.STRING,
       allowNull: false,
       primaryKey: true
