@@ -69,7 +69,7 @@ const getUserAndAuthToken = async (token, Users) => {
   const tokenHash = sha256Hash(token);
   const user = await Users.findOne({where: {token_hash: tokenHash}});
   if(!user) {
-    return null;
+    return {};
   } else {
     const authToken = aesDecrypt(user.encrypted_auth_token, token);
     return {user, authToken};
