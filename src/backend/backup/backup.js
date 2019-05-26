@@ -46,7 +46,7 @@ const backup = async (req, state) => {
     try {
       await startBackup(state, authToken, task, backupPrivateChannels);
     } catch(e) {
-      console.error(e);
+      console.error(e.stack);
       if(e instanceof TaskCancelError) {
         task.status = Status.CANCELLED;
       } else {
