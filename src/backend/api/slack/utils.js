@@ -2,21 +2,15 @@ const paginatedRequest = async (makeRequest, request) => {
   const response = await makeRequest(request);
   const json = await response.json();
 
-  if(json.ok) {
-    let next;
-    if(json.response_metadata && json.response_metadata.next_cursor) {
-      const newRequest = JSON.parse(JSON.stringify(request));
-      newRequest.cursor = json.response_metadata.next_cursor;
-      next = () => paginatedRequest(makeRequest, newRequest);
-    }
-    return {
-      response: json,
-      next
-    }
-  } else {
-    return {
-      response: json
-    }
+  let next;
+  if(json.response_metadata && json.response_metadata.next_cursor) {
+    const newRequest = JSON.parse(JSON.stringify(request));
+    newRequest.cursor = json.response_metadata.next_cursor;
+    next = () => paginatedRequest(makeRequest, newRequest);
+  }
+  return {
+    response: json,
+    next
   }
 }
 
