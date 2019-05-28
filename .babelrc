@@ -1,4 +1,3 @@
 {
-  "presets": ["@babel/preset-env"],
-  "plugins": ["@babel/plugin-transform-async-to-generator", "@babel/plugin-proposal-export-default-from"]
+  "presets": ["@babel/preset-env"]
 }

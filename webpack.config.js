@@ -5,9 +5,7 @@ const UglifyJSPlugin = require('uglifyjs-webpack-plugin');
 const VueLoaderPlugin = require('vue-loader/lib/plugin');
 
 module.exports = {
-	entry: {
-		index: path.join(__dirname, 'src/frontend/index.js')
-	},
+	entry: ['@babel/polyfill', './src/frontend'],
 
 	module: {
 		rules: [
@@ -16,22 +14,21 @@ module.exports = {
         loader: 'vue-loader'
       },
       {
-        test: /\.js$/,
-        loader: 'babel-loader'
-      },
-      {
         test: /\.css$/,
         use: [
           'vue-style-loader',
           'css-loader'
         ]
-      }
+      },
+			{
+        test: /\.js$/,
+        loader: 'babel-loader'
+      },
 		]
 	},
 
 	output: {
-		chunkFilename: '[name].[chunkhash].js',
-		filename: '[name].js'
+		filename: 'index.js'
 	},
 
 	mode: 'development',
@@ -45,21 +42,5 @@ module.exports = {
 		port: 8081,
     contentBase: path.join(__dirname, 'dist'),
     compress: true
-  },
-
-	optimization: {
-		splitChunks: {
-			cacheGroups: {
-				vendors: {
-					priority: -10,
-					test: /[\\/]node_modules[\\/]/
-				}
-			},
-
-			chunks: 'async',
-			minChunks: 1,
-			minSize: 30000,
-			name: true
-		}
-	}
+  }
 };
