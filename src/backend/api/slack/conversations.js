@@ -11,24 +11,28 @@ const listConversations = async (fetch, token, private, onRateLimit) => {
     types: private ? 'private_channel,mpim,im' : 'public_channel'
   }
 
-  const {response, next} = await paginatedRequest(makeRequest, params);
-  if(response.ok) {
-    const channels = response.channels.reduce((channels, c) => {
-      channels[c.id] = c;
-      return channels;
-    }, {});
+  const fn = async getNext => {
+    const {response, next} = await getNext();
+    if(response.ok) {
+      const channels = response.channels.reduce((channels, c) => {
+        channels[c.id] = c;
+        return channels;
+      }, {});
 
-    return {
-      error: false,
-      channels,
-      next
-    }
-  } else {
-    return {
-      error: true,
-      slackError: response
+      return {
+        error: false,
+        channels,
+        next: next ? () => fn(() => next()) : undefined
+      }
+    } else {
+      return {
+        error: true,
+        slackError: response
+      }
     }
   }
+
+  return fn(() => paginatedRequest(makeRequest, params));
 }
 
 const getConversationHistory = async (fetch, token, channelId, onRateLimit) => {
@@ -40,24 +44,29 @@ const getConversationHistory = async (fetch, token, channelId, onRateLimit) => {
     token,
     channel: channelId
   }
-  const {response, next} = await paginatedRequest(makeRequest, params);
-  if(response.ok) {
-    const messages = response.messages.reduce((messages, m) => {
-      messages[m.ts] = m;
-      return messages;
-    }, {});
 
-    return {
-      error: false,
-      messages,
-      next
-    }
-  } else {
-    return {
-      error: true,
-      slackError: response
+  const fn = async getNext => {
+    const {response, next} = await getNext();
+    if(response.ok) {
+      const messages = response.messages.reduce((messages, m) => {
+        messages[m.ts] = m;
+        return messages;
+      }, {});
+
+      return {
+        error: false,
+        messages,
+        next: next ? () => fn(() => next()) : undefined
+      }
+    } else {
+      return {
+        error: true,
+        slackError: response
+      }
     }
   }
+
+  return fn(() => paginatedRequest(makeRequest, params));
 }
 
 const getConversationReplies = async (fetch, token, channelId, ts, onRateLimit) => {
@@ -70,24 +79,29 @@ const getConversationReplies = async (fetch, token, channelId, ts, onRateLimit) 
     channel: channelId,
     ts
   }
-  const {response, next} = await paginatedRequest(makeRequest, params);
-  if(response.ok) {
-    const messages = response.messages.reduce((messages, m) => {
-      messages[m.ts] = m;
-      return messages;
-    }, {});
 
-    return {
-      error: false,
-      messages,
-      next
-    }
-  } else {
-    return {
-      error: true,
-      slackError: response
+  const fn = async getNext => {
+    const {response, next} = await getNext();
+    if(response.ok) {
+      const messages = response.messages.reduce((messages, m) => {
+        messages[m.ts] = m;
+        return messages;
+      }, {});
+
+      return {
+        error: false,
+        messages,
+        next: next ? () => fn(() => next()) : undefined
+      }
+    } else {
+      return {
+        error: true,
+        slackError: response
+      }
     }
   }
+
+  return fn(() => paginatedRequest(makeRequest, params));
 }
 
 module.exports = {

@@ -8,24 +8,28 @@ const listUsers = async (fetch, token, onRateLimit) => {
   };
   const params = { token };
 
-  const {response, next} = await paginatedRequest(makeRequest, params);
-  if(response.ok) {
-    const members = response.members.reduce((members, m) => {
-      members[m.id] = m;
-      return members;
-    }, {});
+  const fn = async getNext => {
+    const {response, next} = await getNext();
+    if(response.ok) {
+      const members = response.members.reduce((members, m) => {
+        members[m.id] = m;
+        return members;
+      }, {});
 
-    return {
-      error: false,
-      members,
-      next
-    }
-  } else {
-    return {
-      error: true,
-      slackError: response
+      return {
+        error: false,
+        members,
+        next: next ? () => fn(() => next()) : undefined
+      }
+    } else {
+      return {
+        error: true,
+        slackError: response
+      }
     }
   }
+
+  return fn(() => paginatedRequest(makeRequest, params));
 }
 
 module.exports = {
