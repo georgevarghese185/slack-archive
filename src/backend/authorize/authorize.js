@@ -9,7 +9,7 @@ const authorize = async (req, state) => {
   const parameters = {
     client_id: state.config.app.client_id,
     scope: state.config.app.scope,
-    redirect_uri: state.config.app.oauthRedirectUrl,
+    redirect_uri: state.config.server.url + state.config.app.oauthRedirectRoute,
     team: state.config.app.team_id
   }
 
