@@ -1,7 +1,7 @@
 {
   "name": "slack-archive",
   "scripts": {
-    "backend": "node src/backend"
+    "start": "concurrently \"node src/backend\" \"webpack-dev-server\""
   },
   "author": "George Varghese M",
   "license": "UNLICENSED",
