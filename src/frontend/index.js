@@ -4,14 +4,15 @@ import App from './components/App.vue';
 import Archive from './components/Archive.vue'
 import Home from './components/Home.vue'
 import SignIn from './components/SignIn.vue'
+import Routes from './routes'
 
 window.addEventListener('load', function() {
   Vue.use(VueRouter);
 
   const router = new VueRouter({
     routes: [
-      {path: '/archive', component: Archive},
-      {path: '/sign-in', component: SignIn},
+      {path: Routes.ARCHIVE, component: Archive},
+      {path: Routes.SIGN_IN, component: SignIn},
       {path: '/', component: Home}
     ]
   });

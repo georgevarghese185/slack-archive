@@ -1,3 +1,4 @@
 module.exports = {
-  SIGN_IN_SUCCESS: "/sign-in/success"
+  ARCHIVE: '/archive',
+  SIGN_IN: '/sign-in'
 }

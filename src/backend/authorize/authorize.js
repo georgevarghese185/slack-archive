@@ -61,7 +61,7 @@ const exchange = async (req, state) => {
   }
 
   return new RedirectResponse(
-    state.config.server.url + '/#' + FrontendRoutes.SIGN_IN_SUCCESS,
+    state.config.server.url + '/#' + FrontendRoutes.SIGN_IN + '?success=true',
     { 'login_token': tokenCookie }
   );
 }
