@@ -29,7 +29,7 @@ const authorize = async (req, state) => {
   return new Response(
     200,
     { redirectUrl },
-    { 'token': tokenCookie }
+    { 'login_token': tokenCookie }
   )
 }
 

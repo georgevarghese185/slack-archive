@@ -5,7 +5,7 @@ const {Response} = require('../utils/response');
 const Op = require('sequelize').Op
 
 const status = async (req, state) => {
-  const token = req.cookies.token;
+  const token = req.cookies.login_token;
   const taskId = req.query.taskId;
   const BackupTasks = state.models.BackupTasks;
   const signInResponse = new Response(

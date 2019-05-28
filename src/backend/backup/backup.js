@@ -9,7 +9,7 @@ const {updateTask, TaskCancelError, Status} = require('./task');
 const Pages = require('../strings/pages');
 
 const backup = async (req, state) => {
-  const token = req.cookies.token;
+  const token = req.cookies.login_token;
   const backupPrivateChannels = req.backup_private_channels;
   const Users = state.models.Users;
   const BackupTasks = state.models.BackupTasks;
