@@ -1,7 +1,8 @@
 const {Response} = require('./utils/response')
 const {authorize, exchange} = require('./authorize/authorize');
 const {backup} = require('./backup/backup');
-const {status} = require('./backup/status')
+const {status} = require('./backup/status');
+const path = require('path');
 
 const routeHandler = (handler, state) => {
 
@@ -30,6 +31,15 @@ const setupRoutes = (app, state) => {
   app.post('/api/slack/OAuth/exchangeCode', routeHandler(exchange, state));
   app.post('/api/slack/backup', routeHandler(backup, state));
   app.get('/api/slack/backup/status', routeHandler(status, state));
+  app.get('/', (req, res) => res.sendFile(path.join(__dirname, '../../dist/index.html')));
+  app.get('*', (req, res) => {
+    if(process.env.ENV == "development") {
+      const webpackUrl = process.env.WEBPACK_URL || "http://localhost:8081";
+      res.redirect(webpackUrl + req.url);
+    } else {
+      res.redirect('/')
+    }
+  });
 }
 
 module.exports = setupRoutes;

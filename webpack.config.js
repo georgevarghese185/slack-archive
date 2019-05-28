@@ -5,6 +5,10 @@ const UglifyJSPlugin = require('uglifyjs-webpack-plugin');
 const VueLoaderPlugin = require('vue-loader/lib/plugin');
 
 module.exports = {
+	entry: {
+		index: path.join(__dirname, 'src/frontend/index.js')
+	},
+
 	module: {
 		rules: [
 			{
@@ -31,12 +35,14 @@ module.exports = {
 	},
 
 	mode: 'development',
+
 	plugins: [
 		new UglifyJSPlugin(),
 		new VueLoaderPlugin()
 	],
 
 	devServer: {
+		port: 8081,
     contentBase: path.join(__dirname, 'dist'),
     compress: true
   },
