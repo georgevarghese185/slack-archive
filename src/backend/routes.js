@@ -31,7 +31,9 @@ const setupRoutes = (app, state) => {
   app.post('/api/slack/OAuth/exchangeCode', routeHandler(exchange, state));
   app.post('/api/slack/backup', routeHandler(backup, state));
   app.get('/api/slack/backup/status', routeHandler(status, state));
+
   app.get('/', (req, res) => res.sendFile(path.join(__dirname, '../../dist/index.html')));
+  app.get(state.config.app.oauthRedirectRoute, routeHandler(exchange, state));
   app.get('*', (req, res) => {
     if(process.env.ENV == "development") {
       const webpackUrl = process.env.WEBPACK_URL || "http://localhost:8081";

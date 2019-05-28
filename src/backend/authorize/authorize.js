@@ -1,8 +1,9 @@
-const {Response} = require('../utils/response');
+const {Response, RedirectResponse} = require('../utils/response');
 const {getQueryString} = require('../utils/request')
 const uuid = require('uuid/v4');
 const {aesEncrypt, aesDecrypt, sha256Hash} = require('../utils/secure');
 const {exchangeAuthCode} = require('../api/slack/oauth');
+const FrontendRoutes = require('../../frontend/routes');
 
 const authorize = async (req, state) => {
   const slackAuthUrl = 'https://slack.com/oauth/authorize';
@@ -15,32 +16,19 @@ const authorize = async (req, state) => {
 
   const redirectUrl = slackAuthUrl + '?' + getQueryString(parameters);
 
-  const token = uuid();
-
-  const tokenCookie = {
-    value: token,
-    options: {
-      httpOnly: true,
-      secure: !process.env.ENV == 'development',
-      maxAge: 30 * 24 * 60 * 60 * 1000
-    }
-  }
-
   return new Response(
     200,
-    { redirectUrl },
-    { 'login_token': tokenCookie }
+    { redirectUrl }
   )
 }
 
 const exchange = async (req, state) => {
   const Users = state.models.Users;
   const fetch = state.fetch;
-  const token = req.cookies.token;
   const codeExchangeUrl = 'https://slack.com/api/oauth.access';
   const clientId = state.config.app.client_id;
   const clientSecret = state.config.app.client_secret;
-  const code = req.body.code;
+  const code = req.query.code;
 
   const response = await exchangeAuthCode(fetch, clientId, clientSecret, code);
 
@@ -48,6 +36,7 @@ const exchange = async (req, state) => {
     return new Response(300, {slackError: response.slackError});
   }
 
+  const token = uuid();
   const token_hash = sha256Hash(token);
   const encrypted_auth_token = aesEncrypt(response.accessToken, token);
 
@@ -62,7 +51,19 @@ const exchange = async (req, state) => {
     await user.update({ token_hash, encrypted_auth_token });
   }
 
-  return new Response(200, {status: 'success'});
+  const tokenCookie = {
+    value: token,
+    options: {
+      httpOnly: true,
+      secure: !process.env.ENV == 'development',
+      maxAge: 30 * 24 * 60 * 60 * 1000
+    }
+  }
+
+  return new RedirectResponse(
+    state.config.server.url + '/#' + FrontendRoutes.SIGN_IN_SUCCESS,
+    { 'login_token': tokenCookie }
+  );
 }
 
 const getUserAndAuthToken = async (token, Users) => {
