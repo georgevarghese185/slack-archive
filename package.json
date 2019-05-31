@@ -1,7 +1,9 @@
 {
   "name": "slack-archive",
   "scripts": {
-    "start": "concurrently \"node src/backend\" \"webpack-dev-server\""
+    "start": "ENV=development concurrently \"node src/backend\" \"webpack-dev-server\"",
+    "build-prod": "ENV=production webpack -p",
+    "start-prod": "ENV=production node src/backend"
   },
   "author": "George Varghese M",
   "license": "UNLICENSED",
@@ -11,6 +13,7 @@
     "cookie-parser": "^1.4.4",
     "crypto-js": "^3.1.9-1",
     "express": "^4.16.4",
+    "glob": "^7.1.4",
     "morgan": "^1.9.1",
     "node-fetch": "^2.5.0",
     "pg": "^7.10.0",

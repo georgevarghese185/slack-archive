@@ -4,6 +4,8 @@ const path = require('path');
 const UglifyJSPlugin = require('uglifyjs-webpack-plugin');
 const VueLoaderPlugin = require('vue-loader/lib/plugin');
 
+const dev = process.env.ENV == "development";
+
 module.exports = {
 	entry: ['@babel/polyfill', './src/frontend'],
 
@@ -28,10 +30,10 @@ module.exports = {
 	},
 
 	output: {
-		filename: 'index.js'
+		filename: dev ? 'index.js' : 'index-[hash].js'
 	},
 
-	mode: 'development',
+	mode: dev ? 'development' : 'production',
 
 	plugins: [
 		new UglifyJSPlugin(),

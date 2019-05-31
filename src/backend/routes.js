@@ -3,6 +3,8 @@ const {authorize, exchange} = require('./authorize/authorize');
 const {backup} = require('./backup/backup');
 const {status} = require('./backup/status');
 const path = require('path');
+const glob = require('glob');
+const fs = require('fs');
 
 const routeHandler = (handler, state) => {
 
@@ -25,6 +27,17 @@ const routeHandler = (handler, state) => {
   }
 }
 
+const sendHtml = (res, state) => {
+  const id = state.config.server.indexId;
+  res.send(
+`<html>
+  <head>
+    <script src='/index${id}.js'></script>
+  </head>
+</html>`
+);
+}
+
 const setupRoutes = (app, state) => {
   app.get('/hai', (req, resp) => resp.send("hai"));
   app.get('/api/slack/OAuth/authUrl', routeHandler(authorize, state));
@@ -32,14 +45,21 @@ const setupRoutes = (app, state) => {
   app.post('/api/slack/backup', routeHandler(backup, state));
   app.get('/api/slack/backup/status', routeHandler(status, state));
 
-  app.get('/', (req, res) => res.sendFile(path.join(__dirname, '../../dist/index.html')));
   app.get(state.config.app.oauthRedirectRoute, routeHandler(exchange, state));
+  app.get('/', (req, res) => sendHtml(res, state));
   app.get('*', (req, res) => {
-    if(process.env.ENV == "development") {
+    if(process.env.ENV == "development" && req.url.match(/\.js$/)) {
       const webpackUrl = process.env.WEBPACK_URL || "http://localhost:8081";
       res.redirect(webpackUrl + req.url);
     } else {
-      res.redirect('/')
+      const filePath = path.join(__dirname, '../../dist' + req.url);
+      fs.access(filePath, err => {
+        if(err) {
+          sendHtml(res, state);
+        } else {
+          res.sendFile(filePath);
+        }
+      })
     }
   });
 }

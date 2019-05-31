@@ -14,7 +14,7 @@ const start = async (app) => {
   console.log("Setting up Sequelize");
   const {sequelize, models} = await Sequelize.setupSequelize();
 
-  const serverConfig = ServerConfig();
+  const serverConfig = await ServerConfig();
   const appConfig = AppConfig(serverConfig);
 
   const state = {

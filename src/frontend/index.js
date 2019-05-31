@@ -7,6 +7,13 @@ import SignIn from './components/SignIn.vue'
 import Routes from './routes'
 
 window.addEventListener('load', function() {
+  document.body.margin = 0;
+  document.title = "Slack Archive";
+
+  const div = document.createElement('div');
+  div.id = "app";
+  document.body.appendChild(div);
+
   Vue.use(VueRouter);
 
   const router = new VueRouter({
@@ -14,7 +21,8 @@ window.addEventListener('load', function() {
       {path: Routes.ARCHIVE, component: Archive},
       {path: Routes.SIGN_IN, component: SignIn},
       {path: '/', component: Home}
-    ]
+    ],
+    mode: 'history'
   });
 
   new Vue({
