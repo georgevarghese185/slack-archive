@@ -10,7 +10,6 @@ const requestLogger = (req, resp, next) => {
 }
 
 const setupMiddleware = (app, serverConfig) => {
-  app.use(express.static(__dirname + '/../../dist', {index:false, extensions: ['html']}))
   app.use(morgan('dev'));
   app.use(cookieParser);
   app.use(jsonParser);
