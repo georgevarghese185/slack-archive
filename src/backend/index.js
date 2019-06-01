@@ -38,5 +38,6 @@ const start = async (app) => {
 
 start(app)
   .catch(e => {
-    console.error(`\n\nFAILED TO START SERVER: ${e.toString()}`);
+    console.error(e);
+    process.exit(1);
   });
