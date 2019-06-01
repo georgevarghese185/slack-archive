@@ -61,9 +61,33 @@ const exchange = async (req, state) => {
   }
 
   return new RedirectResponse(
-    state.config.server.url + '/#' + FrontendRoutes.SIGN_IN + '?success=true',
+    state.config.server.url + FrontendRoutes.SIGN_IN + '?success=true',
     { 'login_token': tokenCookie }
   );
+}
+
+const signOut = async (req, state) => {
+  const token = req.cookies.login_token;
+  const Users = state.models.Users;
+
+  if(token) {
+    await Users.destroy({where: {token_hash: sha256Hash(token)}});
+  }
+
+  const clearCookie = {
+    value: '',
+    options: {
+      httpOnly: true,
+      secure: !process.env.ENV == 'development',
+      maxAge: 1
+    }
+  }
+
+  return new Response(
+    200,
+    { status: 'SUCCESS' },
+    { 'login_token': clearCookie }
+  )
 }
 
 const getUserAndAuthToken = async (token, Users) => {
@@ -80,5 +104,6 @@ const getUserAndAuthToken = async (token, Users) => {
 module.exports = {
   authorize,
   exchange,
+  signOut,
   getUserAndAuthToken
 }

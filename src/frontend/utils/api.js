@@ -30,9 +30,13 @@ const getSlackAuthUrl = async () => {
   return json.redirectUrl
 }
 
+const signOut = async () => {
+  await withError(await fetch('/api/signOut'));
+}
 
-module.exports = {
+export {
   ApiError,
   withError,
-  getSlackAuthUrl
+  getSlackAuthUrl,
+  signOut
 }

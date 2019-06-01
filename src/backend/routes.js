@@ -1,5 +1,5 @@
 const {Response} = require('./utils/response')
-const {authorize, exchange} = require('./authorize/authorize');
+const {authorize, exchange, signOut} = require('./authorize/authorize');
 const {backup} = require('./backup/backup');
 const {status} = require('./backup/status');
 const path = require('path');
@@ -42,6 +42,7 @@ const setupRoutes = (app, state) => {
   app.get('/hai', (req, resp) => resp.send("hai"));
   app.get('/api/slack/OAuth/authUrl', routeHandler(authorize, state));
   app.post('/api/slack/OAuth/exchangeCode', routeHandler(exchange, state));
+  app.get('/api/signOut', routeHandler(signOut, state));
   app.post('/api/slack/backup', routeHandler(backup, state));
   app.get('/api/slack/backup/status', routeHandler(status, state));
 
