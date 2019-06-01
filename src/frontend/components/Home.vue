@@ -21,7 +21,9 @@
 
 	export default {
     computed: {
-      signedIn: isSignedIn
+      signedIn() {
+				return this.$store.state.signedIn
+			}
     }
   }
 

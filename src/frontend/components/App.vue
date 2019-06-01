@@ -16,11 +16,14 @@
 </template>
 
 <script>
-  import {isSignedIn} from '../utils/session'
+  import {setSignedOut} from '../utils/session'
+  import * as API from '../utils/api'
 
   export default{
     computed: {
-      signedIn: isSignedIn
+      signedIn() {
+        return this.$store.state.signedIn
+      }
     },
 
     methods: {
@@ -28,7 +31,12 @@
         this.$router.push('/sign-in')
       },
       signOut() {
-        this.$router.push('/sign-out')
+        const _this = this;
+        API.signOut()
+          .then(() => {
+            setSignedOut(_this.$store);
+            _this.$router.push('/sign-out');
+          }).catch(console.error);
       },
       goHome() {
         this.$router.push('/');
