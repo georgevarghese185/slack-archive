@@ -1,7 +1,7 @@
 {
   "name": "slack-archive",
   "scripts": {
-    "start": "ENV=development concurrently \"node src/backend\" \"webpack-dev-server\"",
+    "start": "ENV=development concurrently --kill-others \"node src/backend\" \"webpack-dev-server\"",
     "build-prod": "ENV=production webpack -p",
     "start-prod": "ENV=production node src/backend"
   },
