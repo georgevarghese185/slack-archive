@@ -17,7 +17,7 @@ const updateMessages = async (state, token, task) => {
     return () => {
       task.info.status = 'UPDATING_MESSAGES';
       delete task.info.retry_after;
-      updateTask(BackuptTasks, task).then();
+      updateTask(BackupTasks, task).then();
     }
   }
 
