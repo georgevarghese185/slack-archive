@@ -1,4 +1,4 @@
-const {updateTask, shouldCancel} = require('./task');
+const {updateTask, shouldCancel, Status} = require('./task');
 const {getConversationHistory, getConversationReplies} = require('../api/slack/conversations');
 
 const updateMessages = async (state, token, task) => {
