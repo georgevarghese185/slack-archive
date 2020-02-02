@@ -1,0 +1,8 @@
+{
+  "name": "slack-archive",
+  "version": "0.1.0",
+  "description": "A webapp to backup content in a Slack Workspace",
+  "scripts": {},
+  "author": "George Varghese M",
+  "license": "UNLICENSE"
+}
