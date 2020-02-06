@@ -9,6 +9,7 @@
   "license": "UNLICENSE",
   "devDependencies": {
     "chai": "^4.2.0",
+    "decache": "^4.5.1",
     "mocha": "^7.0.1"
   }
 }
