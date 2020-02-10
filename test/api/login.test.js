@@ -105,5 +105,23 @@ module.exports = () => {
             expect(decodedToken.accessToken).to.equal(accessToken);
             expect(decodedToken.exp - decodedToken.iat).to.equal(30 * 24 * 60 * 60);
         });
+
+
+        it('bad request: invalid body type', async () => {
+            const request = new Request({ body: "XYZ" });
+            const response = await api['POST:/v1/login'](request);
+
+            expect(response.status).to.equal(400);
+            expect(response.body.errorCode).to.equal("bad_request");
+        });
+
+
+        it('bad request: missing verification code', async () => {
+            const request = new Request({});
+            const response = await api['POST:/v1/login'](request);
+
+            expect(response.status).to.equal(400);
+            expect(response.body.errorCode).to.equal("bad_request");
+        });
     });
 }
