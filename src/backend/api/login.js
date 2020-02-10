@@ -4,6 +4,7 @@ const cookie = require('cookie');
 const jwt = require('jsonwebtoken');
 const qs = require('query-string');
 const Response = require('../../types/Response');
+const { fromAxiosError, badRequest } = require('../../util/response');
 
 const getAuthUrl = () => {
     const body = {
@@ -21,7 +22,16 @@ const getAuthUrl = () => {
 
 
 const login = async (request) => {
+    if(typeof request.body !== 'object') {
+        return badRequest("Expected body of type 'application/json'");
+    }
+
     const verificationCode = request.body.verificationCode;
+
+    if(typeof verificationCode !== 'string') {
+        return badRequest("Missing string: verificationCode");
+    }
+
     const axiosInstance = axios.create({ baseURL: constants.slack.apiBaseUrl });
     let response;
 
@@ -39,8 +49,7 @@ const login = async (request) => {
             }
         );
     } catch(e) {
-        //TODO
-        return;
+        return fromAxiosError(e);
     }
 
     const { access_token, user_id } = response.data;

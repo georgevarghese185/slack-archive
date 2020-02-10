@@ -10,6 +10,9 @@ module.exports = {
         clientSecret: process.env.SLACK_CLIENT_SECRET,
         teamId: process.env.SLACK_TEAM_ID
     },
+    errorCodes: {
+        badRequest: 'bad_request'
+    },
     tokenSecret: process.env.TOKEN_SECRET,
     loginTokenExpiry: '30 days',
     isDevEnvironment: process.env.ENV == 'dev'
