@@ -11,7 +11,9 @@ module.exports = {
         teamId: process.env.SLACK_TEAM_ID
     },
     errorCodes: {
-        badRequest: 'bad_request'
+        badRequest: 'bad_request',
+        slackError: 'slack_error',
+        invalidCode: 'invalid_code'
     },
     tokenSecret: process.env.TOKEN_SECRET,
     loginTokenExpiry: '30 days',

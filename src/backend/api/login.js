@@ -4,7 +4,7 @@ const cookie = require('cookie');
 const jwt = require('jsonwebtoken');
 const qs = require('query-string');
 const Response = require('../../types/Response');
-const { fromAxiosError, badRequest } = require('../../util/response');
+const { fromAxiosError, fromSlackError, badRequest } = require('../../util/response');
 
 const getAuthUrl = () => {
     const body = {
@@ -50,6 +50,14 @@ const login = async (request) => {
         );
     } catch(e) {
         return fromAxiosError(e);
+    }
+
+    if(!response.data.ok) {
+        if(response.data.error === 'invalid_code') {
+            return badRequest(constants.errorCodes.invalidCode, "Invalid verification code");
+        } else {
+            return fromSlackError(response);
+        }
     }
 
     const { access_token, user_id } = response.data;

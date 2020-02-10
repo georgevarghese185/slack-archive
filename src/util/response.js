@@ -12,6 +12,15 @@ const fromAxiosError = (e) => {
     return new Response({ status, body });
 }
 
+const fromSlackError = (response) => {
+    return new Response({
+        status: 502,
+        body: {
+            errorCode: constants.errorCodes.slackError,
+            message: response.data.error
+        }
+    });
+}
 
 const badRequest = (...args) => {
     let errorCode = args.length == 2 ? args[0] : constants.errorCodes.badRequest;
@@ -28,5 +37,6 @@ const badRequest = (...args) => {
 
 module.exports = {
     fromAxiosError,
+    fromSlackError,
     badRequest
 }
