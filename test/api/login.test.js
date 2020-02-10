@@ -11,6 +11,8 @@ module.exports = () => {
     let constants;
     let api;
     before(() => {
+        decache('../../src/constants');
+        decache('../../src/backend/api');
         process.env.SLACK_CLIENT_ID = "client id";
         process.env.SLACK_CLIENT_SECRET = "client secret";
         process.env.SLACK_TEAM_ID = "team id";
@@ -24,8 +26,6 @@ module.exports = () => {
         delete process.env.SLACK_CLIENT_SECRET;
         delete process.env.SLACK_TEAM_ID;
         delete process.env.TOKEN_SECRET;
-        decache('../../src/constants');
-        decache('../../src/backend/api');
     })
 
 
