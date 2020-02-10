@@ -123,5 +123,23 @@ module.exports = () => {
             expect(response.status).to.equal(400);
             expect(response.body.errorCode).to.equal("bad_request");
         });
+
+
+        it('bad request: invalid verification code', async () => {
+            const request = new Request({ body: { verificationCode: "XYZ" } });
+
+            moxios.stubRequest('/oauth.access', {
+                status: 200,
+                response: {
+                    okay: false,
+                    error: "invalid_code"
+                }
+            });
+
+            const response = await api['POST:/v1/login'](request);
+
+            expect(response.status).to.equal(400);
+            expect(response.body.errorCode).to.equal("invalid_code");
+        });
     });
 }
