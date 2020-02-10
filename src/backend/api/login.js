@@ -14,6 +14,12 @@ const getAuthUrl = () => {
     return new Response({ status: 200, body });
 }
 
+
+const login = async (request) => {
+}
+
+
 module.exports = {
-    getAuthUrl
+    getAuthUrl,
+    login
 }

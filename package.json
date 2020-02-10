@@ -10,6 +10,13 @@
   "devDependencies": {
     "chai": "^4.2.0",
     "decache": "^4.5.1",
-    "mocha": "^7.0.1"
+    "mocha": "^7.0.1",
+    "moxios": "^0.4.0"
+  },
+  "dependencies": {
+    "axios": "^0.19.2",
+    "cookie": "^0.4.0",
+    "jsonwebtoken": "^8.5.1",
+    "query-string": "^6.10.1"
   }
 }

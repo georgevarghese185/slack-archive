@@ -1,4 +1,8 @@
+const cookie = require('cookie');
 const decache = require('decache');
+const jwt = require('jsonwebtoken');
+const moxios = require('moxios');
+const qs = require('query-string');
 const Response = require('../../src/types/Response');
 const Request = require('../../src/types/Request');
 const { expect } = require('chai');
@@ -8,14 +12,18 @@ module.exports = () => {
     let api;
     before(() => {
         process.env.SLACK_CLIENT_ID = "client id";
+        process.env.SLACK_CLIENT_SECRET = "client secret";
         process.env.SLACK_TEAM_ID = "team id";
+        process.env.TOKEN_SECRET = "secret";
         constants = require('../../src/constants');
         api = require('../../src/backend/api');
     });
 
     after(() => {
         delete process.env.SLACK_CLIENT_ID;
+        delete process.env.SLACK_CLIENT_SECRET;
         delete process.env.SLACK_TEAM_ID;
+        delete process.env.TOKEN_SECRET;
         decache('../../src/constants');
         decache('../../src/backend/api');
     })
@@ -40,6 +48,62 @@ module.exports = () => {
             });
 
             expect(response).to.deep.equal(expectedResponse);
+        });
+    });
+
+
+
+    describe('POST:/v1/login', () => {
+        beforeEach(() => {
+            moxios.install();
+        });
+
+        afterEach(() => {
+            moxios.uninstall();
+        });
+
+
+        it('sucessful login', async () => {
+            const userId = "U1234";
+            const accessToken = "ABC";
+            const verificationCode = 'XYZ';
+            const request = new Request({
+                body: {
+                    verificationCode
+                }
+            });
+
+            moxios.stubRequest('/oauth.access', {
+                status: 200,
+                response: {
+                    ok: true,
+                    access_token: accessToken,
+                    user_id: userId
+                }
+            });
+
+            const response = await api['POST:/v1/login'](request);
+            const slackRequest = moxios.requests.mostRecent();
+            const token = cookie.parse(response.headers['Set-Cookie']).loginToken;
+            const decodedToken = jwt.verify(token, constants.tokenSecret);
+
+
+
+            const excpectedSlackBody = qs.stringify({
+                code: verificationCode,
+                redirect_uri: constants.slack.oauthRedirectUrl
+            });
+            const expectedSlackAuthorization = "Basic " + Buffer.from(constants.slack.clientId + ":" + constants.slack.clientSecret).toString('base64');
+
+            expect(slackRequest.headers['Content-Type']).to.equal('application/x-www-form-urlencoded');
+            expect(slackRequest.headers['Authorization']).to.equal(expectedSlackAuthorization);
+            expect(slackRequest.config.baseURL).to.equal(constants.slack.apiBaseUrl);
+            expect(slackRequest.config.data).to.equal(excpectedSlackBody);
+
+            expect(response.status).to.equal(200);
+            expect(decodedToken.userId).to.equal(userId);
+            expect(decodedToken.accessToken).to.equal(accessToken);
+            expect(decodedToken.exp - decodedToken.iat).to.equal(30 * 24 * 60 * 60);
         });
     });
 }
