@@ -36,8 +36,7 @@ const login = async (request) => {
     let response;
 
     try {
-        response = await axiosInstance.post(
-            '/oauth.access',
+        response = await axiosInstance.post('/oauth.access',
             qs.stringify({
                 code: verificationCode,
                 redirect_uri: constants.slack.oauthRedirectUrl
@@ -80,8 +79,24 @@ const login = async (request) => {
     });
 }
 
+const validLogin = async (request) => {
+    const { loginToken } = cookie.parse(request.headers['Cookie']);
+    const { accessToken } = jwt.verify(loginToken, constants.tokenSecret);
+
+    const axiosInstance = axios.create({ baseURL: constants.slack.apiBaseUrl });
+
+    const response = await axiosInstance.post('/auth.test', {}, {
+        headers: {
+            'Authorization': 'Bearer ' + accessToken
+        }
+    });
+
+    return new Response({ status: 200 });
+}
+
 
 module.exports = {
     getAuthUrl,
-    login
+    login,
+    validLogin
 }
