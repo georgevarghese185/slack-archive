@@ -13,6 +13,7 @@ module.exports = () => {
     before(() => {
         decache('../../src/constants');
         decache('../../src/backend/api');
+        process.env.ENV = "prod";
         process.env.SLACK_CLIENT_ID = "client id";
         process.env.SLACK_CLIENT_SECRET = "client secret";
         process.env.SLACK_TEAM_ID = "team id";
@@ -22,6 +23,7 @@ module.exports = () => {
     });
 
     after(() => {
+        delete process.env.ENV;
         delete process.env.SLACK_CLIENT_ID;
         delete process.env.SLACK_CLIENT_SECRET;
         delete process.env.SLACK_TEAM_ID;
@@ -101,6 +103,8 @@ module.exports = () => {
             expect(slackRequest.config.data).to.equal(excpectedSlackBody);
 
             expect(response.status).to.equal(200);
+            expect(response.headers['Set-Cookie']).to.match(/Secure/);
+            expect(response.headers['Set-Cookie']).to.match(/HttpOnly/);
             expect(decodedToken.userId).to.equal(userId);
             expect(decodedToken.accessToken).to.equal(accessToken);
             expect(decodedToken.exp - decodedToken.iat).to.equal(30 * 24 * 60 * 60);
