@@ -245,5 +245,32 @@ module.exports = () => {
             expect(response.status).to.equal(401);
             expect(response.body.errorCode).to.equal('token_expired');
         });
+
+
+        it('unauthorized: invalid slack access token', async () => {
+            const accessToken = "XYZ";
+            const token = jwt.sign(
+                { accessToken },
+                constants.tokenSecret,
+                { expiresIn: constants.loginTokenExpiry }
+            );
+            const request = new Request({
+                headers: {
+                    'Cookie': cookie.serialize('loginToken', token)
+                }
+            });
+
+            moxios.stubRequest('/auth.test', {
+                status: 200,
+                response: {
+                    ok: false
+                }
+            });
+
+            const response = await api['GET:/v1/login'](request);
+
+            expect(response.status).to.equal(401);
+            expect(response.body.errorCode).to.equal('unauthorized');
+        });
     });
 }
