@@ -205,7 +205,7 @@ module.exports = () => {
         });
 
 
-        it('missing token', async () => {
+        it('bad request: missing token', async () => {
             const request = new Request();
             const response = await api['GET:/v1/login'](request);
 
@@ -214,7 +214,7 @@ module.exports = () => {
         });
 
 
-        it('invalid token', async () => {
+        it('unauthorized: invalid token', async () => {
             const request = new Request({
                 headers: {
                     'Cookie': cookie.serialize('loginToken', 'not a JWT')
@@ -228,7 +228,7 @@ module.exports = () => {
         });
 
 
-        it('expired token', async () => {
+        it('unauthorized: expired token', async () => {
             const token = jwt.sign(
                 {},
                 constants.tokenSecret,
