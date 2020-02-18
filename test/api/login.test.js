@@ -203,5 +203,14 @@ module.exports = () => {
             expect(slackRequest.headers['Authorization']).to.equal(`Bearer ${accessToken}`);
             expect(response.status).to.equal(200);
         });
+
+
+        it('missing token', async () => {
+            const request = new Request();
+            const response = await api['GET:/v1/login'](request);
+
+            expect(response.status).to.equal(400);
+            expect(response.body.errorCode).to.equal('bad_request');
+        });
     });
 }
