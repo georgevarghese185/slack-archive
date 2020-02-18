@@ -108,11 +108,22 @@ const validLogin = async (request) => {
 
     const axiosInstance = axios.create({ baseURL: constants.slack.apiBaseUrl });
 
-    const response = await axiosInstance.post('/auth.test', {}, {
-        headers: {
-            'Authorization': 'Bearer ' + accessToken
+    try {
+        const response = await axiosInstance.post('/auth.test', {}, {
+            headers: {
+                'Authorization': 'Bearer ' + accessToken
+            }
+        });
+
+        if(!response.data.ok) {
+            return unauthorized("Slack access token invalid: " + response.data.error);
         }
-    });
+    } catch (e) {
+        console.error("Slack 'auth.test' error: " + e.message);
+        console.error(e);
+        return fromAxiosError(e);
+    }
+
 
     return new Response({ status: 200 });
 }
