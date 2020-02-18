@@ -226,5 +226,24 @@ module.exports = () => {
             expect(response.status).to.equal(401);
             expect(response.body.errorCode).to.equal('unauthorized');
         });
+
+
+        it('expired token', async () => {
+            const token = jwt.sign(
+                {},
+                constants.tokenSecret,
+                { expiresIn: '0 ms' }
+            );
+            const request = new Request({
+                headers: {
+                    'Cookie': cookie.serialize('loginToken', token)
+                }
+            });
+
+            const response = await api['GET:/v1/login'](request);
+
+            expect(response.status).to.equal(401);
+            expect(response.body.errorCode).to.equal('token_expired');
+        });
     });
 }
