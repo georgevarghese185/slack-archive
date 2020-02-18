@@ -35,8 +35,22 @@ const badRequest = (...args) => {
     });
 }
 
+const unauthorized = (...args) => {
+    let errorCode = args.length == 2 ? args[0] : constants.errorCodes.unauthorized;
+    let message = args.length == 2 ? args[1] : args[0];
+
+    return new Response({
+        status: 401,
+        body: {
+            errorCode,
+            message
+        }
+    })
+}
+
 module.exports = {
     fromAxiosError,
     fromSlackError,
-    badRequest
+    badRequest,
+    unauthorized
 }

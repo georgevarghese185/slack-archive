@@ -217,7 +217,7 @@ module.exports = () => {
         it('invalid token', async () => {
             const request = new Request({
                 headers: {
-                    'Cookie': cookie.serialize('loginToken', 'not a JWT token')
+                    'Cookie': cookie.serialize('loginToken', 'not a JWT')
                 }
             });
 

@@ -4,7 +4,7 @@ const cookie = require('cookie');
 const jwt = require('jsonwebtoken');
 const qs = require('query-string');
 const Response = require('../../types/Response');
-const { fromAxiosError, fromSlackError, badRequest } = require('../../util/response');
+const { fromAxiosError, fromSlackError, badRequest, unauthorized } = require('../../util/response');
 
 const getAuthUrl = () => {
     const body = {
@@ -81,6 +81,7 @@ const login = async (request) => {
 
 const validLogin = async (request) => {
     let loginToken;
+    let accessToken;
 
     try {
         loginToken = cookie.parse(request.headers['Cookie']).loginToken;
@@ -91,7 +92,15 @@ const validLogin = async (request) => {
         return badRequest("Missing 'loginToken' Cookie");
     }
 
-    const { accessToken } = jwt.verify(loginToken, constants.tokenSecret);
+    try {
+        accessToken = jwt.verify(loginToken, constants.tokenSecret).accessToken;
+        if(typeof accessToken != 'string') {
+            throw new Error('Invalid login token');
+        }
+    } catch (e) {
+        return unauthorized('Invalid login token');
+    }
+
 
     const axiosInstance = axios.create({ baseURL: constants.slack.apiBaseUrl });
 

@@ -13,7 +13,8 @@ module.exports = {
     errorCodes: {
         badRequest: 'bad_request',
         slackError: 'slack_error',
-        invalidCode: 'invalid_code'
+        invalidCode: 'invalid_code',
+        unauthorized: 'unauthorized'
     },
     tokenSecret: process.env.TOKEN_SECRET,
     loginTokenExpiry: '30 days',
