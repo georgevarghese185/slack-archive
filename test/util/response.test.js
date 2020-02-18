@@ -18,7 +18,7 @@ module.exports = () => {
                 await axiosInstance.get('/');
             } catch(e) {
                 const response = fromAxiosError(e);
-                expect(response.status).to.equal(404);
+                expect(response.status).to.equal(500);
                 expect(response.body).to.equal("Not Found");
 
                 moxios.uninstall(axiosInstance);
@@ -44,7 +44,7 @@ module.exports = () => {
                 await axiosInstance.get('/');
             } catch (e) {
                 const response = fromAxiosError(e);
-                expect(response.status).to.equal(404);
+                expect(response.status).to.equal(500);
                 expect(response.body).to.equal(JSON.stringify(responseBody));
                 return
             }
@@ -58,7 +58,7 @@ module.exports = () => {
                 await axios.get('/nonexistentpath');
             } catch (e) {
                 const response = fromAxiosError(e);
-                expect(response.status).to.equal(-1);
+                expect(response.status).to.equal(500);
                 expect(response.body).to.be.a('string');
                 return
             }
