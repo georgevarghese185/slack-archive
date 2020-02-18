@@ -98,7 +98,11 @@ const validLogin = async (request) => {
             throw new Error('Invalid login token');
         }
     } catch (e) {
-        return unauthorized('Invalid login token');
+        if(e instanceof jwt.TokenExpiredError) {
+            return unauthorized(constants.errorCodes.tokenExpired, "Login token expired");
+        } else {
+            return unauthorized('Invalid login token');
+        }
     }
 
 
