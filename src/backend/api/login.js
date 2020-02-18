@@ -80,7 +80,17 @@ const login = async (request) => {
 }
 
 const validLogin = async (request) => {
-    const { loginToken } = cookie.parse(request.headers['Cookie']);
+    let loginToken;
+
+    try {
+        loginToken = cookie.parse(request.headers['Cookie']).loginToken;
+        if(typeof loginToken != 'string') {
+            throw new Error("Missing 'loginToken' Cookie");
+        }
+    } catch (e) {
+        return badRequest("Missing 'loginToken' Cookie");
+    }
+
     const { accessToken } = jwt.verify(loginToken, constants.tokenSecret);
 
     const axiosInstance = axios.create({ baseURL: constants.slack.apiBaseUrl });
