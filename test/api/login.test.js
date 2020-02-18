@@ -229,8 +229,9 @@ module.exports = () => {
 
 
         it('unauthorized: expired token', async () => {
+            const accessToken = "XYZ";
             const token = jwt.sign(
-                {},
+                { accessToken },
                 constants.tokenSecret,
                 { expiresIn: '0 ms' }
             );
@@ -240,10 +241,19 @@ module.exports = () => {
                 }
             });
 
+            moxios.stubRequest('/auth.revoke', {
+                status: 200,
+                response: {
+                    ok: true
+                }
+            });
+
             const response = await api['GET:/v1/login'](request);
+            const slackRequest = moxios.requests.mostRecent();
 
             expect(response.status).to.equal(401);
             expect(response.body.errorCode).to.equal('token_expired');
+            expect(slackRequest.headers['Authorization']).to.equal(`Bearer ${accessToken}`);
         });
 
 
