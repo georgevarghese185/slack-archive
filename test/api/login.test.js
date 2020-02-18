@@ -212,5 +212,19 @@ module.exports = () => {
             expect(response.status).to.equal(400);
             expect(response.body.errorCode).to.equal('bad_request');
         });
+
+
+        it('invalid token', async () => {
+            const request = new Request({
+                headers: {
+                    'Cookie': cookie.serialize('loginToken', 'not a JWT token')
+                }
+            });
+
+            const response = await api['GET:/v1/login'](request);
+
+            expect(response.status).to.equal(401);
+            expect(response.body.errorCode).to.equal('unauthorized');
+        });
     });
 }
