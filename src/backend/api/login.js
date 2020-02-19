@@ -99,6 +99,8 @@ const validLogin = async (request) => {
         }
     } catch (e) {
         if(e instanceof jwt.TokenExpiredError) {
+            const token = jwt.verify(loginToken, constants.tokenSecret, { ignoreExpiration: true }).accessToken;
+            await revokeSlackToken(token);
             return unauthorized(constants.errorCodes.tokenExpired, "Login token expired");
         } else {
             return unauthorized('Invalid login token');
@@ -126,6 +128,21 @@ const validLogin = async (request) => {
 
 
     return new Response({ status: 200 });
+}
+
+
+const revokeSlackToken = async (token) => {
+    const axiosInstance = axios.create({ baseURL: constants.slack.apiBaseUrl });
+    try {
+        await axiosInstance.get('/auth.revoke', {
+            headers: {
+                'Authorization': 'Bearer ' + token
+            }
+        });
+    } catch (e) {
+        console.error("Error while revoking Slack access token: " + e.message);
+        console.error(e);
+    }
 }
 
 
