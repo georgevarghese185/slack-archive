@@ -114,23 +114,30 @@ const validLogin = async (request) => {
 
 
     const axiosInstance = axios.create({ baseURL: constants.slack.apiBaseUrl });
+    let response;
 
     try {
-        const response = await axiosInstance.post('/auth.test', {}, {
+        response = await axiosInstance.post('/auth.test', {}, {
             headers: {
                 'Authorization': 'Bearer ' + accessToken
             }
         });
-
-        if(!response.data.ok) {
-            return unauthorized("Slack access token invalid: " + response.data.error);
-        }
     } catch (e) {
         console.error("Slack 'auth.test' error: " + e.message);
         console.error(e);
         return fromAxiosError(e);
     }
 
+    if(!response.data.ok) {
+        if (['invalid_auth', 'account_inactive', 'token_revoked', 'no_permission', 'missing_scope'].indexOf(response.data.error) > -1) {
+            return unauthorized("Invalid token: " + response.data.error);
+        } else if (['org_login_required', 'ekm_access_denied', 'team_added_to_org', 'fatal_error'].indexOf(response.data.error) > -1) {
+            return fromSlackError(response);
+        } else {
+            console.error("Error trying to exchange verification code with Slack: " + response.data.error);
+            return internalError("Could not obtain access token from Slack");
+        }
+    }
 
     return new Response({ status: 200 });
 }
