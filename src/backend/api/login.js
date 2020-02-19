@@ -48,6 +48,8 @@ const login = async (request) => {
             }
         );
     } catch(e) {
+        console.error("Slack '/oauth.access' error: " + e.message);
+        console.error(e);
         return fromAxiosError(e);
     }
 
@@ -123,7 +125,7 @@ const validLogin = async (request) => {
             }
         });
     } catch (e) {
-        console.error("Slack 'auth.test' error: " + e.message);
+        console.error("Slack '/auth.test' error: " + e.message);
         console.error(e);
         return fromAxiosError(e);
     }
