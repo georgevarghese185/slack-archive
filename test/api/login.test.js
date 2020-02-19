@@ -147,21 +147,46 @@ module.exports = () => {
         });
 
 
-        it('slack error', async () => {
-            const request = new Request({ body: { verificationCode: "XYZ" } });
-
-            moxios.stubRequest('/oauth.access', {
-                status: 200,
-                response: {
-                    okay: false,
-                    error: "code_already_used"
+        it('slack error handling', async () => {
+            const slackErrors = [
+                {
+                    slackCodes: ['invalid_code'],
+                    expectedResponse: { status: 400, errorCode: 'invalid_code' }
+                },
+                {
+                    slackCodes: ['code_already_used'],
+                    expectedResponse: { status: 401, errorCode: 'code_already_used' }
+                },
+                {
+                    slackCodes: ['org_login_required', 'ekm_access_denied', 'team_added_to_org', 'fatal_error'],
+                    expectedResponse: { status: 502, errorCode: 'slack_error' }
+                },
+                {
+                    slackCodes: ['*'], // any other error
+                    expectedResponse: { status: 500, errorCode: 'internal_server_error' }
                 }
+            ];
+
+            const request = new Request({
+                body: { verificationCode: "XYZ" }
             });
 
-            const response = await api['POST:/v1/login'](request);
+            for (const e of slackErrors) {
+                for (const slackErrorCode of e.slackCodes) {
+                    moxios.stubs.reset();
+                    moxios.stubRequest('/oauth.access', {
+                        status: 200,
+                        response: { ok: false, error: slackErrorCode }
+                    });
 
-            expect(response.status).to.equal(502);
-            expect(response.body.errorCode).to.equal("slack_error");
+                    const response = await api['POST:/v1/login'](request);
+
+                    expect(response.status, `Incorrect status for '${slackErrorCode}'`)
+                        .to.equal(e.expectedResponse.status);
+                    expect(response.body.errorCode, `Incorrect errorCode for '${slackErrorCode}'`)
+                        .to.equal(e.expectedResponse.errorCode);
+                }
+            }
         });
     });
 
@@ -257,10 +282,9 @@ module.exports = () => {
         });
 
 
-        it('unauthorized: invalid slack access token', async () => {
-            const accessToken = "XYZ";
+        it('slack error handling', async () => {
             const token = jwt.sign(
-                { accessToken },
+                { accessToken: "XYZ" },
                 constants.tokenSecret,
                 { expiresIn: constants.loginTokenExpiry }
             );
@@ -269,18 +293,37 @@ module.exports = () => {
                     'Cookie': cookie.serialize('loginToken', token)
                 }
             });
-
-            moxios.stubRequest('/auth.test', {
-                status: 200,
-                response: {
-                    ok: false
+            const slackErrors = [
+                {
+                    slackCodes: ['invalid_auth', 'account_inactive', 'token_revoked', 'no_permission', 'missing_scope'],
+                    expectedResponse: { status: 401, errorCode: 'unauthorized' }
+                },
+                {
+                    slackCodes: ['org_login_required', 'ekm_access_denied', 'team_added_to_org', 'fatal_error'],
+                    expectedResponse: { status: 502, errorCode: 'slack_error' }
+                },
+                {
+                    slackCodes: ['*'], // any other error
+                    expectedResponse: { status: 500, errorCode: 'internal_server_error' }
                 }
-            });
+            ];
 
-            const response = await api['GET:/v1/login'](request);
+            for (const e of slackErrors) {
+                for (const slackErrorCode of e.slackCodes) {
+                    moxios.stubs.reset();
+                    moxios.stubRequest('/auth.test', {
+                        status: 200,
+                        response: { ok: false, error: slackErrorCode }
+                    });
 
-            expect(response.status).to.equal(401);
-            expect(response.body.errorCode).to.equal('unauthorized');
+                    const response = await api['GET:/v1/login'](request);
+
+                    expect(response.status, `Incorrect status for '${slackErrorCode}'`)
+                        .to.equal(e.expectedResponse.status);
+                    expect(response.body.errorCode, `Incorrect errorCode for '${slackErrorCode}'`)
+                        .to.equal(e.expectedResponse.errorCode);
+                }
+            }
         });
     });
 }
