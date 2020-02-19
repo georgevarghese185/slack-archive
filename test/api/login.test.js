@@ -1,6 +1,6 @@
 const cookie = require('cookie');
 const decache = require('decache');
-const jwt = require('jsonwebtoken');
+const jwt = require('../../src/util/jwt');
 const moxios = require('moxios');
 const qs = require('query-string');
 const Response = require('../../src/types/Response');

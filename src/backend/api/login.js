@@ -1,7 +1,7 @@
 const axios = require('axios');
 const constants = require('../../constants');
 const cookie = require('cookie');
-const jwt = require('jsonwebtoken');
+const jwt = require('../../util/jwt');
 const qs = require('query-string');
 const Response = require('../../types/Response');
 const { fromAxiosError, fromSlackError, badRequest, unauthorized } = require('../../util/response');
