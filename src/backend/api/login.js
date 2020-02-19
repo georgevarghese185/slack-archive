@@ -4,7 +4,7 @@ const cookie = require('cookie');
 const jwt = require('../../util/jwt');
 const qs = require('query-string');
 const Response = require('../../types/Response');
-const { fromAxiosError, fromSlackError, badRequest, unauthorized } = require('../../util/response');
+const { fromAxiosError, fromSlackError, badRequest, unauthorized, internalError } = require('../../util/response');
 
 const getAuthUrl = () => {
     const body = {
@@ -54,8 +54,13 @@ const login = async (request) => {
     if(!response.data.ok) {
         if(response.data.error === 'invalid_code') {
             return badRequest(constants.errorCodes.invalidCode, "Invalid verification code");
-        } else {
+        } else if(response.data.error === 'code_already_used') {
+            return unauthorized(constants.errorCodes.codeUsed, "Provided code has already been used before");
+        } else if (['org_login_required', 'ekm_access_denied', 'team_added_to_org', 'fatal_error'].indexOf(response.data.error) > -1) {
             return fromSlackError(response);
+        } else {
+            console.error("Error trying to exchange verification code with Slack: " + response.data.error);
+            return internalError("Could not obtain access token from Slack");
         }
     }
 

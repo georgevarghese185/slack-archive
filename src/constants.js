@@ -14,8 +14,10 @@ module.exports = {
         badRequest: 'bad_request',
         slackError: 'slack_error',
         invalidCode: 'invalid_code',
+        codeUsed: 'code_already_used',
         unauthorized: 'unauthorized',
-        tokenExpired: 'token_expired'
+        tokenExpired: 'token_expired',
+        internalError: 'internal_server_error'
     },
     tokenSecret: process.env.TOKEN_SECRET,
     loginTokenExpiry: '30 days',

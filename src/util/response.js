@@ -47,9 +47,23 @@ const unauthorized = (...args) => {
     })
 }
 
+const internalError = (...args) => {
+    let errorCode = args.length == 2 ? args[0] : constants.errorCodes.internalError;
+    let message = args.length == 2 ? args[1] : args[0];
+
+    return new Response({
+        status: 500,
+        body: {
+            errorCode,
+            message
+        }
+    })
+}
+
 module.exports = {
     fromAxiosError,
     fromSlackError,
     badRequest,
-    unauthorized
+    unauthorized,
+    internalError
 }
