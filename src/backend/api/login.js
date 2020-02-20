@@ -1,6 +1,7 @@
 const axios = require('axios');
 const constants = require('../../constants');
 const cookie = require('cookie');
+const logger = require('../../../src/util/logger').getInstance();
 const jwt = require('../../util/jwt');
 const qs = require('query-string');
 const Response = require('../../types/Response');
@@ -48,8 +49,8 @@ const login = async (request) => {
             }
         );
     } catch(e) {
-        console.error("Slack '/oauth.access' error: " + e.message);
-        console.error(e);
+        logger.error("Slack '/oauth.access' error: " + e.message);
+        logger.error(e);
         return fromAxiosError(e);
     }
 
@@ -61,7 +62,7 @@ const login = async (request) => {
         } else if (['org_login_required', 'ekm_access_denied', 'team_added_to_org', 'fatal_error'].indexOf(response.data.error) > -1) {
             return fromSlackError(response);
         } else {
-            console.error("Error trying to exchange verification code with Slack: " + response.data.error);
+            logger.error("Error trying to exchange verification code with Slack: " + response.data.error);
             return internalError("Could not obtain access token from Slack");
         }
     }
@@ -125,8 +126,8 @@ const validLogin = async (request) => {
             }
         });
     } catch (e) {
-        console.error("Slack '/auth.test' error: " + e.message);
-        console.error(e);
+        logger.error("Slack '/auth.test' error: " + e.message);
+        logger.error(e);
         return fromAxiosError(e);
     }
 
@@ -136,7 +137,7 @@ const validLogin = async (request) => {
         } else if (['org_login_required', 'ekm_access_denied', 'team_added_to_org', 'fatal_error'].indexOf(response.data.error) > -1) {
             return fromSlackError(response);
         } else {
-            console.error("Error trying to exchange verification code with Slack: " + response.data.error);
+            logger.error("Error trying to exchange verification code with Slack: " + response.data.error);
             return internalError("Could not obtain access token from Slack");
         }
     }
@@ -154,8 +155,8 @@ const revokeSlackToken = async (token) => {
             }
         });
     } catch (e) {
-        console.error("Error while revoking Slack access token: " + e.message);
-        console.error(e);
+        logger.error("Error while revoking Slack access token: " + e.message);
+        logger.error(e);
     }
 }
 
