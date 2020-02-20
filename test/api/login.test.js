@@ -6,7 +6,10 @@ const moxios = require('moxios');
 const qs = require('query-string');
 const Response = require('../../src/types/Response');
 const Request = require('../../src/types/Request');
-const { expect } = require('chai');
+const chai = require('chai');
+const chaiAsPromised = require('chai-as-promised');
+chai.use(chaiAsPromised);
+const expect = chai.expect;
 
 module.exports = () => {
     let constants;
@@ -268,6 +271,15 @@ module.exports = () => {
                 }
             });
 
+            const makeRequest = async () => {
+                const response = await api['GET:/v1/login'](request);
+                const slackRequest = moxios.requests.mostRecent();
+
+                expect(response.status).to.equal(401);
+                expect(response.body.errorCode).to.equal('token_expired');
+                expect(slackRequest.headers['Authorization']).to.equal(`Bearer ${accessToken}`);
+            }
+
             moxios.stubRequest('/auth.revoke', {
                 status: 200,
                 response: {
@@ -275,12 +287,19 @@ module.exports = () => {
                 }
             });
 
-            const response = await api['GET:/v1/login'](request);
-            const slackRequest = moxios.requests.mostRecent();
+            await makeRequest();
 
-            expect(response.status).to.equal(401);
-            expect(response.body.errorCode).to.equal('token_expired');
-            expect(slackRequest.headers['Authorization']).to.equal(`Bearer ${accessToken}`);
+            // Run again but this time, /auth.revoke will return an error.
+            moxios.stubs.reset();
+            moxios.stubRequest('/auth.revoke', {
+                status: 200,
+                response: {
+                    ok: false,
+                    error: 'invalid_auth'
+                }
+            });
+
+            await expect(makeRequest(), "Should not have failed even if '/auth.revoke' failed").to.be.fulfilled;
         });
 
 
