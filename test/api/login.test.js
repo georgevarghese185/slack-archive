@@ -347,4 +347,44 @@ module.exports = () => {
             }
         });
     });
+
+
+
+    describe('DELETE:/v1/login', () => {
+        beforeEach(() => {
+            moxios.install();
+        });
+
+        afterEach(() => {
+            moxios.uninstall();
+        });
+
+
+        it('delete token', async() => {
+            const accessToken = "XYZ";
+            const token = jwt.sign(
+                { accessToken: "XYZ" },
+                constants.tokenSecret,
+                { expiresIn: constants.loginTokenExpiry }
+            );
+            const request = new Request({
+                headers: {
+                    'Cookie': cookie.serialize('loginToken', token)
+                }
+            });
+
+            moxios.stubRequest('/auth.revoke', {
+                status: 200,
+                response: {
+                    ok: true
+                }
+            });
+
+            const response = await api['DELETE:/v1/login'](request);
+            const slackRequest = moxios.requests.mostRecent();
+
+            expect(slackRequest.headers['Authorization']).to.equal(`Bearer ${accessToken}`);
+            expect(response.status).to.equal(200);
+        });
+    });
 }
