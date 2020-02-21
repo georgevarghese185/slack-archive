@@ -146,6 +146,16 @@ const validLogin = async (request) => {
 }
 
 
+const deleteToken = async (request) => {
+    const loginToken = cookie.parse(request.headers['Cookie']).loginToken;
+    const accessToken = jwt.verify(loginToken, constants.tokenSecret).accessToken;
+
+    await revokeSlackToken(accessToken);
+
+    return new Response({ status: 200 });
+}
+
+
 const revokeSlackToken = async (token) => {
     const axiosInstance = axios.create({ baseURL: constants.slack.apiBaseUrl });
     try {
@@ -164,5 +174,6 @@ const revokeSlackToken = async (token) => {
 module.exports = {
     getAuthUrl,
     login,
-    validLogin
+    validLogin,
+    deleteToken
 }
