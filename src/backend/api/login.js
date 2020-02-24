@@ -174,7 +174,7 @@ const deleteToken = async (request) => {
 const revokeSlackToken = async (token) => {
     const axiosInstance = axios.create({ baseURL: constants.slack.apiBaseUrl });
     try {
-        await axiosInstance.get('/auth.revoke', {
+        await axiosInstance.post('/auth.revoke', {}, {
             headers: {
                 'Authorization': 'Bearer ' + token
             }
