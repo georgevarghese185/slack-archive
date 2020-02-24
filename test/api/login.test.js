@@ -423,5 +423,19 @@ module.exports = () => {
             expect(response.status).to.equal(400);
             expect(response.body.errorCode).to.equal('bad_request');
         });
+
+
+        it('unauthorized: invalid token', async () => {
+            const request = new Request({
+                headers: {
+                    'Cookie': cookie.serialize('loginToken', 'not a token')
+                }
+            });
+
+            const response = await api['DELETE:/v1/login'](request);
+
+            expect(response.status).to.equal(401);
+            expect(response.body.errorCode).to.equal('unauthorized');
+        });
     });
 }
