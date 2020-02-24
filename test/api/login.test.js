@@ -102,6 +102,7 @@ module.exports = () => {
             });
             const expectedSlackAuthorization = "Basic " + Buffer.from(constants.slack.clientId + ":" + constants.slack.clientSecret).toString('base64');
 
+            expect(slackRequest.config.method).to.equal('post');
             expect(slackRequest.headers['Content-Type']).to.equal('application/x-www-form-urlencoded');
             expect(slackRequest.headers['Authorization']).to.equal(expectedSlackAuthorization);
             expect(slackRequest.config.baseURL).to.equal(constants.slack.apiBaseUrl);
@@ -230,6 +231,7 @@ module.exports = () => {
 
             const slackRequest = moxios.requests.mostRecent();
 
+            expect(slackRequest.config.method).to.equal('post');
             expect(slackRequest.headers['Authorization']).to.equal(`Bearer ${accessToken}`);
             expect(response.status).to.equal(200);
         });
@@ -383,6 +385,7 @@ module.exports = () => {
             const response = await api['DELETE:/v1/login'](request);
             const slackRequest = moxios.requests.mostRecent();
 
+            expect(slackRequest.config.method).to.equal('post');
             expect(slackRequest.headers['Authorization']).to.equal(`Bearer ${accessToken}`);
             expect(response.status).to.equal(200);
         });
