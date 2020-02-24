@@ -197,7 +197,7 @@ module.exports = () => {
 
 
 
-    describe('GET:/v1/login', () => {
+    describe('GET:/v1/login/status', () => {
         beforeEach(() => {
             moxios.install();
         });
@@ -226,7 +226,7 @@ module.exports = () => {
                 }
             });
 
-            const response = await api['GET:/v1/login'](request);
+            const response = await api['GET:/v1/login/status'](request);
 
             const slackRequest = moxios.requests.mostRecent();
 
@@ -237,7 +237,7 @@ module.exports = () => {
 
         it('bad request: missing token', async () => {
             const request = new Request();
-            const response = await api['GET:/v1/login'](request);
+            const response = await api['GET:/v1/login/status'](request);
 
             expect(response.status).to.equal(400);
             expect(response.body.errorCode).to.equal('bad_request');
@@ -251,7 +251,7 @@ module.exports = () => {
                 }
             });
 
-            const response = await api['GET:/v1/login'](request);
+            const response = await api['GET:/v1/login/status'](request);
 
             expect(response.status).to.equal(401);
             expect(response.body.errorCode).to.equal('unauthorized');
@@ -272,7 +272,7 @@ module.exports = () => {
             });
 
             const makeRequest = async () => {
-                const response = await api['GET:/v1/login'](request);
+                const response = await api['GET:/v1/login/status'](request);
                 const slackRequest = moxios.requests.mostRecent();
 
                 expect(response.status).to.equal(401);
@@ -337,7 +337,7 @@ module.exports = () => {
                         response: { ok: false, error: slackErrorCode }
                     });
 
-                    const response = await api['GET:/v1/login'](request);
+                    const response = await api['GET:/v1/login/status'](request);
 
                     expect(response.status, `Incorrect status for '${slackErrorCode}'`)
                         .to.equal(e.expectedResponse.status);
