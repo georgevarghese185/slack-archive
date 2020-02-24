@@ -414,5 +414,14 @@ module.exports = () => {
             expect(response.status).to.equal(200);
             expect(slackRequest.headers['Authorization']).to.equal(`Bearer ${accessToken}`);
         });
+
+
+        it('bad request: missing token', async () => {
+            const request = new Request();
+            const response = await await api['DELETE:/v1/login'](request);
+
+            expect(response.status).to.equal(400);
+            expect(response.body.errorCode).to.equal('bad_request');
+        });
     });
 }
