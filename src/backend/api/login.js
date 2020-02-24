@@ -93,10 +93,11 @@ const validLogin = async (request) => {
 
     try {
         loginToken = cookie.parse(request.headers['Cookie']).loginToken;
-        if(typeof loginToken != 'string') {
-            throw new Error("Missing 'loginToken' Cookie");
-        }
     } catch (e) {
+        loginToken = null;
+    }
+
+    if (typeof loginToken != 'string') {
         return badRequest("Missing 'loginToken' Cookie");
     }
 
@@ -152,10 +153,11 @@ const deleteToken = async (request) => {
 
     try {
         loginToken = cookie.parse(request.headers['Cookie']).loginToken;
-        if (typeof loginToken != 'string') {
-            throw new Error("Missing 'loginToken' Cookie");
-        }
     } catch (e) {
+        loginToken = null;
+    }
+
+    if (typeof loginToken != 'string') {
         return badRequest("Missing 'loginToken' Cookie");
     }
 
