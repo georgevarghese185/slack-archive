@@ -386,5 +386,33 @@ module.exports = () => {
             expect(slackRequest.headers['Authorization']).to.equal(`Bearer ${accessToken}`);
             expect(response.status).to.equal(200);
         });
+
+
+        it('expired token', async () => {
+            const accessToken = "XYZ";
+            const token = jwt.sign(
+                { accessToken },
+                constants.tokenSecret,
+                { expiresIn: '0 ms' }
+            );
+            const request = new Request({
+                headers: {
+                    'Cookie': cookie.serialize('loginToken', token)
+                }
+            });
+
+            moxios.stubRequest('/auth.revoke', {
+                status: 200,
+                response: {
+                    ok: true
+                }
+            });
+
+            const response = await api['DELETE:/v1/login'](request);
+            const slackRequest = moxios.requests.mostRecent();
+
+            expect(response.status).to.equal(200);
+            expect(slackRequest.headers['Authorization']).to.equal(`Bearer ${accessToken}`);
+        });
     });
 }
