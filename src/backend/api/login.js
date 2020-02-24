@@ -148,7 +148,7 @@ const validLogin = async (request) => {
 
 const deleteToken = async (request) => {
     const loginToken = cookie.parse(request.headers['Cookie']).loginToken;
-    const accessToken = jwt.verify(loginToken, constants.tokenSecret).accessToken;
+    const accessToken = jwt.verify(loginToken, constants.tokenSecret, { ignoreExpiration: true }).accessToken;
 
     await revokeSlackToken(accessToken);
 
