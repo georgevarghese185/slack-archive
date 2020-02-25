@@ -35,5 +35,24 @@ module.exports = () => {
             expect(response.status).to.equal(200);
             expect(response.body).to.equal(memberObj);
         });
+
+        it('not found: invalid member ID', async () => {
+            const request = new Request({
+                parameters: { id: 'U1' }
+            });
+
+            class TestMembers extends Members {
+                async get(id) {
+                    return null;
+                }
+            }
+            const members = new TestMembers();
+            const models = { members };
+
+            const response = await api['GET:/v1/members/:id'](request, models);
+
+            expect(response.status).to.equal(404);
+            expect(response.body.errorCode).to.equal('member_not_found');
+        });
     });
 }
