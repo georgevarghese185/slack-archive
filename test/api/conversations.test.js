@@ -8,6 +8,7 @@ module.exports = () => {
 
     before(() => {
         decache('../../src/backend/api');
+        decache('../../src/constants');
         api = require('../../src/backend/api');
     });
 

@@ -60,10 +60,24 @@ const internalError = (...args) => {
     })
 }
 
+const notFound = (...args) => {
+    let errorCode = args.length == 2 ? args[0] : constants.errorCodes.notFound;
+    let message = args.length == 2 ? args[1] : args[0];
+
+    return new Response({
+        status: 404,
+        body: {
+            errorCode,
+            message
+        }
+    })
+}
+
 module.exports = {
     fromAxiosError,
     fromSlackError,
     badRequest,
     unauthorized,
-    internalError
+    internalError,
+    notFound
 }
