@@ -19,7 +19,8 @@ module.exports = {
         tokenExpired: 'token_expired',
         internalError: 'internal_server_error',
         notFound: 'not_found',
-        conversationNotFound: 'conversation_not_found'
+        conversationNotFound: 'conversation_not_found',
+        memberNotFound: 'member_not_found'
     },
     tokenSecret: process.env.TOKEN_SECRET,
     loginTokenExpiry: '30 days',
