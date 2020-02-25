@@ -54,6 +54,24 @@ module.exports = () => {
 
             expect(response.status).to.equal(200);
             expect(response.body).to.deep.equal(conversationObj);
-        })
+        });
+
+        it('not found: unknown conversation ID', async () => {
+            const request = new Request({
+                parameters: { id: 'C1' }
+            });
+            class TestConversations extends Conversations {
+                async get(id) {
+                    return null;
+                }
+            }
+            const conversations = new TestConversations();
+            const models = { conversations };
+
+            const response = await api['GET:/v1/conversations/:id'](request, models);
+
+            expect(response.status).to.equal(404);
+            expect(response.body.errorCode).to.equal('conversation_not_found');
+        });
     })
 }
