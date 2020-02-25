@@ -8,7 +8,14 @@ const list = async (models) => {
     });
 }
 
+const get = async (request, models) => {
+    const id = request.parameters.id;
+    const conversation = await models.conversations.get(id);
+    return new Response({ status: 200, body: conversation });
+}
+
 
 module.exports = {
-    list
+    list,
+    get
 }

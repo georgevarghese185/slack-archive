@@ -7,5 +7,6 @@ module.exports = {
     'GET:/v1/login/status': login.validLogin,
     'DELETE:/v1/login': login.deleteToken,
 
-    'GET:/v1/conversations': conversations.list
+    'GET:/v1/conversations': conversations.list,
+    'GET:/v1/conversations/:id': conversations.get
 }
