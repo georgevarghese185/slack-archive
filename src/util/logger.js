@@ -1,36 +1,23 @@
 class Logger {
-    constructor(options = {}) {
-        const testMode = options.testMode;
-        this.testMode = testMode;
-    }
-
     log(...args) {
-        if (!this.testMode) {
+        if (!Logger.silent) {
             console.log(...args);
         }
     }
 
     info(...args) {
-        if (!this.testMode) {
+        if (!Logger.silent) {
             console.info(...args);
         }
     }
 
     error(...args) {
-        if (!this.testMode) {
+        if (!Logger.silent) {
             console.error(...args);
         }
     }
 }
 
-let instance = null;
+Logger.silent = false;
 
-module.exports = {
-    createInstance(options) {
-        instance = new Logger(options);
-        return instance;
-    },
-    getInstance() {
-        return instance;
-    }
-}
+module.exports = Logger;

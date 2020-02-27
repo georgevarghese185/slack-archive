@@ -1,7 +1,8 @@
 const axios = require('axios');
 const constants = require('../../constants');
 const cookie = require('cookie');
-const logger = require('../../../src/util/logger').getInstance();
+const Logger = require('../../util/Logger');
+const logger = new Logger();
 const jwt = require('../../util/jwt');
 const qs = require('query-string');
 const Response = require('../../types/Response');
