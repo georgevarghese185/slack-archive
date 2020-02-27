@@ -1,6 +1,7 @@
 const conversations = require('./conversations');
 const login = require('./login');
 const members = require('./members');
+const messages = require('./messages');
 
 module.exports = {
     'GET:/v1/login/auth-url': login.getAuthUrl,
@@ -11,5 +12,7 @@ module.exports = {
     'GET:/v1/conversations': conversations.list,
     'GET:/v1/conversations/:id': conversations.get,
 
-    'GET:/v1/members/:id': members.get
+    'GET:/v1/members/:id': members.get,
+
+    'GET:/v1/messages' : messages.get
 }
