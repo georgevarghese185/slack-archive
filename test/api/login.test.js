@@ -1,7 +1,6 @@
 const cookie = require('cookie');
 const decache = require('decache');
 const jwt = require('../../src/util/jwt');
-const Logger = require('../../src/util/Logger');
 const moxios = require('moxios');
 const qs = require('query-string');
 const Response = require('../../src/types/Response');
@@ -15,7 +14,6 @@ module.exports = () => {
     let constants;
     let api;
     before(() => {
-        Logger.silent = true;
         decache('../../src/constants');
         decache('../../src/backend/api');
         process.env.ENV = "prod";
