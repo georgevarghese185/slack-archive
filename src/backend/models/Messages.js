@@ -1,5 +1,5 @@
 class Messages {
-    get() {
+    get(limit) {
         throw new Error('Not implemented');
     }
 }

@@ -28,8 +28,13 @@ module.exports = () => {
         ];
 
         class TestMessages extends Messages {
-            get() {
+            get(limit) {
                 let messages = messageList;
+
+                if(limit) {
+                    messages = messages.slice(0, limit);
+                }
+
                 return messages;
             }
         }
@@ -41,6 +46,26 @@ module.exports = () => {
 
             expect(response.status).to.equal(200);
             expect(response.body.messages).to.deep.equal(messageList.map(m => m.json));
+        });
+
+
+        it('limit', async () => {
+            const models = { messages: new TestMessages() };
+            const request = new Request({
+                query: { limit: "6" }
+            });
+
+            const response = await api['GET:/v1/messages'](request, models);
+
+            expect(response.status).to.equal(200);
+            expect(response.body.messages).to.deep.equal([
+                { text: "1" },
+                { text: "2" },
+                { text: "3" },
+                { text: "4" },
+                { text: "5" },
+                { text: "6" }
+            ]);
         });
     });
 }
