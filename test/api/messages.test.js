@@ -272,6 +272,28 @@ module.exports = () => {
         });
 
 
+        it('bad request: invalid limit value', async () => {
+            const models = { messages: new TestMessages(), conversations: new TestConversations() };
+
+            const testCases = [
+                "",
+                "10.01",
+                "-8"
+            ];
+
+            for(const testCase of testCases) {
+                const request = new Request({
+                    query: { limit: testCase }
+                });
+
+                const response = await api['GET:/v1/messages'](request, models);
+
+                expect(response.status, `Invalid status for ${JSON.stringify(testCase)}`).to.equal(400);
+                expect(response.body.errorCode, `Invalid error code for ${testCase}`).to.deep.equal('bad_request');
+            }
+        })
+
+
         it('not found: unknown conversation ID', async () => {
 
 
