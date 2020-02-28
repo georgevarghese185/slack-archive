@@ -4,6 +4,7 @@ const get = async (request, models) => {
     const limit = parseInt(request.query.limit);
     const conversationId = request.query.conversationId;
     const postsOnly = request.query.postsOnly === 'true';
+    const thread = request.query.thread;
     let from, to;
 
     if(request.query.from) {
@@ -22,7 +23,7 @@ const get = async (request, models) => {
         to = { value: request.query.before, inclusive: false };
     }
 
-    const messages = await models.messages.get(from, to, conversationId, postsOnly, limit);
+    const messages = await models.messages.get(from, to, conversationId, postsOnly, thread, limit);
 
     return new Response({
         status: 200,
