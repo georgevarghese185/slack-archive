@@ -2,6 +2,7 @@ const Response = require('../../types/Response');
 
 const get = async (request, models) => {
     const limit = parseInt(request.query.limit);
+    const conversationId = request.query.conversationId
     let from, to;
 
     if(request.query.from) {
@@ -20,7 +21,7 @@ const get = async (request, models) => {
         to = { value: request.query.before, inclusive: false };
     }
 
-    const messages = await models.messages.get(from, to, limit);
+    const messages = await models.messages.get(from, to, conversationId, limit);
 
     return new Response({
         status: 200,
