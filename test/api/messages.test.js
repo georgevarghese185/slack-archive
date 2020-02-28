@@ -28,7 +28,7 @@ module.exports = () => {
         ];
 
         class TestMessages extends Messages {
-            get(from, to, conversationId, postsOnly, limit) {
+            get(from, to, conversationId, postsOnly, threadTs, limit) {
                 let messages = messageList;
 
                 const validateTimeArg = (x) => {
@@ -54,6 +54,10 @@ module.exports = () => {
 
                 if(postsOnly) {
                     messages = messages.filter(m => m.threadTs == null || m.threadTs === m.ts);
+                }
+
+                if(threadTs) {
+                    messages = messages.filter(m => m.threadTs == threadTs);
                 }
 
                 if(limit) {
@@ -198,6 +202,24 @@ module.exports = () => {
                 { text: "7" },
                 { text: "8" },
                 { text: "10" }
+            ]);
+        });
+
+
+        it("'thread' parameter", async () => {
+            const models = { messages: new TestMessages() };
+            const request = new Request({
+                query: { thread: "1500000010.000000" }
+            });
+
+            const response = await api['GET:/v1/messages'](request, models);
+
+            expect(response.status).to.equal(200);
+            expect(response.body.messages).to.deep.equal([
+                { text: "3" },
+                { text: "5" },
+                { text: "6" },
+                { text: "9" }
             ]);
         });
     });
