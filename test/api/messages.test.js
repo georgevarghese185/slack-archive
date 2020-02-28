@@ -28,8 +28,24 @@ module.exports = () => {
         ];
 
         class TestMessages extends Messages {
-            get(limit) {
+            get(from, to, limit) {
                 let messages = messageList;
+
+                const validateTimeArg = (x) => {
+                    expect(x.inclusive).to.be.a('boolean');
+                    expect(x.value).to.be.a('string');
+                    expect(x.value).to.match(/\d+\.\d+/);
+                }
+
+                if(from) {
+                    validateTimeArg(from);
+                    messages = messages.filter(m => from.inclusive ? from.value <= m.ts : from.value < m.ts);
+                }
+
+                if (to) {
+                    validateTimeArg(to);
+                    messages = messages.filter(m => to.inclusive ? to.value >= m.ts : to.value > m.ts);
+                }
 
                 if(limit) {
                     messages = messages.slice(0, limit);
@@ -65,6 +81,76 @@ module.exports = () => {
                 { text: "4" },
                 { text: "5" },
                 { text: "6" }
+            ]);
+        });
+
+
+        it("'from' parameter", async () => {
+            const models = { messages: new TestMessages() };
+            const request = new Request({
+                query: { from: "1500000045.000001" }
+            })
+
+            const response = await api['GET:/v1/messages'](request, models);
+
+            expect(response.status).to.equal(200);
+            expect(response.body.messages).to.deep.equal([
+                { text: "7" },
+                { text: "8" },
+                { text: "9" },
+                { text: "10" }
+            ]);
+        });
+
+
+        it("'to' parameter", async () => {
+            const models = { messages: new TestMessages() };
+            const request = new Request({
+                query: { to: "1500000020.000001" }
+            });
+
+            const response = await api['GET:/v1/messages'](request, models);
+
+            expect(response.status).to.equal(200);
+            expect(response.body.messages).to.deep.equal([
+                { text: "1" },
+                { text: "2" },
+                { text: "3" },
+                { text: "4" }
+            ]);
+        });
+
+
+        it("'after' parameter", async () => {
+            const models = { messages: new TestMessages() };
+            const request = new Request({
+                query: { after: "1500000045.000001" }
+            })
+
+            const response = await api['GET:/v1/messages'](request, models);
+
+            expect(response.status).to.equal(200);
+            expect(response.body.messages).to.deep.equal([
+                { text: "8" },
+                { text: "9" },
+                { text: "10" }
+            ]);
+        });
+
+
+        it("'before' parameter", async () => {
+            const models = { messages: new TestMessages() };
+            const request = new Request({
+                query: { before: "1500000020.000001" }
+            });
+
+            const response = await api['GET:/v1/messages'](request, models);
+
+            expect(response.status).to.equal(200);
+            expect(response.body.messages).to.deep.equal([
+                { text: "1" },
+                { text: "2" },
+                { text: "3" }
             ]);
         });
     });
