@@ -27,6 +27,16 @@ class Conversations {
     async get(id) {
         throw new Error('Not implemented')
     }
+
+    /**
+     * Check if a Conversation with the given ID exists
+     *
+     * @param {string} id - The Slack conversation ID
+     * @returns {boolean} `true` if a backed up conversation with the given ID exists. `false` otherwise
+     */
+    async exists(id) {
+        throw new Error('Not implemented')
+    }
 }
 
 

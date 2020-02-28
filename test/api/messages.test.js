@@ -1,3 +1,4 @@
+const Conversations = require('../../src/backend/models/Conversations');
 const Messages = require('../../src/backend/models/Messages');
 const decache = require('decache');
 const expect = require('chai').expect;
@@ -68,9 +69,15 @@ module.exports = () => {
             }
         }
 
+        class TestConversations extends Conversations {
+            async exists(id) {
+                return messageList.find(m => m.conversationId == id) != null;
+            }
+        }
+
 
         it('no parameters', async () => {
-            const models = { messages: new TestMessages() };
+            const models = { messages: new TestMessages(), conversations: new TestConversations() };
             const response = await api['GET:/v1/messages'](new Request(), models);
 
             expect(response.status).to.equal(200);
@@ -79,7 +86,7 @@ module.exports = () => {
 
 
         it("'limit' parameter", async () => {
-            const models = { messages: new TestMessages() };
+            const models = { messages: new TestMessages(), conversations: new TestConversations() };
             const request = new Request({
                 query: { limit: "6" }
             });
@@ -99,7 +106,7 @@ module.exports = () => {
 
 
         it("'from' parameter", async () => {
-            const models = { messages: new TestMessages() };
+            const models = { messages: new TestMessages(), conversations: new TestConversations() };
             const request = new Request({
                 query: { from: "1500000045.000001" }
             })
@@ -117,7 +124,7 @@ module.exports = () => {
 
 
         it("'to' parameter", async () => {
-            const models = { messages: new TestMessages() };
+            const models = { messages: new TestMessages(), conversations: new TestConversations() };
             const request = new Request({
                 query: { to: "1500000020.000001" }
             });
@@ -135,7 +142,7 @@ module.exports = () => {
 
 
         it("'after' parameter", async () => {
-            const models = { messages: new TestMessages() };
+            const models = { messages: new TestMessages(), conversations: new TestConversations() };
             const request = new Request({
                 query: { after: "1500000045.000001" }
             })
@@ -152,7 +159,7 @@ module.exports = () => {
 
 
         it("'before' parameter", async () => {
-            const models = { messages: new TestMessages() };
+            const models = { messages: new TestMessages(), conversations: new TestConversations() };
             const request = new Request({
                 query: { before: "1500000020.000001" }
             });
@@ -169,7 +176,7 @@ module.exports = () => {
 
 
         it("'conversationId' parameter", async () => {
-            const models = { messages: new TestMessages() };
+            const models = { messages: new TestMessages(), conversations: new TestConversations() };
             const request = new Request({
                 query: { conversationId: "C1" }
             });
@@ -186,7 +193,7 @@ module.exports = () => {
 
 
         it('postsOnly', async () => {
-            const models = { messages: new TestMessages() };
+            const models = { messages: new TestMessages(), conversations: new TestConversations() };
             const request = new Request({
                 query: { postsOnly: 'true' }
             });
@@ -207,7 +214,7 @@ module.exports = () => {
 
 
         it("'thread' parameter", async () => {
-            const models = { messages: new TestMessages() };
+            const models = { messages: new TestMessages(), conversations: new TestConversations() };
             const request = new Request({
                 query: { thread: "1500000010.000000" }
             });
@@ -225,7 +232,7 @@ module.exports = () => {
 
 
         it('bad request: from+after/to+before', async () => {
-            const models = { messages: new TestMessages() };
+            const models = { messages: new TestMessages(), conversations: new TestConversations() };
 
             // from + after
             let request = new Request({
@@ -248,7 +255,7 @@ module.exports = () => {
 
 
         it('bad request: Invalid Slack timestamp', async () => {
-            const models = { messages: new TestMessages() };
+            const models = { messages: new TestMessages(), conversations: new TestConversations() };
 
             test = async (query) => {
                 let response = await api['GET:/v1/messages'](new Request({ query }), models);
@@ -262,6 +269,21 @@ module.exports = () => {
             await test({ after: "1500000010" });
             await test({ before: "1500000010" });
             await test({ thread: "1500000010" });
+        });
+
+
+        it('not found: unknown conversation ID', async () => {
+
+
+            const models = { messages: new TestMessages(), conversations: new TestConversations() };
+            const request = new Request({
+                query: { conversationId: "C10" }
+            });
+
+            const response = await api['GET:/v1/messages'](request, models);
+
+            expect(response.status).to.equal(404);
+            expect(response.body.errorCode).to.equal('conversation_not_found');
         });
     });
 }
