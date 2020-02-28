@@ -295,8 +295,6 @@ module.exports = () => {
 
 
         it('not found: unknown conversation ID', async () => {
-
-
             const models = { messages: new TestMessages(), conversations: new TestConversations() };
             const request = new Request({
                 query: { conversationId: "C10" }
