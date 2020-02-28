@@ -15,16 +15,16 @@ module.exports = () => {
 
     describe('GET:/v1/messages', () => {
         const messageList = [
-            { ts: "1500000000.000001", parentTs: null,                  conversationId: "C1", json: { text: "1" } },
-            { ts: "1500000000.000005", parentTs: null,                  conversationId: "C2", json: { text: "2" } },
-            { ts: "1500000010.000000", parentTs: "1500000010.000000",   conversationId: "C2", json: { text: "3" } },
-            { ts: "1500000020.000001", parentTs: null,                  conversationId: "C1", json: { text: "4" } },
-            { ts: "1500000035.000001", parentTs: "1500000010.000000",   conversationId: "C2", json: { text: "5" } },
-            { ts: "1500000040.000001", parentTs: "1500000010.000000",   conversationId: "C2", json: { text: "6" } },
-            { ts: "1500000045.000001", parentTs: null,                  conversationId: "C3", json: { text: "7" } },
-            { ts: "1500000050.000001", parentTs: null,                  conversationId: "C3", json: { text: "8" } },
-            { ts: "1500000060.000001", parentTs: "1500000010.000000",   conversationId: "C2", json: { text: "9" } },
-            { ts: "1500000100.000001", parentTs: null,                  conversationId: "C1", json: { text: "10" } }
+            { ts: "1500000000.000001", threadTs: null,                  conversationId: "C1", json: { text: "1" } },
+            { ts: "1500000000.000005", threadTs: null,                  conversationId: "C2", json: { text: "2" } },
+            { ts: "1500000010.000000", threadTs: "1500000010.000000",   conversationId: "C2", json: { text: "3" } },
+            { ts: "1500000020.000001", threadTs: null,                  conversationId: "C1", json: { text: "4" } },
+            { ts: "1500000035.000001", threadTs: "1500000010.000000",   conversationId: "C2", json: { text: "5" } },
+            { ts: "1500000040.000001", threadTs: "1500000010.000000",   conversationId: "C2", json: { text: "6" } },
+            { ts: "1500000045.000001", threadTs: null,                  conversationId: "C3", json: { text: "7" } },
+            { ts: "1500000050.000001", threadTs: null,                  conversationId: "C3", json: { text: "8" } },
+            { ts: "1500000060.000001", threadTs: "1500000010.000000",   conversationId: "C2", json: { text: "9" } },
+            { ts: "1500000100.000001", threadTs: null,                  conversationId: "C1", json: { text: "10" } }
         ];
 
         class TestMessages extends Messages {
@@ -53,7 +53,7 @@ module.exports = () => {
 
 
                 if(postsOnly) {
-                    messages = messages.filter(m => m.parentTs == null || m.parentTs === m.ts);
+                    messages = messages.filter(m => m.threadTs == null || m.threadTs === m.ts);
                 }
 
                 if(limit) {
