@@ -67,6 +67,14 @@ module.exports = () => {
 
                 return messages;
             }
+
+            async threadExists(threadTs, conversationId) {
+                if(conversationId) {
+                    return messageList.find(m => m.threadTs == threadTs && m.conversationId == conversationId);
+                } else {
+                    return messageList.find(m => m.threadTs == threadTs);
+                }
+            }
         }
 
         class TestConversations extends Conversations {
@@ -304,6 +312,33 @@ module.exports = () => {
 
             expect(response.status).to.equal(404);
             expect(response.body.errorCode).to.equal('conversation_not_found');
+        });
+
+
+        it('not found: unknown thread ts', async () => {
+            const models = { messages: new TestMessages(), conversations: new TestConversations() };
+
+
+            // invalid ts
+            let request = new Request({
+                query: { thread: "1500000100.000001" }
+            });
+
+            let response = await api['GET:/v1/messages'](request, models);
+
+            expect(response.status).to.equal(404);
+            expect(response.body.errorCode).to.equal('thread_not_found');
+
+
+            // valid ts but not in the given conversation
+            request = new Request({
+                query: { thread: "1500000010.000000", conversationId: "C3" }
+            });
+
+            response = await api['GET:/v1/messages'](request, models);
+
+            expect(response.status).to.equal(404);
+            expect(response.body.errorCode).to.equal('thread_not_found');
         });
     });
 }

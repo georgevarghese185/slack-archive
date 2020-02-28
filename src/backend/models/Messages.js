@@ -25,6 +25,20 @@ class Messages {
     get(from, to, conversationId, postsOnly, threadTs, limit) {
         throw new Error('Not implemented');
     }
+
+
+
+    /**
+     * Check if a thread with the given ID exists
+     *
+     * @param {string} threadTs - The ts of the thread (the ts of the thread's parent message)
+     * @param {string} [conversationId] - The Conversation ID. If passed, checks if the given
+     * thread exists inside this conversation. Otherwise, checks if this thread exists anywhere
+     * @returns {boolean} `true` if the thread exists, `false` otherwise
+     */
+    async threadExists(threadTs, conversationId) {
+        throw new Error('Not implemented');
+    }
 }
 
 module.exports = Messages;
