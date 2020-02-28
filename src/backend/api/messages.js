@@ -1,5 +1,6 @@
+const constants = require('../../constants');
 const Response = require('../../types/Response');
-const { badRequest } = require('../../util/response');
+const { badRequest, notFound } = require('../../util/response');
 
 
 const get = async (request, models) => {
@@ -30,6 +31,14 @@ const get = async (request, models) => {
         ['from', 'to', 'before', 'after', 'thread'].forEach(validateTs);
     } catch (e) {
         return badRequest(e.message);
+    }
+
+
+    if(conversationId) {
+        const conversationExists = await models.conversations.exists(conversationId);
+        if(!conversationExists) {
+            return notFound(constants.errorCodes.conversationNotFound, "Could find a conversation with the given ID");
+        }
     }
 
 
