@@ -40,7 +40,7 @@ module.exports = () => {
         }
 
 
-        it('no params', async () => {
+        it('no parameters', async () => {
             const models = { messages: new TestMessages() };
             const response = await api['GET:/v1/messages'](new Request(), models);
 
@@ -49,7 +49,7 @@ module.exports = () => {
         });
 
 
-        it('limit', async () => {
+        it("'limit' parameter", async () => {
             const models = { messages: new TestMessages() };
             const request = new Request({
                 query: { limit: "6" }
