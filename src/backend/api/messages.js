@@ -48,6 +48,14 @@ const get = async (request, models) => {
     }
 
 
+    if(thread) {
+        const threadExists = await models.messages.threadExists(thread, conversationId);
+        if(!threadExists) {
+            return notFound(constants.errorCodes.threadNotFound, "The given thread could be found");
+        }
+    }
+
+
 
     if(request.query.from) {
         from = { value: request.query.from, inclusive: true };
