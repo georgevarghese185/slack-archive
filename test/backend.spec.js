@@ -1,6 +1,6 @@
 const apiTest = require('./api/api.spec');
-const utilTest = require('./util/util.spec');
 const Logger = require('../src/util/Logger');
+const utilTest = require('./util/util.spec');
 
 Logger.silent = true;
 

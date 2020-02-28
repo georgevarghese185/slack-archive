@@ -1,6 +1,6 @@
 const axios = require('axios');
-const { expect } = require('chai');
 const moxios = require('moxios');
+const { expect } = require('chai');
 const { fromAxiosError } = require('../../src/util/response');
 
 module.exports = () => {

@@ -1,5 +1,5 @@
-const jwt = require('jsonwebtoken');
 const Crypto = require('crypto-js');
+const jwt = require('jsonwebtoken');
 
 /**
  * This module is a wrapper around the 'jsonwebtoken' npm module that adds an

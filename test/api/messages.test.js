@@ -1,7 +1,7 @@
 const Conversations = require('../../src/backend/models/Conversations');
-const Messages = require('../../src/backend/models/Messages');
 const decache = require('decache');
 const expect = require('chai').expect;
+const Messages = require('../../src/backend/models/Messages');
 const Request = require('../../src/types/Request');
 
 module.exports = () => {

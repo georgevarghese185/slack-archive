@@ -1,9 +1,9 @@
 const axios = require('axios');
 const constants = require('../../constants');
 const cookie = require('cookie');
+const jwt = require('../../util/jwt');
 const Logger = require('../../util/Logger');
 const logger = new Logger();
-const jwt = require('../../util/jwt');
 const qs = require('query-string');
 const Response = require('../../types/Response');
 const { fromAxiosError, fromSlackError, badRequest, unauthorized, internalError } = require('../../util/response');

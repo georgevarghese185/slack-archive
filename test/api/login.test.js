@@ -1,14 +1,15 @@
 const cookie = require('cookie');
+const chai = require('chai');
+const chaiAsPromised = require('chai-as-promised');
 const decache = require('decache');
+const expect = chai.expect;
 const jwt = require('../../src/util/jwt');
 const moxios = require('moxios');
 const qs = require('query-string');
-const Response = require('../../src/types/Response');
 const Request = require('../../src/types/Request');
-const chai = require('chai');
-const chaiAsPromised = require('chai-as-promised');
+const Response = require('../../src/types/Response');
+
 chai.use(chaiAsPromised);
-const expect = chai.expect;
 
 module.exports = () => {
     let constants;
