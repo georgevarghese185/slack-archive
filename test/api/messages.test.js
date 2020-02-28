@@ -28,7 +28,7 @@ module.exports = () => {
         ];
 
         class TestMessages extends Messages {
-            get(from, to, limit) {
+            get(from, to, conversationId, limit) {
                 let messages = messageList;
 
                 const validateTimeArg = (x) => {
@@ -45,6 +45,10 @@ module.exports = () => {
                 if (to) {
                     validateTimeArg(to);
                     messages = messages.filter(m => to.inclusive ? to.value >= m.ts : to.value > m.ts);
+                }
+
+                if(conversationId) {
+                    messages = messages.filter(m => m.conversationId == conversationId);
                 }
 
                 if(limit) {
@@ -151,6 +155,23 @@ module.exports = () => {
                 { text: "1" },
                 { text: "2" },
                 { text: "3" }
+            ]);
+        });
+
+
+        it("'conversationId' parameter", async () => {
+            const models = { messages: new TestMessages() };
+            const request = new Request({
+                query: { conversationId: "C1" }
+            });
+
+            const response = await api['GET:/v1/messages'](request, models);
+
+            expect(response.status).to.equal(200);
+            expect(response.body.messages).to.deep.equal([
+                { text: "1" },
+                { text: "4" },
+                { text: "10" }
             ]);
         });
     });

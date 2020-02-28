@@ -1,5 +1,5 @@
 class Messages {
-    get(from, to, limit) {
+    get(from, to, conversationId, limit) {
         throw new Error('Not implemented');
     }
 }
