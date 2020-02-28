@@ -222,5 +222,28 @@ module.exports = () => {
                 { text: "9" }
             ]);
         });
+
+
+        it('bad request: from+after/to+before', async () => {
+            const models = { messages: new TestMessages() };
+
+            // from + after
+            let request = new Request({
+                query: { from: "1500000010.000000", after: "1500000010.000000" }
+            });
+            let response = await api['GET:/v1/messages'](request, models);
+
+            expect(response.status).to.equal(400);
+            expect(response.body.errorCode).to.equal('bad_request');
+
+            // to + before
+            request = new Request({
+                query: { to: "1500000010.000000", before: "1500000010.000000" }
+            });
+            response = await api['GET:/v1/messages'](request, models);
+
+            expect(response.status).to.equal(400);
+            expect(response.body.errorCode).to.equal('bad_request');
+        });
     });
 }
