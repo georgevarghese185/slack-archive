@@ -245,5 +245,23 @@ module.exports = () => {
             expect(response.status).to.equal(400);
             expect(response.body.errorCode).to.equal('bad_request');
         });
+
+
+        it('bad request: Invalid Slack timestamp', async () => {
+            const models = { messages: new TestMessages() };
+
+            test = async (query) => {
+                let response = await api['GET:/v1/messages'](new Request({ query }), models);
+
+                expect(response.status, `Incorrect status for ${JSON.stringify(query)}`).to.equal(400);
+                expect(response.body.errorCode, `Incorrect error code for ${JSON.stringify(query)}`).to.equal('bad_request');
+            }
+
+            await test({ from: "1500000010" });
+            await test({ to: "1500000010" });
+            await test({ after: "1500000010" });
+            await test({ before: "1500000010" });
+            await test({ thread: "1500000010" });
+        });
     });
 }
