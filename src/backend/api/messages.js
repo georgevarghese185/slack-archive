@@ -4,11 +4,17 @@ const { badRequest, notFound } = require('../../util/response');
 
 
 const get = async (request, models) => {
-    const limit = parseInt(request.query.limit);
     const conversationId = request.query.conversationId;
     const postsOnly = request.query.postsOnly === 'true';
     const thread = request.query.thread;
-    let from, to;
+    let limit, from, to;
+
+    if (request.query.limit != null) {
+        limit = parseFloat(request.query.limit);
+        if (isNaN(limit) || !Number.isInteger(limit) || limit < 1) {
+            return badRequest("'limit' should be a positive integer greater than 0")
+        }
+    }
 
     // make sure from and after/to and before are not given together
     if(request.query.from && request.query.after) {
