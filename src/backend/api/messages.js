@@ -9,6 +9,7 @@ const get = async (request, models) => {
     const thread = request.query.thread;
     let from, to;
 
+    // make sure from and after/to and before are not given together
     if(request.query.from && request.query.after) {
         return badRequest("'from' and 'after' parameters cannot be used together");
     }
@@ -16,6 +17,22 @@ const get = async (request, models) => {
     if (request.query.to && request.query.before) {
         return badRequest("'to' and 'before' parameters cannot be used together");
     }
+
+
+    // Make sure any ts strings have a valid format
+    try {
+        const validateTs = (key) => {
+            if (request.query[key] && !request.query[key].match(/^\d+\.\d+$/)) {
+                throw new Error(`'${key}' is not a valid Slack ts string`);
+            }
+        }
+
+        ['from', 'to', 'before', 'after', 'thread'].forEach(validateTs);
+    } catch (e) {
+        return badRequest(e.message);
+    }
+
+
 
     if(request.query.from) {
         from = { value: request.query.from, inclusive: true };
