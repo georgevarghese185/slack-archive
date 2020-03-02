@@ -21,13 +21,13 @@ module.exports = () => {
                 parameters: { id: memberId }
             });
 
-            class TestMembers extends Members {
+            class MembersMock extends Members {
                 async get(id) {
                     expect(id).to.equal(memberId);
                     return memberObj;
                 }
             }
-            const members = new TestMembers();
+            const members = new MembersMock();
             const models = { members };
 
             const response = await api['GET:/v1/members/:id'](request, models);
@@ -41,12 +41,12 @@ module.exports = () => {
                 parameters: { id: 'U1' }
             });
 
-            class TestMembers extends Members {
+            class MembersMock extends Members {
                 async get(id) {
                     return null;
                 }
             }
-            const members = new TestMembers();
+            const members = new MembersMock();
             const models = { members };
 
             const response = await api['GET:/v1/members/:id'](request, models);

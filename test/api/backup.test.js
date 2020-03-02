@@ -15,14 +15,14 @@ module.exports = () => {
     });
 
 
-    class TestMessages extends Messages {
+    class MessagesMock extends Messages {
         async count() {
             return 100
         }
     }
 
 
-    class TestConversations extends Conversations {
+    class ConversationsMock extends Conversations {
         async count() {
             return 5
         }
@@ -39,7 +39,7 @@ module.exports = () => {
                 lastBackupAt: 1583128896216
             };
 
-            class TestBackups extends Backups {
+            class BackupsMock extends Backups {
                 async last() {
                     return {
                         endedAt: 1583128896216
@@ -48,9 +48,9 @@ module.exports = () => {
             }
 
             const models = {
-                messages: new TestMessages(),
-                conversations: new TestConversations(),
-                backups: new TestBackups()
+                messages: new MessagesMock(),
+                conversations: new ConversationsMock(),
+                backups: new BackupsMock()
             }
 
             const response = await api['GET:/v1/backup/stats'](new Request(), models);
@@ -67,16 +67,16 @@ module.exports = () => {
                 lastBackupAt: null
             };
 
-            class TestBackups extends Backups {
+            class BackupsMock extends Backups {
                 async last() {
                     return null;
                 }
             }
 
             const models = {
-                messages: new TestMessages(),
-                conversations: new TestConversations(),
-                backups: new TestBackups()
+                messages: new MessagesMock(),
+                conversations: new ConversationsMock(),
+                backups: new BackupsMock()
             }
 
             const response = await api['GET:/v1/backup/stats'](new Request(), models);

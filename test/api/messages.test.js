@@ -28,7 +28,7 @@ module.exports = () => {
             { ts: "1500000100.000001", threadTs: null,                  conversationId: "C1", json: { text: "10" } }
         ];
 
-        class TestMessages extends Messages {
+        class MessagesMock extends Messages {
             get(from, to, conversationId, postsOnly, threadTs, limit) {
                 let messages = messageList;
 
@@ -77,7 +77,7 @@ module.exports = () => {
             }
         }
 
-        class TestConversations extends Conversations {
+        class ConversationsMock extends Conversations {
             async exists(id) {
                 return messageList.find(m => m.conversationId == id) != null;
             }
@@ -85,7 +85,7 @@ module.exports = () => {
 
 
         it('no parameters', async () => {
-            const models = { messages: new TestMessages(), conversations: new TestConversations() };
+            const models = { messages: new MessagesMock(), conversations: new ConversationsMock() };
             const response = await api['GET:/v1/messages'](new Request(), models);
 
             expect(response.status).to.equal(200);
@@ -94,7 +94,7 @@ module.exports = () => {
 
 
         it("'limit' parameter", async () => {
-            const models = { messages: new TestMessages(), conversations: new TestConversations() };
+            const models = { messages: new MessagesMock(), conversations: new ConversationsMock() };
             const request = new Request({
                 query: { limit: "6" }
             });
@@ -114,7 +114,7 @@ module.exports = () => {
 
 
         it("'from' parameter", async () => {
-            const models = { messages: new TestMessages(), conversations: new TestConversations() };
+            const models = { messages: new MessagesMock(), conversations: new ConversationsMock() };
             const request = new Request({
                 query: { from: "1500000045.000001" }
             })
@@ -132,7 +132,7 @@ module.exports = () => {
 
 
         it("'to' parameter", async () => {
-            const models = { messages: new TestMessages(), conversations: new TestConversations() };
+            const models = { messages: new MessagesMock(), conversations: new ConversationsMock() };
             const request = new Request({
                 query: { to: "1500000020.000001" }
             });
@@ -150,7 +150,7 @@ module.exports = () => {
 
 
         it("'after' parameter", async () => {
-            const models = { messages: new TestMessages(), conversations: new TestConversations() };
+            const models = { messages: new MessagesMock(), conversations: new ConversationsMock() };
             const request = new Request({
                 query: { after: "1500000045.000001" }
             })
@@ -167,7 +167,7 @@ module.exports = () => {
 
 
         it("'before' parameter", async () => {
-            const models = { messages: new TestMessages(), conversations: new TestConversations() };
+            const models = { messages: new MessagesMock(), conversations: new ConversationsMock() };
             const request = new Request({
                 query: { before: "1500000020.000001" }
             });
@@ -184,7 +184,7 @@ module.exports = () => {
 
 
         it("'conversationId' parameter", async () => {
-            const models = { messages: new TestMessages(), conversations: new TestConversations() };
+            const models = { messages: new MessagesMock(), conversations: new ConversationsMock() };
             const request = new Request({
                 query: { conversationId: "C1" }
             });
@@ -201,7 +201,7 @@ module.exports = () => {
 
 
         it('postsOnly', async () => {
-            const models = { messages: new TestMessages(), conversations: new TestConversations() };
+            const models = { messages: new MessagesMock(), conversations: new ConversationsMock() };
             const request = new Request({
                 query: { postsOnly: 'true' }
             });
@@ -222,7 +222,7 @@ module.exports = () => {
 
 
         it("'thread' parameter", async () => {
-            const models = { messages: new TestMessages(), conversations: new TestConversations() };
+            const models = { messages: new MessagesMock(), conversations: new ConversationsMock() };
             const request = new Request({
                 query: { thread: "1500000010.000000" }
             });
@@ -240,7 +240,7 @@ module.exports = () => {
 
 
         it('bad request: from+after/to+before', async () => {
-            const models = { messages: new TestMessages(), conversations: new TestConversations() };
+            const models = { messages: new MessagesMock(), conversations: new ConversationsMock() };
 
             // from + after
             let request = new Request({
@@ -263,7 +263,7 @@ module.exports = () => {
 
 
         it('bad request: Invalid Slack timestamp', async () => {
-            const models = { messages: new TestMessages(), conversations: new TestConversations() };
+            const models = { messages: new MessagesMock(), conversations: new ConversationsMock() };
 
             test = async (query) => {
                 let response = await api['GET:/v1/messages'](new Request({ query }), models);
@@ -281,7 +281,7 @@ module.exports = () => {
 
 
         it('bad request: invalid limit value', async () => {
-            const models = { messages: new TestMessages(), conversations: new TestConversations() };
+            const models = { messages: new MessagesMock(), conversations: new ConversationsMock() };
 
             const testCases = [
                 "",
@@ -303,7 +303,7 @@ module.exports = () => {
 
 
         it('not found: unknown conversation ID', async () => {
-            const models = { messages: new TestMessages(), conversations: new TestConversations() };
+            const models = { messages: new MessagesMock(), conversations: new ConversationsMock() };
             const request = new Request({
                 query: { conversationId: "C10" }
             });
@@ -316,7 +316,7 @@ module.exports = () => {
 
 
         it('not found: unknown thread ts', async () => {
-            const models = { messages: new TestMessages(), conversations: new TestConversations() };
+            const models = { messages: new MessagesMock(), conversations: new ConversationsMock() };
 
 
             // invalid ts

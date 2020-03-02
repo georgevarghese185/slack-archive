@@ -19,12 +19,12 @@ module.exports = () => {
                 { id: 'C2', name: 'random' }
             ];
 
-            class TestConversations extends Conversations {
+            class ConversationsMock extends Conversations {
                 async listAll() {
                     return conversationList
                 }
             }
-            const conversations = new TestConversations();
+            const conversations = new ConversationsMock();
             const models = { conversations };
 
             const response = await api['GET:/v1/conversations'](models);
@@ -42,13 +42,13 @@ module.exports = () => {
                 parameters: { id: conversationId }
             });
 
-            class TestConversations extends Conversations {
+            class ConversationsMock extends Conversations {
                 async get(id) {
                     expect(id).to.equal(conversationId);
                     return conversationObj;
                 }
             }
-            const conversations = new TestConversations();
+            const conversations = new ConversationsMock();
             const models = { conversations };
 
             const response = await api['GET:/v1/conversations/:id'](request, models);
@@ -61,12 +61,12 @@ module.exports = () => {
             const request = new Request({
                 parameters: { id: 'C1' }
             });
-            class TestConversations extends Conversations {
+            class ConversationsMock extends Conversations {
                 async get(id) {
                     return null;
                 }
             }
-            const conversations = new TestConversations();
+            const conversations = new ConversationsMock();
             const models = { conversations };
 
             const response = await api['GET:/v1/conversations/:id'](request, models);
