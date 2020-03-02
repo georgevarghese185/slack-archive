@@ -1,4 +1,11 @@
 /**
+ * The status of a backup task
+ *
+ * @typedef {('COLLECTING_INFO'|'BACKING_UP'|'CANCELED'|'COMPLETED'|'RATE_LIMITED'|'FAILED')} BackupStatus
+ */
+
+
+/**
  * A backup task that has been started to backup Slack messages
  *
  * @typedef {Object} BackupTask
