@@ -29,11 +29,17 @@
  */
 
 
-
+/**
+ * An interface of the data model for Slack backup tasks. This class must be
+ * extended and implemented
+ *
+ * @interface Backups
+ */
 class Backups {
     /**
      * Get the last successful backup task
      *
+     * @abstract
      * @returns {BackupTask|null} The last backup sucessful task. `null` if no
      * backup tasks have been successfully completed till now
      */

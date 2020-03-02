@@ -7,6 +7,7 @@
 class Messages {
     /**
      *
+     * @abstract
      * @param {Object|null} from - Fetch messages from this time stamp onwards. Structure
      * should be { value, inclusive } where `value` is a Slack ts string and `inclusive`
      * can be `true` (include messages with a ts equal to `value`) or `false` (don't include `value`)
@@ -31,6 +32,7 @@ class Messages {
     /**
      * Check if a thread with the given ID exists
      *
+     * @abstract
      * @param {string} threadTs - The ts of the thread (the ts of the thread's parent message)
      * @param {string} [conversationId] - The Conversation ID. If passed, checks if the given
      * thread exists inside this conversation. Otherwise, checks if this thread exists anywhere
@@ -44,6 +46,7 @@ class Messages {
     /**
      * Get the total number of backed up messages
      *
+     * @abstract
      * @returns {number} total number of backed up messages
      */
     async count() {

@@ -34,7 +34,7 @@ class Conversations {
 
     /**
      * Check if a Conversation with the given ID exists
-     *
+     * @abstract
      * @param {string} id - The Slack conversation ID
      * @returns {boolean} `true` if a backed up conversation with the given ID exists. `false` otherwise
      */
@@ -46,6 +46,7 @@ class Conversations {
     /**
      * Get the total number of backed up conversations
      *
+     * @abstract
      * @returns {number} total number of backed up conversations
      */
     async count() {
