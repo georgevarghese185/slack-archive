@@ -85,4 +85,36 @@ module.exports = () => {
             expect(response.body).to.deep.equal(expectedBody);
         });
     });
+
+
+    describe('POST:/v1/backup', () => {
+        it('create a new backup task', async () => {
+            const token = { userId: "U1" }
+            let backupStarted = false;
+            let backupId;
+
+            class BackupsMock extends Backups {
+                async create(backupId1, userId) {
+                    expect(backupId1).to.be.a('string');
+                    expect(userId).to.equal(token.userId);
+                    backupId = backupId1;
+                }
+            }
+
+            const models = { backups: new BackupsMock() }
+
+            const actions = {
+                startBackup(backupId1) {
+                    expect(backupId1).to.equal(backupId);
+                    backupStarted = true;
+                }
+            }
+
+            const response = await api['POST:/v1/backup'](new Request(), token, models, actions);
+
+            expect(backupStarted).to.be.true;
+            expect(response.status).to.equal(200);
+            expect(response.body.backupId).to.equal(backupId);
+        });
+    });
 }

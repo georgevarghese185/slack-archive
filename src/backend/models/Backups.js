@@ -37,6 +37,19 @@
  */
 class Backups {
     /**
+     * Create a new backup task
+     *
+     * @abstract
+     * @param {string} backupId - unique ID for the newly created backup task
+     * @param {string} userId - The ID of the user who started this backup
+     */
+    async create(backupId, userId) {
+        throw new Error('Not implemented');
+    }
+
+
+
+    /**
      * Get the last successful backup task
      *
      * @abstract
