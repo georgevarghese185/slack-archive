@@ -39,6 +39,16 @@ class Messages {
     async threadExists(threadTs, conversationId) {
         throw new Error('Not implemented');
     }
+
+
+    /**
+     * Get the total number of backed up messages
+     *
+     * @returns {number} total number of backed up messages
+     */
+    async count() {
+        throw new Error('Not implemented');
+    }
 }
 
 module.exports = Messages;

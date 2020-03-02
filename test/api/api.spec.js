@@ -1,3 +1,4 @@
+const backupTest = require('./backup.test');
 const conversationsTest = require('./conversations.test');
 const loginTest = require('./login.test');
 const membersTest = require('./members.test');
@@ -8,4 +9,5 @@ module.exports = () => {
     conversationsTest();
     membersTest();
     messagesTest();
+    backupTest();
 }

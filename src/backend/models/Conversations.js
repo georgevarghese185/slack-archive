@@ -16,6 +16,8 @@ class Conversations {
         throw new Error('Not implemented')
     }
 
+
+
     /**
      * Get all info on a Slack conversation of the given ID
      *
@@ -28,6 +30,8 @@ class Conversations {
         throw new Error('Not implemented')
     }
 
+
+
     /**
      * Check if a Conversation with the given ID exists
      *
@@ -36,6 +40,16 @@ class Conversations {
      */
     async exists(id) {
         throw new Error('Not implemented')
+    }
+
+
+    /**
+     * Get the total number of backed up conversations
+     *
+     * @returns {number} total number of backed up conversations
+     */
+    async count() {
+        throw new Error('Not implemented');
     }
 }
 
