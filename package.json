@@ -19,6 +19,7 @@
     "cookie": "^0.4.0",
     "crypto-js": "^4.0.0",
     "jsonwebtoken": "^8.5.1",
-    "query-string": "^6.10.1"
+    "query-string": "^6.10.1",
+    "uuid": "^7.0.1"
   }
 }

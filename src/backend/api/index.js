@@ -14,6 +14,7 @@ module.exports = {
     'GET:/v1/conversations/:id': conversations.get,
 
     'GET:/v1/backup/stats': backup.getStats,
+    'POST:/v1/backup': backup.create,
 
     'GET:/v1/members/:id': members.get,
 

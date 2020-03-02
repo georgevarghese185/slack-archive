@@ -1,4 +1,5 @@
 const Response = require('../../types/Response');
+const uuid = require('uuid').v4;
 
 const getStats = async (request, models) => {
     const messages = await models.messages.count();
@@ -15,6 +16,23 @@ const getStats = async (request, models) => {
 }
 
 
+const create = async (request, token, models, actions) => {
+    const userId = token.userId;
+    const backupId = uuid();
+
+    await models.backups.create(backupId, userId);
+    actions.startBackup(backupId);
+
+    return new Response({
+        status: 200,
+        body: {
+            backupId
+        }
+    });
+}
+
+
 module.exports = {
-    getStats
+    getStats,
+    create
 }
