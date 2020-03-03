@@ -196,6 +196,10 @@ module.exports = () => {
             });
 
             class BackupsMock extends Backups {
+                async get(id) {
+                    return {};
+                }
+
                 async cancel(id) {
                     expect(id).to.equal(backupId);
                 }
@@ -206,5 +210,25 @@ module.exports = () => {
 
             expect(response.status).to.equal(200);
         });
+
+
+        it('not found: invalid backup ID', async () => {
+            const request = new Request({
+                parameters: { id: '1234' }
+            });
+
+            class BackupsMock extends Backups {
+                async get(id) {
+                    return null;
+                }
+            }
+
+            const models = { backups: new BackupsMock() };
+
+            const response = await api['POST:/v1/backup/:id/cancel'](request, models);
+
+            expect(response.status).to.equal(404);
+            expect(response.body.errorCode).to.equal('backup_not_found');
+        })
     });
 }
