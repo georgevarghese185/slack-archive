@@ -21,7 +21,8 @@ module.exports = {
         notFound: 'not_found',
         conversationNotFound: 'conversation_not_found',
         memberNotFound: 'member_not_found',
-        threadNotFound: 'thread_not_found'
+        threadNotFound: 'thread_not_found',
+        backupNotFound: 'backup_not_found'
     },
     tokenSecret: process.env.TOKEN_SECRET,
     loginTokenExpiry: '30 days',

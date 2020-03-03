@@ -1,5 +1,7 @@
+const constants = require('../../constants');
 const Response = require('../../types/Response');
 const uuid = require('uuid').v4;
+const { notFound } = require('../../util/response');
 
 const getStats = async (request, models) => {
     const messages = await models.messages.count();
@@ -35,6 +37,10 @@ const create = async (request, token, models, actions) => {
 const get = async (request, models) => {
     const backupId = request.parameters.id;
     const backup = await models.backups.get(backupId);
+
+    if(!backup) {
+        return notFound(constants.errorCodes.backupNotFound, "Could not find a backup task with the given ID");
+    }
 
     const body = {
         status: backup.status,
