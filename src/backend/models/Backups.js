@@ -53,7 +53,7 @@ class Backups {
      * Get the last successful backup task
      *
      * @abstract
-     * @returns {BackupTask|null} The last backup sucessful task. `null` if no
+     * @returns {BackupTask|null} The last sucessful backup task. `null` if no
      * backup tasks have been successfully completed till now
      */
     async last() {
