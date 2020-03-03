@@ -73,6 +73,18 @@ class Backups {
     async get(id) {
         throw new Error('Not implemented');
     }
+
+
+
+    /**
+     * Cancel a backup task
+     *
+     * @abstract
+     * @param {string} id - The backup task ID
+     */
+    async cancel(id) {
+        throw new Error('Not implemented');
+    }
 }
 
 module.exports = Backups;

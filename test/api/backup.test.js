@@ -185,4 +185,26 @@ module.exports = () => {
             expect(response.body.errorCode).to.equal('backup_not_found');
         });
     });
+
+
+
+    describe('POST:/v1/backup/:id/cancel', () => {
+        it('cancel a backup task', async () => {
+            const backupId = '1234';
+            const request = new Request({
+                parameters: { id: backupId }
+            });
+
+            class BackupsMock extends Backups {
+                async cancel(id) {
+                    expect(id).to.equal(backupId);
+                }
+            }
+            const models = { backups: new BackupsMock() }
+
+            const response = await api['POST:/v1/backup/:id/cancel'](request, models);
+
+            expect(response.status).to.equal(200);
+        });
+    });
 }
