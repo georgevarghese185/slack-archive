@@ -32,7 +32,27 @@ const create = async (request, token, models, actions) => {
 }
 
 
+const get = async (request, models) => {
+    const backupId = request.parameters.id;
+    const backup = await models.backups.get(backupId);
+
+    const body = {
+        status: backup.status,
+        error: backup.error,
+        messagesBackedUp: backup.messagesBackedUp,
+        currentConversation: backup.currentConversation,
+        backedUpConversations: backup.backedUpConversations,
+    };
+
+    return new Response({
+        status: 200,
+        body
+    });
+}
+
+
 module.exports = {
     getStats,
-    create
+    create,
+    get
 }
