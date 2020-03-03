@@ -172,7 +172,7 @@ module.exports = () => {
             });
 
             class BackupsMock extends Backups {
-                get() {
+                async get() {
                     return null;
                 }
             }
