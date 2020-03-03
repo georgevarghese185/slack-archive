@@ -16,6 +16,7 @@ module.exports = {
     'GET:/v1/backup/stats': backup.getStats,
     'POST:/v1/backup': backup.create,
     'GET:/v1/backup/:id': backup.get,
+    'POST:/v1/backup/:id/cancel': backup.cancel,
 
     'GET:/v1/members/:id': members.get,
 

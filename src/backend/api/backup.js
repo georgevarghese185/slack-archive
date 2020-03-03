@@ -57,8 +57,16 @@ const get = async (request, models) => {
 }
 
 
+const cancel = async (request, models) => {
+    const backupId = request.parameters.id;
+    await models.backups.cancel(backupId);
+    return new Response({ status: 200 });
+}
+
+
 module.exports = {
     getStats,
     create,
-    get
+    get,
+    cancel
 }
