@@ -164,5 +164,25 @@ module.exports = () => {
             backupTask.messagesBackedUp = [];
             await test();
         });
+
+
+        it('not found: invalid backup ID', async () => {
+            const request = new Request({
+                parameters: { id: '1234' }
+            });
+
+            class BackupsMock extends Backups {
+                get() {
+                    return null;
+                }
+            }
+
+            const models = { backups: new BackupsMock() };
+
+            const response = await api['GET:/v1/backup/:id'](request, models);
+
+            expect(response.status).to.equal(404);
+            expect(response.body.errorCode).to.equal('backup_not_found');
+        });
     });
 }
