@@ -59,6 +59,12 @@ const get = async (request, models) => {
 
 const cancel = async (request, models) => {
     const backupId = request.parameters.id;
+    const backupTask = await models.backups.get(backupId);
+
+    if(!backupTask) {
+        return notFound(constants.errorCodes.backupNotFound, "Could not find a backup task with the given ID");
+    }
+
     await models.backups.cancel(backupId);
     return new Response({ status: 200 });
 }
