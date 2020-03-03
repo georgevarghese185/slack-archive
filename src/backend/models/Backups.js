@@ -59,6 +59,20 @@ class Backups {
     async last() {
         throw new Error('Not implemented');
     }
+
+
+
+    /**
+     * Get info on a backup task
+     *
+     * @abstract
+     * @param {string} id - The backup task ID
+     * @returns {BackupTask|null} The backup task or `null` if no task with the given
+     * ID was found
+     */
+    async get(id) {
+        throw new Error('Not implemented');
+    }
 }
 
 module.exports = Backups;

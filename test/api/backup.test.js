@@ -117,4 +117,52 @@ module.exports = () => {
             expect(response.body.backupId).to.equal(backupId);
         });
     });
+
+
+
+    describe('GET:/v1/backup/:id', () => {
+        it('get backup task', async () => {
+            const backupId = '1234';
+            const request = new Request({
+                parameters: { id: backupId }
+            });
+            let backupTask = {
+                status: 'BACKING_UP',
+                messagesBackedUp: 1,
+                currentConversation: 'C4',
+                backedUpConversations: ['C1', 'C2', 'C3'],
+                error: null
+            }
+
+            class BackupsMock extends Backups {
+                get(id) {
+                    expect(id).to.equal(backupId);
+                    return JSON.parse(JSON.stringify(backupTask));
+                }
+            }
+            const models = { backups: new BackupsMock() };
+
+            const test = async () => {
+                let response = await api['GET:/v1/backup/:id'](request, models);
+
+                expect(response.status).to.equal(200);
+                expect(response.body).to.deep.equal(backupTask);
+            }
+
+            // normal case
+            await test();
+
+            // failed backup case: error field present
+            backupTask.status = 'FAILED';
+            backupTask.error = 'Something went wrong'
+            await test();
+
+            // early case: current conversation is null, backedUpConversations is empty
+            backupTask.error = null;
+            backupTask.status = 'COLLECTING_INFO';
+            backupTask.currentConversation = null;
+            backupTask.messagesBackedUp = [];
+            await test();
+        });
+    });
 }
