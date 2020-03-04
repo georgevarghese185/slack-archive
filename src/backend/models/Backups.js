@@ -85,6 +85,19 @@ class Backups {
     async cancel(id) {
         throw new Error('Not implemented');
     }
+
+
+
+    /**
+     * Update the status of a backup task
+     *
+     * @abstract
+     * @param {string} id - The backup task ID
+     * @param {BackupStatus} status - The new status
+     */
+    async setStatus(id, status) {
+        throw new Error('Not implemented');
+    }
 }
 
 module.exports = Backups;
