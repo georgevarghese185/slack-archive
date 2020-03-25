@@ -165,5 +165,85 @@ module.exports = () => {
             .catch(done);
     });
 
+    it('rate limited', (done) => {
+        const accessToken = 'ABC';
+        const token = { accessToken };
+        const backupId = '1234';
+        let addedConversations = [];
+
+        moxios.delay = 5;
+
+        class BackupsMock extends Backups {
+            async setStatus(id, status) {
+            }
+        }
+
+        class ConversationsMock extends Conversations {
+            async add(conversationId, name, json) {
+                addedConversations.push({
+                    id: conversationId,
+                    name: name,
+                    json
+                });
+            }
+        }
+
+        const models = {
+            backups: new BackupsMock,
+            conversations: new ConversationsMock()
+        };
+
+        let delayStart;
+
+        nextRequest(moxios)
+            .then((request) => {
+                request.respondWith({
+                    status: 200,
+                    response: {
+                        ok: true,
+                        channels: conversationList.slice(0, 2),
+                        response_metadata: {
+                            next_cursor: "abc"
+                        }
+                    }
+                });
+
+                return nextRequest(moxios);
+            })
+            .then((request) => {
+                delayStart = Date.now();
+                request.respondWith({
+                    status: 429,
+                    headers: {
+                        'Retry-After': '1'
+                    }
+                });
+
+                return nextRequest(moxios);
+            })
+            .then((request) => {
+                expect(Date.now() - delayStart).to.be.greaterThan(1000);
+
+                request.respondWith({
+                    status: 200,
+                    response: {
+                        ok: true,
+                        channels: conversationList.slice(2),
+                        response_metadata: {
+                            next_cursor: ""
+                        }
+                    }
+                });
+            })
+            .catch(done);
+
+        backupConversations(backupId, token, models)
+            .then(() => {
+                expect(addedConversations).to.deep.equal(conversationList.map(c => ({ id: c.id, name: c.name, json: c })));
+                done();
+            })
+            .catch(done);
+    });
+
     it('slack error handling');
 }
