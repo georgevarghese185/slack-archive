@@ -23,6 +23,12 @@ const backupConversations = async (backupId, token, models) => {
 
         const response = await axiosInstance.post('/conversations.list', {}, config);
 
+        if(!response.data.ok) {
+            const error = new Error('conversations.list API failed');
+            error.code = response.data.error;
+            throw error;
+        }
+
         const conversations = response.data.channels;
         await models.conversations.add(conversations);
 
