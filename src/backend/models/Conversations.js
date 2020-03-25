@@ -52,6 +52,18 @@ class Conversations {
     async count() {
         throw new Error('Not implemented');
     }
+
+    /**
+     * Add one or more conversations
+     *
+     * @abstract
+     * @param {Array<Object>} conversations - Array of [Conversation objects]{@link https://api.slack.com/types/conversation}.
+     * If a conversation with the same ID already exists, it will be updated with
+     * the new one in this array
+     */
+    async add(conversations) {
+        throw new Error('Not implemented')
+    }
 }
 
 
