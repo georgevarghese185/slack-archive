@@ -233,5 +233,31 @@ module.exports = () => {
             .catch(done);
     });
 
-    it('slack error handling');
+    it('slack error handling', async () => {
+        const token = { accessToken: 'ABC' };
+
+        class BackupsMock extends Backups {
+            async setStatus(id, status) {
+            }
+        }
+
+        moxios.stubRequest('/conversations.list', {
+            status: 200,
+            response: {
+                ok: false,
+                error: 'some_error'
+            }
+        });
+
+        const models = {
+            backups: new BackupsMock()
+        }
+
+        try {
+            await backupConversations('123', token, models);
+            throw new Error('Should have failed');
+        } catch (e) {
+            expect(e.code).to.equal('some_error');
+        }
+    });
 }
