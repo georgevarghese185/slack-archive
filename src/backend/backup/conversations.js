@@ -5,17 +5,29 @@ const backupConversations = async (backupId, token, models) => {
     await models.backups.setStatus(backupId, 'COLLECTING_INFO');
     const axiosInstance = axios.create({ baseURL: constants.slack.apiBaseUrl });
 
-    const response = await axiosInstance.post('/conversations.list', {}, {
-        headers: {
-            'Authorization': `Bearer ${token.accessToken}`
+    let nextCursor;
+
+    do {
+        const config = {
+            headers: {
+                'Authorization': `Bearer ${token.accessToken}`
+            }
+        };
+
+        if(nextCursor) {
+            config.params = { cursor: nextCursor };
         }
-    });
 
-    const conversations = response.data.channels;
+        const response = await axiosInstance.post('/conversations.list', {}, config);
 
-    for(const conversation of conversations) {
-        await models.conversations.add(conversation.id, conversation.name, conversation);
-    }
+        const conversations = response.data.channels;
+
+        for (const conversation of conversations) {
+            await models.conversations.add(conversation.id, conversation.name, conversation);
+        }
+
+        nextCursor = (response.data.response_metadata || {}).next_cursor || "";
+    } while (nextCursor != "");
 }
 
 
