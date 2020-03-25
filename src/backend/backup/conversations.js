@@ -1,9 +1,12 @@
 const axios = require('axios');
 const constants = require('../../constants');
+const { withRateLimiting } = require('../../util/slack');
 
 const backupConversations = async (backupId, token, models) => {
     await models.backups.setStatus(backupId, 'COLLECTING_INFO');
     const axiosInstance = axios.create({ baseURL: constants.slack.apiBaseUrl });
+
+    withRateLimiting(axiosInstance);
 
     let nextCursor;
 
