@@ -1,7 +1,7 @@
 /**
  * The status of a backup task
  *
- * @typedef {('COLLECTING_INFO'|'BACKING_UP'|'CANCELED'|'COMPLETED'|'RATE_LIMITED'|'FAILED')} BackupStatus
+ * @typedef {('COLLECTING_INFO'|'BACKING_UP'|'CANCELED'|'COMPLETED'|'FAILED')} BackupStatus
  */
 
 
