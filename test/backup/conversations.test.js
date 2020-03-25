@@ -51,12 +51,8 @@ module.exports = () => {
         let statusSet = false;
 
         class ConversationsMock extends Conversations {
-            async add(conversationId, name, json) {
-                addedConversations.push({
-                    id: conversationId,
-                    name: name,
-                    json
-                });
+            async add(conversations) {
+                addedConversations = addedConversations.concat(conversations);
             }
         }
 
@@ -88,7 +84,7 @@ module.exports = () => {
         const slackRequest = moxios.requests.mostRecent();
 
         expect(statusSet).to.be.true;
-        expect(addedConversations).to.deep.equal(conversationList.map(c => ({ id: c.id, name: c.name, json: c })));
+        expect(addedConversations).to.deep.equal(conversationList);
         expect(slackRequest.headers['Authorization']).to.equal(`Bearer ${accessToken}`);
     });
 
@@ -108,12 +104,8 @@ module.exports = () => {
         }
 
         class ConversationsMock extends Conversations {
-            async add(conversationId, name, json) {
-                addedConversations.push({
-                    id: conversationId,
-                    name: name,
-                    json
-                });
+            async add(conversations) {
+                addedConversations = addedConversations.concat(conversations);
             }
         }
 
@@ -159,7 +151,7 @@ module.exports = () => {
 
         backupConversations(backupId, token, models)
             .then(() => {
-                expect(addedConversations).to.deep.equal(conversationList.map(c => ({ id: c.id, name: c.name, json: c })));
+                expect(addedConversations).to.deep.equal(conversationList);
                 done();
             })
             .catch(done);
@@ -179,12 +171,8 @@ module.exports = () => {
         }
 
         class ConversationsMock extends Conversations {
-            async add(conversationId, name, json) {
-                addedConversations.push({
-                    id: conversationId,
-                    name: name,
-                    json
-                });
+            async add(conversations) {
+                addedConversations = addedConversations.concat(conversations);
             }
         }
 
@@ -239,7 +227,7 @@ module.exports = () => {
 
         backupConversations(backupId, token, models)
             .then(() => {
-                expect(addedConversations).to.deep.equal(conversationList.map(c => ({ id: c.id, name: c.name, json: c })));
+                expect(addedConversations).to.deep.equal(conversationList);
                 done();
             })
             .catch(done);

@@ -24,10 +24,7 @@ const backupConversations = async (backupId, token, models) => {
         const response = await axiosInstance.post('/conversations.list', {}, config);
 
         const conversations = response.data.channels;
-
-        for (const conversation of conversations) {
-            await models.conversations.add(conversation.id, conversation.name, conversation);
-        }
+        await models.conversations.add(conversations);
 
         nextCursor = (response.data.response_metadata || {}).next_cursor || "";
     } while (nextCursor != "");
