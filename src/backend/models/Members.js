@@ -16,6 +16,19 @@ class Members {
     async get(id) {
         throw new Error('Not implemented')
     }
+
+
+    /**
+     * Add one or more members
+     *
+     * @abstract
+     * @param {Object} members Array of [User objects]{@link https://api.slack.com/types/user}.
+     * If a member with the same ID already exists, it will be updated with the
+     * new one in this array
+     */
+    async add(members) {
+        throw new Error('Not implemented')
+    }
 }
 
 
