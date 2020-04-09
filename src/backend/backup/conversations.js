@@ -21,7 +21,7 @@ const backupConversations = async (backupId, token, models) => {
             config.params = { cursor: nextCursor };
         }
 
-        const response = await axiosInstance.post('/conversations.list', {}, config);
+        const response = await axiosInstance.get('/conversations.list', config);
 
         if(!response.data.ok) {
             const error = new Error('conversations.list API failed');
