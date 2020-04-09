@@ -24,8 +24,7 @@ const backupMembers = async (backupId, token, models) => {
         const response = await axiosInstance.get('/users.list', config);
 
         if (!response.data.ok) {
-            const error = new Error('conversations.list API failed');
-            error.code = response.data.error;
+            const error = new Error('users.list API failed');
             throw error;
         }
 
