@@ -64,7 +64,7 @@ module.exports = () => {
         }
 
         const models = {
-            backups: new BackupsMock,
+            backups: new BackupsMock(),
             conversations: new ConversationsMock()
         };
 
@@ -107,7 +107,7 @@ module.exports = () => {
         }
 
         const models = {
-            backups: new BackupsMock,
+            backups: new BackupsMock(),
             conversations: new ConversationsMock()
         };
 
@@ -163,7 +163,7 @@ module.exports = () => {
         }
 
         const models = {
-            backups: new BackupsMock,
+            backups: new BackupsMock(),
             conversations: new ConversationsMock()
         };
 
