@@ -133,4 +133,74 @@ module.exports = () => {
         expect(moxios.requests.at(1).headers['Authorization']).to.equal(`Bearer ${accessToken}`);
         expect(moxios.requests.at(1).config.params.cursor).to.equal('abc');
     });
+
+    it('rate limiting', async () => {
+        const accessToken = 'ABC';
+        const token = { accessToken };
+        const backupId = '1234';
+        let addedMembers = [];
+
+        class MembersMock extends Members {
+            async add(members) {
+                addedMembers = addedMembers.concat(members);
+            }
+        }
+
+        class BackupsMock extends Backups {
+            async setStatus(id, status) {
+            }
+        }
+
+        const models = {
+            backups: new BackupsMock(),
+            members: new MembersMock()
+        }
+
+        let delayStart;
+        let requestNo = 0;
+
+        moxios.stubs.track({
+            url: /\/users\.list.*/,
+            get response() {
+                requestNo++;
+
+                if (requestNo == 1) {
+                    return {
+                        status: 200,
+                        response: {
+                            ok: true,
+                            members: memberList.slice(0, 2),
+                            response_metadata: {
+                                next_cursor: "abc"
+                            }
+                        }
+                    }
+                } else if (requestNo == 2) {
+                    delayStart = Date.now();
+                    return {
+                        status: 429,
+                        headers: {
+                            'Retry-After': '1'
+                        }
+                    }
+                } else {
+                    return {
+                        status: 200,
+                        response: {
+                            ok: true,
+                            members: memberList.slice(2),
+                            response_metadata: {
+                                next_cursor: ""
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        await backupMembers(backupId, token, models);
+
+        expect(addedMembers).to.deep.equal(memberList);
+        expect(Date.now() - delayStart).to.be.gte(1000);
+    });
 }
