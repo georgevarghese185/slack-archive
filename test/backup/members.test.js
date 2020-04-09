@@ -77,4 +77,60 @@ module.exports = () => {
         expect(slackRequest.headers['Authorization']).to.equal('Bearer ' + accessToken);
         expect(addedMembers).to.deep.equal(memberList);
     });
+
+    it('paginated members', async () => {
+        const accessToken = 'ABC';
+        const token = { accessToken };
+        const backupId = '1234';
+        let addedMembers = [];
+
+        class MembersMock extends Members {
+            async add(members) {
+                addedMembers = addedMembers.concat(members);
+            }
+        }
+
+        class BackupsMock extends Backups {
+            async setStatus(id, status) {
+            }
+        }
+
+        const models = {
+            backups: new BackupsMock(),
+            members: new MembersMock()
+        }
+
+        let requestNo = 0;
+
+        moxios.stubs.track({
+            url: /\/users\.list.*/,
+            get response() {
+                requestNo++;
+                const members = requestNo == 1 ? memberList.slice(0, 2) : memberList.slice(2);
+                const next_cursor = requestNo == 1 ? "abc" : "";
+
+                return {
+                    status: 200,
+                    response: {
+                        ok: true,
+                        members,
+                        response_metadata: {
+                            next_cursor
+                        }
+                    }
+                }
+            }
+        });
+
+        await backupMembers(backupId, token, models);
+        expect(addedMembers).to.deep.equal(memberList);
+
+        expect(moxios.requests.count()).to.equal(2);
+
+        expect(moxios.requests.at(0).headers['Authorization']).to.equal(`Bearer ${accessToken}`);
+        expect(moxios.requests.at(0).config.params).to.be.undefined;
+
+        expect(moxios.requests.at(1).headers['Authorization']).to.equal(`Bearer ${accessToken}`);
+        expect(moxios.requests.at(1).config.params.cursor).to.equal('abc');
+    });
 }
