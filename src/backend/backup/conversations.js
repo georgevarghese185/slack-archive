@@ -20,8 +20,22 @@ const backupConversations = async (backupId, token, models) => {
         if(nextCursor) {
             config.params = { cursor: nextCursor };
         }
+        let response;
 
-        const response = await axiosInstance.get('/conversations.list', config);
+        try {
+            response = await axiosInstance.get('/conversations.list', config);
+        } catch (e) {
+            let message = (e.response || {}).data || e.message;
+            const status = (e.response || {}).status || -1;
+
+            if (typeof message != 'string') {
+                message = JSON.stringify(message, null, 2);
+            }
+
+            const err = new Error(`/conversations.list failed. status: ${status}, message: ${message}`);
+
+            throw err;
+        }
 
         if(!response.data.ok) {
             const error = new Error('conversations.list API failed with code ' + response.data.error);

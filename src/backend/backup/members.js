@@ -21,7 +21,22 @@ const backupMembers = async (backupId, token, models) => {
             config.params = { cursor: nextCursor };
         }
 
-        const response = await axiosInstance.get('/users.list', config);
+        let response;
+
+        try {
+            response = await axiosInstance.get('/users.list', config);
+        } catch (e) {
+            let message = (e.response || {}).data || e.message;
+            const status = (e.response || {}).status || -1;
+
+            if (typeof message != 'string') {
+                message = JSON.stringify(message, null, 2);
+            }
+
+            const err = new Error(`/users.list failed. status: ${status}, message: ${message}`);
+
+            throw err;
+        }
 
         if (!response.data.ok) {
             const error = new Error('users.list API failed');
