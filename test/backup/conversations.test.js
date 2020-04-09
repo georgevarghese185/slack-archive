@@ -3,7 +3,6 @@ const Conversations = require('../../src/backend/models/Conversations');
 const expect = require('chai').expect;
 const moxios = require('moxios');
 const { backupConversations } = require('../../src/backend/backup/conversations');
-const { nextRequest } = require('../helpers');
 
 module.exports = () => {
     beforeEach(() => {
@@ -90,13 +89,11 @@ module.exports = () => {
 
 
 
-    it('paginated conversations', (done) => {
+    it('paginated conversations', async () => {
         const accessToken = 'ABC';
         const token = { accessToken };
         const backupId = '1234';
         let addedConversations = [];
-
-        moxios.delay = 5;
 
         class BackupsMock extends Backups {
             async setStatus(id, status) {
@@ -114,56 +111,45 @@ module.exports = () => {
             conversations: new ConversationsMock()
         };
 
-        nextRequest(moxios)
-            .then((request) => {
-                expect(request.headers['Authorization']).to.equal(`Bearer ${accessToken}`);
-                expect(request.config.params).to.be.undefined;
+        let requestNo = 0;
 
-                request.respondWith({
+        moxios.stubs.track({
+            url: /\/conversations\.list.*/,
+            get response() {
+                requestNo++;
+                const channels = requestNo == 1 ? conversationList.slice(0, 2) : conversationList.slice(2);
+                const next_cursor = requestNo == 1 ? "abc" : "";
+
+                return {
                     status: 200,
                     response: {
                         ok: true,
-                        channels: conversationList.slice(0, 2),
+                        channels,
                         response_metadata: {
-                            next_cursor: "abc"
+                            next_cursor
                         }
                     }
-                });
+                }
+            }
+        });
 
-                return nextRequest(moxios);
-            })
-            .then((request) => {
-                expect(request.headers['Authorization']).to.equal(`Bearer ${accessToken}`);
-                expect(request.config.params.cursor).to.equal('abc');
+        await backupConversations(backupId, token, models);
+        expect(addedConversations).to.deep.equal(conversationList);
 
-                request.respondWith({
-                    status: 200,
-                    response: {
-                        ok: true,
-                        channels: conversationList.slice(2),
-                        response_metadata: {
-                            next_cursor: ""
-                        }
-                    }
-                });
-            })
-            .catch(done);
+        expect(moxios.requests.count()).to.equal(2);
 
-        backupConversations(backupId, token, models)
-            .then(() => {
-                expect(addedConversations).to.deep.equal(conversationList);
-                done();
-            })
-            .catch(done);
+        expect(moxios.requests.at(0).headers['Authorization']).to.equal(`Bearer ${accessToken}`);
+        expect(moxios.requests.at(0).config.params).to.be.undefined;
+
+        expect(moxios.requests.at(1).headers['Authorization']).to.equal(`Bearer ${accessToken}`);
+        expect(moxios.requests.at(1).config.params.cursor).to.equal('abc');
     });
 
-    it('rate limited', (done) => {
+    it('rate limited', async () => {
         const accessToken = 'ABC';
         const token = { accessToken };
         const backupId = '1234';
         let addedConversations = [];
-
-        moxios.delay = 5;
 
         class BackupsMock extends Backups {
             async setStatus(id, status) {
@@ -182,55 +168,51 @@ module.exports = () => {
         };
 
         let delayStart;
+        let requestNo = 0;
 
-        nextRequest(moxios)
-            .then((request) => {
-                request.respondWith({
-                    status: 200,
-                    response: {
-                        ok: true,
-                        channels: conversationList.slice(0, 2),
-                        response_metadata: {
-                            next_cursor: "abc"
+        moxios.stubs.track({
+            url: /\/conversations\.list.*/,
+            get response() {
+                requestNo++;
+
+                if (requestNo == 1) {
+                    return {
+                        status: 200,
+                        response: {
+                            ok: true,
+                            channels: conversationList.slice(0, 2),
+                            response_metadata: {
+                                next_cursor: "abc"
+                            }
                         }
                     }
-                });
-
-                return nextRequest(moxios);
-            })
-            .then((request) => {
-                delayStart = Date.now();
-                request.respondWith({
-                    status: 429,
-                    headers: {
-                        'Retry-After': '1'
-                    }
-                });
-
-                return nextRequest(moxios);
-            })
-            .then((request) => {
-                expect(Date.now() - delayStart).to.be.greaterThan(1000);
-
-                request.respondWith({
-                    status: 200,
-                    response: {
-                        ok: true,
-                        channels: conversationList.slice(2),
-                        response_metadata: {
-                            next_cursor: ""
+                } else if (requestNo == 2) {
+                    delayStart = Date.now();
+                    return {
+                        status: 429,
+                        headers: {
+                            'Retry-After': '1'
                         }
                     }
-                });
-            })
-            .catch(done);
+                } else {
+                    return {
+                        status: 200,
+                        response: {
+                            ok: true,
+                            channels: conversationList.slice(2),
+                            response_metadata: {
+                                next_cursor: ""
+                            }
+                        }
+                    }
+                }
+            }
+        });
 
-        backupConversations(backupId, token, models)
-            .then(() => {
-                expect(addedConversations).to.deep.equal(conversationList);
-                done();
-            })
-            .catch(done);
+        await backupConversations(backupId, token, models);
+
+        expect(addedConversations).to.deep.equal(conversationList);
+        expect(Date.now() - delayStart).to.be.gte(1000);
     });
 
     it('slack error handling', async () => {
