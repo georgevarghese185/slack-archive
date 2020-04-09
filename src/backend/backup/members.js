@@ -11,11 +11,21 @@ const backupMembers = async (backupId, token, models) => {
         }
     }
 
-    const response = await axiosInstance.get('/users.list', config);
+    let nextCursor;
 
-    const members = response.data.members;
+    do {
+        if (nextCursor) {
+            config.params = { cursor: nextCursor };
+        }
 
-    models.members.add(members);
+        const response = await axiosInstance.get('/users.list', config);
+
+        const members = response.data.members;
+
+        models.members.add(members);
+
+        nextCursor = (response.data.response_metadata || {}).next_cursor || "";
+    } while (nextCursor)
 }
 
 
