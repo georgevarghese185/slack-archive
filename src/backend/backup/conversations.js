@@ -38,7 +38,7 @@ const backupConversations = async (backupId, token, models) => {
         }
 
         if(!response.data.ok) {
-            const error = new Error('conversations.list API failed with code ' + response.data.error);
+            const error = new Error('/conversations.list API failed with code ' + response.data.error);
             throw error;
         }
 

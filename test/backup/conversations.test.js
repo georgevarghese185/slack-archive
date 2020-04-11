@@ -215,7 +215,7 @@ module.exports = () => {
         expect(Date.now() - delayStart).to.be.gte(1000);
     });
 
-    it('slack error handling', async () => {
+    it('slack error', async () => {
         const token = { accessToken: 'ABC' };
 
         class BackupsMock extends Backups {
@@ -239,7 +239,36 @@ module.exports = () => {
             await backupConversations('123', token, models);
             throw new Error('Should have failed');
         } catch (e) {
-            // works
+            expect(e.message).to.equal('/conversations.list API failed with code some_error');
+        }
+    });
+
+    it('other API error', async () => {
+        const token = { accessToken: 'ABC' };
+
+        class BackupsMock extends Backups {
+            async setStatus(id, status) {
+            }
+        }
+
+        const errorResponse = {
+            message: "Something went wrong"
+        }
+
+        moxios.stubRequest('/conversations.list', {
+            status: 500,
+            response: errorResponse
+        });
+
+        const models = {
+            backups: new BackupsMock()
+        }
+
+        try {
+            await backupConversations('123', token, models);
+            throw new Error('Should have failed');
+        } catch (e) {
+            expect(e.message).to.equal('/conversations.list failed. status: 500, message: ' + JSON.stringify(errorResponse, null, 2));
         }
     });
 }
