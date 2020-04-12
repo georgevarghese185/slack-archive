@@ -6,7 +6,7 @@ const expect = require('chai').expect;
 const Messages = require('../../src/models/Messages');
 const Request = require('../../src/types/Request');
 
-module.exports = () => {
+describe('Backup APIs', () => {
     class MessagesMock extends Messages {
         async count() {
             return 100
@@ -231,4 +231,4 @@ module.exports = () => {
             expect(response.body.errorCode).to.equal('backup_not_found');
         })
     });
-}
+})

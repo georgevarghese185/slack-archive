@@ -5,7 +5,7 @@ const expect = require('chai').expect;
 const moxios = require('moxios');
 const { backupConversations } = require('../../src/backup/conversations');
 
-module.exports = () => {
+describe('Conversations Backup', () => {
     beforeEach(() => {
         moxios.install();
     });
@@ -277,4 +277,4 @@ module.exports = () => {
             expect(e.message).to.equal('/conversations.list failed. status: 500, message: ' + JSON.stringify(errorResponse, null, 2));
         }
     });
-}
+})

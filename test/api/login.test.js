@@ -13,7 +13,7 @@ const Response = require('../../src/types/Response');
 
 chai.use(chaiAsPromised);
 
-module.exports = () => {
+describe('Login APIs', () => {
     class MockContext extends AppContext {
         getLogger() {
             return { log: () => {}, warn: () => {}, error: () => {} }
@@ -461,4 +461,4 @@ module.exports = () => {
             expect(response.body.errorCode).to.equal('unauthorized');
         });
     });
-}
+})

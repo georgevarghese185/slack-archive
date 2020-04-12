@@ -3,7 +3,7 @@ const moxios = require('moxios');
 const { expect } = require('chai');
 const { fromAxiosError } = require('../../src/util/response');
 
-module.exports = () => {
+describe('Response util functions', () => {
     describe('fromAxiosError()', () => {
         it('non 200 response', async() => {
             const axiosInstance = axios.create();
@@ -66,4 +66,4 @@ module.exports = () => {
             throw new Error('Should have failed');
         });
     });
-}
+})

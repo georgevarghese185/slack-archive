@@ -4,7 +4,7 @@ const Conversations = require('../../src/models/Conversations');
 const expect = require('chai').expect;
 const Request = require('../../src/types/Request');
 
-module.exports = () => {
+describe('Conversation APIs', () => {
     describe('GET:/v1/conversations', () => {
         it('list all conversations', async () => {
             const conversationList = [
@@ -71,4 +71,4 @@ module.exports = () => {
             expect(response.body.errorCode).to.equal('conversation_not_found');
         });
     })
-}
+})

@@ -7,7 +7,7 @@ const { backupMembers } = require('../../src/backup/members');
 
 
 
-module.exports = () => {
+describe('Members Backup', () => {
     beforeEach(() => {
         moxios.install();
     });
@@ -262,4 +262,4 @@ module.exports = () => {
             expect(e.message).to.equal('/users.list failed. status: 500, message: ' + JSON.stringify(errorResponse, null, 2));
         }
     });
-}
+})

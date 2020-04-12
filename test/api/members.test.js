@@ -4,7 +4,7 @@ const expect = require('chai').expect;
 const Members = require('../../src/models/Members');
 const Request = require('../../src/types/Request');
 
-module.exports = () => {
+describe('Member APIs', () => {
     describe('GET:/v1/members/:id', () => {
         it('get member', async () => {
             const memberId = 'U1';
@@ -49,4 +49,4 @@ module.exports = () => {
             expect(response.body.errorCode).to.equal('member_not_found');
         });
     });
-}
+})

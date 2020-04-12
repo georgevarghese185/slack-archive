@@ -5,7 +5,7 @@ const expect = require('chai').expect;
 const Messages = require('../../src/models/Messages');
 const Request = require('../../src/types/Request');
 
-module.exports = () => {
+describe('Message APIs', () => {
     describe('GET:/v1/messages', () => {
         const messageList = [
             { ts: "1500000000.000001", threadTs: null,                  conversationId: "C1", json: { text: "1" } },
@@ -388,4 +388,4 @@ module.exports = () => {
             expect(response.body.errorCode).to.equal('thread_not_found');
         });
     });
-}
+})
