@@ -89,13 +89,53 @@ class Backups {
 
 
     /**
-     * Update the status of a backup task
+     * Update the status of a backup task (backup.status)
      *
      * @abstract
      * @param {string} id - The backup task ID
      * @param {BackupStatus} status - The new status
      */
     async setStatus(id, status) {
+        throw new Error('Not implemented');
+    }
+
+
+    /**
+     * Update the total number of messages that have been backed up (backup.messagesBackedUp)
+     *
+     * @abstract
+     *
+     * @param {number} numOfMessages The number of messages that have been successfully
+     * backed up
+     */
+    async setMessagesBackedUp(id, numOfMessages) {
+        throw new Error('Not implemented');
+    }
+
+
+    /**
+     * Set the conversation that is currently being backed up (backup.currentConversation)
+     *
+     * @abstract
+     * @param {string} id - The backup task ID
+     * @param {string} conversationId The ID of the conversation currently being
+     * backed up
+     */
+    async setCurrentConversation(id, conversationId) {
+        throw new Error('Not implemented');
+    }
+
+
+    /**
+     * Add a conversation ID to the list of conversations who's messages have been
+     * backed up (backup.backedUpConversations)
+     *
+     * @abstract
+     * @param {string} id - The backup task ID
+     * @param {string} conversationId The ID of conversation who's messages have been
+     * completely backed up
+     */
+    async conversationBackupDone(id, conversationId) {
         throw new Error('Not implemented');
     }
 }

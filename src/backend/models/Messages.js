@@ -52,6 +52,18 @@ class Messages {
     async count() {
         throw new Error('Not implemented');
     }
+
+
+    /**
+     * Add one or more messages from a conversation
+     *
+     * @abstract
+     * @param {string} conversationId The ID of the conversation these messages are from
+     * @param {Array<Object>} messages An Array of [message objects]{@link https://api.slack.com/events/message}
+     */
+    async add(conversationId, messages) {
+        throw new Error('Not implemented');
+    }
 }
 
 module.exports = Messages;
