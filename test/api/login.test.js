@@ -16,14 +16,14 @@ module.exports = () => {
     let api;
     before(() => {
         decache('../../src/constants');
-        decache('../../src/backend/api');
+        decache('../../src/api');
         process.env.ENV = "prod";
         process.env.SLACK_CLIENT_ID = "client id";
         process.env.SLACK_CLIENT_SECRET = "client secret";
         process.env.SLACK_TEAM_ID = "team id";
         process.env.TOKEN_SECRET = "secret";
         constants = require('../../src/constants');
-        api = require('../../src/backend/api');
+        api = require('../../src/api');
     });
 
     after(() => {

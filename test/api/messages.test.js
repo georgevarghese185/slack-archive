@@ -1,16 +1,16 @@
-const Conversations = require('../../src/backend/models/Conversations');
+const Conversations = require('../../src/models/Conversations');
 const decache = require('decache');
 const expect = require('chai').expect;
-const Messages = require('../../src/backend/models/Messages');
+const Messages = require('../../src/models/Messages');
 const Request = require('../../src/types/Request');
 
 module.exports = () => {
     let api;
 
     before(() => {
-        decache('../../src/backend/api');
+        decache('../../src/api');
         decache('../../src/constants');
-        api = require('../../src/backend/api');
+        api = require('../../src/api');
     });
 
 

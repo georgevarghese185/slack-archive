@@ -1,7 +1,7 @@
-const constants = require('../../constants');
-const Response = require('../../types/Response');
+const constants = require('../constants');
+const Response = require('../types/Response');
 const uuid = require('uuid').v4;
-const { notFound } = require('../../util/response');
+const { notFound } = require('../util/response');
 
 const getStats = async (request, models) => {
     const messages = await models.messages.count();
@@ -22,6 +22,8 @@ const create = async (request, token, models, actions) => {
     const userId = token.userId;
     const backupId = uuid();
 
+    // TODO don't allow backup if another is in progress
+
     await models.backups.create(backupId, userId);
     actions.startBackup(backupId);
 
@@ -32,6 +34,9 @@ const create = async (request, token, models, actions) => {
         }
     });
 }
+
+
+// TODO API to list all currently running backups created by the user
 
 
 const get = async (request, models) => {

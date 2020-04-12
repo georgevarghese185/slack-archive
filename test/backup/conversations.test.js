@@ -1,8 +1,8 @@
-const Backups = require('../../src/backend/models/Backups');
-const Conversations = require('../../src/backend/models/Conversations');
+const Backups = require('../../src/models/Backups');
+const Conversations = require('../../src/models/Conversations');
 const expect = require('chai').expect;
 const moxios = require('moxios');
-const { backupConversations } = require('../../src/backend/backup/conversations');
+const { backupConversations } = require('../../src/backup/conversations');
 
 module.exports = () => {
     beforeEach(() => {

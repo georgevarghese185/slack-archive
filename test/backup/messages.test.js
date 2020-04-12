@@ -1,10 +1,10 @@
-const Backups = require('../../src/backend/models/Backups');
-const Conversations = require('../../src/backend/models/Conversations');
+const Backups = require('../../src/models/Backups');
+const Conversations = require('../../src/models/Conversations');
 const decache = require('decache');
-const Messages = require('../../src/backend/models/Messages');
+const Messages = require('../../src/models/Messages');
 const moxios = require('moxios');
 const { expect } = require('chai');
-const { backupMessages } = require('../../src/backend/backup/messages');
+const { backupMessages } = require('../../src/backup/messages');
 decache('../../src/constants');
 
 module.exports = () => {

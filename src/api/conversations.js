@@ -1,6 +1,6 @@
-const constants = require('../../../src/constants');
-const Response = require('../../types/Response');
-const { notFound } = require('../../util/response');
+const constants = require('../../src/constants');
+const Response = require('../types/Response');
+const { notFound } = require('../util/response');
 
 const list = async (models) => {
     const conversations = await models.conversations.listAll();

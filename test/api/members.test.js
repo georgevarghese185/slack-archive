@@ -1,15 +1,15 @@
 const decache = require('decache');
 const expect = require('chai').expect;
-const Members = require('../../src/backend/models/Members');
+const Members = require('../../src/models/Members');
 const Request = require('../../src/types/Request');
 
 module.exports = () => {
     let api;
 
     before(() => {
-        decache('../../src/backend/api');
+        decache('../../src/api');
         decache('../../src/constants');
-        api = require('../../src/backend/api');
+        api = require('../../src/api');
     });
 
 

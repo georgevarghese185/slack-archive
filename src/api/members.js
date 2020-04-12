@@ -1,6 +1,6 @@
-const constants = require('../../constants');
-const Response = require('../../types/Response');
-const { notFound } = require('../../util/response');
+const constants = require('../constants');
+const Response = require('../types/Response');
+const { notFound } = require('../util/response');
 
 const get = async (request, models) => {
     const memberId = request.parameters.id;

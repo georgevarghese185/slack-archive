@@ -1,16 +1,20 @@
 const axios = require('axios');
-const constants = require('../../constants');
-const { withRateLimiting } = require('../../util/slack');
+const constants = require('../constants');
+const { withRateLimiting } = require('../util/slack');
 
 const backupConversations = async (backupId, token, models) => {
     await models.backups.setStatus(backupId, 'COLLECTING_INFO');
     const axiosInstance = axios.create({ baseURL: constants.slack.apiBaseUrl });
+
+    // TODO log stuff
+    // TODO log all error objects. Since we're only re-throwing e.message, the stack trace will be lost
 
     withRateLimiting(axiosInstance);
 
     let nextCursor;
 
     do {
+        // TODO move this outside. No point re-initializing every loop
         const config = {
             headers: {
                 'Authorization': `Bearer ${token.accessToken}`

@@ -1,6 +1,6 @@
 const axios = require('axios');
-const constants = require('../../constants');
-const { withRateLimiting } = require('../../util/slack');
+const constants = require('../constants');
+const { withRateLimiting } = require('../util/slack');
 
 const backupMessages = async (backupId, token, models) => {
     await models.backups.setStatus(backupId, 'BACKING_UP');

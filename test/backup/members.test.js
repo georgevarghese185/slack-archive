@@ -1,8 +1,8 @@
-const Backups = require('../../src/backend/models/Backups');
+const Backups = require('../../src/models/Backups');
 const expect = require('chai').expect;
-const Members = require('../../src/backend/models/Members');
+const Members = require('../../src/models/Members');
 const moxios = require('moxios');
-const { backupMembers } = require('../../src/backend/backup/members');
+const { backupMembers } = require('../../src/backup/members');
 
 
 
