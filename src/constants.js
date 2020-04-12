@@ -2,7 +2,7 @@ module.exports = {
     slack: {
         oauthUrl: "https://slack.com/oauth/authorize",
         oauthRedirectUrl: "stub",
-        apiBaseUrl: 'https://slack.com/api/',
+        apiBaseUrl: 'https://slack.com/api',
         scope: {
             publicMessages: "channels:history,channels:read,users:read"
         },
