@@ -1,11 +1,10 @@
+const AppContext = require('../../src/AppContext')
 const Backups = require('../../src/models/Backups');
 const Conversations = require('../../src/models/Conversations');
-const decache = require('decache');
 const Messages = require('../../src/models/Messages');
 const moxios = require('moxios');
 const { expect } = require('chai');
 const { backupMessages } = require('../../src/backup/messages');
-decache('../../src/constants');
 
 module.exports = () => {
     beforeEach(() => {
@@ -138,13 +137,14 @@ module.exports = () => {
             }
         }
 
-        const models = {
-            backups: new BackupsMock(),
-            conversations: new ConversationsMock(),
-            messages: new MessagesMock(),
-        }
+        const context = new AppContext()
+            .setModels({
+                backups: new BackupsMock(),
+                conversations: new ConversationsMock(),
+                messages: new MessagesMock(),
+            });
 
-        await backupMessages(backupId, token, models);
+        await backupMessages(context, backupId, token);
 
         expect(statusSet).to.be.true;
         expect(c1Messages).to.deep.equal(messageList.concat(replies));
@@ -196,11 +196,12 @@ module.exports = () => {
             }
         }
 
-        const models = {
-            backups: new BackupsMock(),
-            conversations: new ConversationsMock(),
-            messages: new MessagesMock(),
-        }
+        const context = new AppContext()
+            .setModels({
+                backups: new BackupsMock(),
+                conversations: new ConversationsMock(),
+                messages: new MessagesMock(),
+            });
 
 
         let historyRequestNo = 0;
@@ -248,7 +249,7 @@ module.exports = () => {
         });
 
 
-        await backupMessages(backupId, token, models);
+        await backupMessages(context, backupId, token);
         expect(addedMessages).to.deep.equal(messageList.concat(replies));
 
         expect(moxios.requests.count()).to.equal(4);
@@ -298,11 +299,12 @@ module.exports = () => {
             }
         }
 
-        const models = {
-            backups: new BackupsMock(),
-            conversations: new ConversationsMock(),
-            messages: new MessagesMock(),
-        }
+        const context = new AppContext()
+            .setModels({
+                backups: new BackupsMock(),
+                conversations: new ConversationsMock(),
+                messages: new MessagesMock(),
+            });
 
 
         let historyRequestNo = 0;
@@ -393,7 +395,7 @@ module.exports = () => {
             }
         });
 
-        await backupMessages(backupId, token, models);
+        await backupMessages(context, backupId, token);
         expect(addedMessages).to.deep.equal(messageList.concat(replies));
         expect(historyReqDelayEnd - historyReqDelayStart).to.be.gte(1000);
         expect(repliesReqDelayEnd - repliesReqDelayStart).to.be.gte(1000);
@@ -426,11 +428,12 @@ module.exports = () => {
             }
         }
 
-        const models = {
-            backups: new BackupsMock(),
-            conversations: new ConversationsMock(),
-            messages: new MessagesMock(),
-        }
+        const context = new AppContext()
+            .setModels({
+                backups: new BackupsMock(),
+                conversations: new ConversationsMock(),
+                messages: new MessagesMock(),
+            });
 
         // conversations.history error
 
@@ -443,7 +446,7 @@ module.exports = () => {
         });
 
         try {
-            await backupMessages('123', token, models);
+            await backupMessages(context, '123', token);
             throw new Error('Should have failed');
         } catch (e) {
             expect(e.message).to.equal('/conversations.history API failed with code some_error');
@@ -470,7 +473,7 @@ module.exports = () => {
         });
 
         try {
-            await backupMessages('123', token, models);
+            await backupMessages(context, '123', token);
             throw new Error('Should have failed');
         } catch (e) {
             expect(e.message).to.equal('/conversations.replies API failed with code some_error');
@@ -504,11 +507,12 @@ module.exports = () => {
             }
         }
 
-        const models = {
-            backups: new BackupsMock(),
-            conversations: new ConversationsMock(),
-            messages: new MessagesMock(),
-        }
+        const context = new AppContext()
+            .setModels({
+                backups: new BackupsMock(),
+                conversations: new ConversationsMock(),
+                messages: new MessagesMock(),
+            });
 
         // conversations.history error
 
@@ -522,7 +526,7 @@ module.exports = () => {
         });
 
         try {
-            await backupMessages('123', token, models);
+            await backupMessages(context, '123', token);
             throw new Error('Should have failed');
         } catch (e) {
             expect(e.message).to.equal('/conversations.history failed. status: 500, message: ' + JSON.stringify(errorResponse, null, 2));
@@ -546,7 +550,7 @@ module.exports = () => {
         });
 
         try {
-            await backupMessages('123', token, models);
+            await backupMessages(context, '123', token);
             throw new Error('Should have failed');
         } catch (e) {
             expect(e.message).to.equal('/conversations.replies failed. status: 500, message: ' + JSON.stringify(errorResponse, null, 2));

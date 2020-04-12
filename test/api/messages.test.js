@@ -1,19 +1,11 @@
+const api = require('../../src/api');
+const AppContext = require('../../src/AppContext');
 const Conversations = require('../../src/models/Conversations');
-const decache = require('decache');
 const expect = require('chai').expect;
 const Messages = require('../../src/models/Messages');
 const Request = require('../../src/types/Request');
 
 module.exports = () => {
-    let api;
-
-    before(() => {
-        decache('../../src/api');
-        decache('../../src/constants');
-        api = require('../../src/api');
-    });
-
-
     describe('GET:/v1/messages', () => {
         const messageList = [
             { ts: "1500000000.000001", threadTs: null,                  conversationId: "C1", json: { text: "1" } },
@@ -85,8 +77,12 @@ module.exports = () => {
 
 
         it('no parameters', async () => {
-            const models = { messages: new MessagesMock(), conversations: new ConversationsMock() };
-            const response = await api['GET:/v1/messages'](new Request(), models);
+            const context = new AppContext()
+                .setModels({
+                    messages: new MessagesMock(),
+                    conversations: new ConversationsMock()
+                });
+            const response = await api['GET:/v1/messages'](context, new Request());
 
             expect(response.status).to.equal(200);
             expect(response.body.messages).to.deep.equal(messageList.map(m => m.json));
@@ -94,12 +90,16 @@ module.exports = () => {
 
 
         it("'limit' parameter", async () => {
-            const models = { messages: new MessagesMock(), conversations: new ConversationsMock() };
+            const context = new AppContext()
+                .setModels({
+                    messages: new MessagesMock(),
+                    conversations: new ConversationsMock()
+                });
             const request = new Request({
                 query: { limit: "6" }
             });
 
-            const response = await api['GET:/v1/messages'](request, models);
+            const response = await api['GET:/v1/messages'](context, request);
 
             expect(response.status).to.equal(200);
             expect(response.body.messages).to.deep.equal([
@@ -114,12 +114,16 @@ module.exports = () => {
 
 
         it("'from' parameter", async () => {
-            const models = { messages: new MessagesMock(), conversations: new ConversationsMock() };
+            const context = new AppContext()
+                .setModels({
+                    messages: new MessagesMock(),
+                    conversations: new ConversationsMock()
+                });
             const request = new Request({
                 query: { from: "1500000045.000001" }
             })
 
-            const response = await api['GET:/v1/messages'](request, models);
+            const response = await api['GET:/v1/messages'](context, request);
 
             expect(response.status).to.equal(200);
             expect(response.body.messages).to.deep.equal([
@@ -132,12 +136,16 @@ module.exports = () => {
 
 
         it("'to' parameter", async () => {
-            const models = { messages: new MessagesMock(), conversations: new ConversationsMock() };
+            const context = new AppContext()
+                .setModels({
+                    messages: new MessagesMock(),
+                    conversations: new ConversationsMock()
+                });
             const request = new Request({
                 query: { to: "1500000020.000001" }
             });
 
-            const response = await api['GET:/v1/messages'](request, models);
+            const response = await api['GET:/v1/messages'](context, request);
 
             expect(response.status).to.equal(200);
             expect(response.body.messages).to.deep.equal([
@@ -150,12 +158,16 @@ module.exports = () => {
 
 
         it("'after' parameter", async () => {
-            const models = { messages: new MessagesMock(), conversations: new ConversationsMock() };
+            const context = new AppContext()
+                .setModels({
+                    messages: new MessagesMock(),
+                    conversations: new ConversationsMock()
+                });
             const request = new Request({
                 query: { after: "1500000045.000001" }
             })
 
-            const response = await api['GET:/v1/messages'](request, models);
+            const response = await api['GET:/v1/messages'](context, request);
 
             expect(response.status).to.equal(200);
             expect(response.body.messages).to.deep.equal([
@@ -167,12 +179,16 @@ module.exports = () => {
 
 
         it("'before' parameter", async () => {
-            const models = { messages: new MessagesMock(), conversations: new ConversationsMock() };
+            const context = new AppContext()
+                .setModels({
+                    messages: new MessagesMock(),
+                    conversations: new ConversationsMock()
+                });
             const request = new Request({
                 query: { before: "1500000020.000001" }
             });
 
-            const response = await api['GET:/v1/messages'](request, models);
+            const response = await api['GET:/v1/messages'](context, request);
 
             expect(response.status).to.equal(200);
             expect(response.body.messages).to.deep.equal([
@@ -184,12 +200,16 @@ module.exports = () => {
 
 
         it("'conversationId' parameter", async () => {
-            const models = { messages: new MessagesMock(), conversations: new ConversationsMock() };
+            const context = new AppContext()
+                .setModels({
+                    messages: new MessagesMock(),
+                    conversations: new ConversationsMock()
+                });
             const request = new Request({
                 query: { conversationId: "C1" }
             });
 
-            const response = await api['GET:/v1/messages'](request, models);
+            const response = await api['GET:/v1/messages'](context, request);
 
             expect(response.status).to.equal(200);
             expect(response.body.messages).to.deep.equal([
@@ -201,12 +221,16 @@ module.exports = () => {
 
 
         it('postsOnly', async () => {
-            const models = { messages: new MessagesMock(), conversations: new ConversationsMock() };
+            const context = new AppContext()
+                .setModels({
+                    messages: new MessagesMock(),
+                    conversations: new ConversationsMock()
+                });
             const request = new Request({
                 query: { postsOnly: 'true' }
             });
 
-            const response = await api['GET:/v1/messages'](request, models);
+            const response = await api['GET:/v1/messages'](context, request);
 
             expect(response.status).to.equal(200);
             expect(response.body.messages).to.deep.equal([
@@ -222,12 +246,16 @@ module.exports = () => {
 
 
         it("'thread' parameter", async () => {
-            const models = { messages: new MessagesMock(), conversations: new ConversationsMock() };
+            const context = new AppContext()
+                .setModels({
+                    messages: new MessagesMock(),
+                    conversations: new ConversationsMock()
+                });
             const request = new Request({
                 query: { thread: "1500000010.000000" }
             });
 
-            const response = await api['GET:/v1/messages'](request, models);
+            const response = await api['GET:/v1/messages'](context, request);
 
             expect(response.status).to.equal(200);
             expect(response.body.messages).to.deep.equal([
@@ -240,13 +268,17 @@ module.exports = () => {
 
 
         it('bad request: from+after/to+before', async () => {
-            const models = { messages: new MessagesMock(), conversations: new ConversationsMock() };
+            const context = new AppContext()
+                .setModels({
+                    messages: new MessagesMock(),
+                    conversations: new ConversationsMock()
+                });
 
             // from + after
             let request = new Request({
                 query: { from: "1500000010.000000", after: "1500000010.000000" }
             });
-            let response = await api['GET:/v1/messages'](request, models);
+            let response = await api['GET:/v1/messages'](context, request);
 
             expect(response.status).to.equal(400);
             expect(response.body.errorCode).to.equal('bad_request');
@@ -255,7 +287,7 @@ module.exports = () => {
             request = new Request({
                 query: { to: "1500000010.000000", before: "1500000010.000000" }
             });
-            response = await api['GET:/v1/messages'](request, models);
+            response = await api['GET:/v1/messages'](context, request);
 
             expect(response.status).to.equal(400);
             expect(response.body.errorCode).to.equal('bad_request');
@@ -263,10 +295,14 @@ module.exports = () => {
 
 
         it('bad request: Invalid Slack timestamp', async () => {
-            const models = { messages: new MessagesMock(), conversations: new ConversationsMock() };
+            const context = new AppContext()
+                .setModels({
+                    messages: new MessagesMock(),
+                    conversations: new ConversationsMock()
+                });
 
             test = async (query) => {
-                let response = await api['GET:/v1/messages'](new Request({ query }), models);
+                let response = await api['GET:/v1/messages'](context, new Request({ query }));
 
                 expect(response.status, `Incorrect status for ${JSON.stringify(query)}`).to.equal(400);
                 expect(response.body.errorCode, `Incorrect error code for ${JSON.stringify(query)}`).to.equal('bad_request');
@@ -281,7 +317,10 @@ module.exports = () => {
 
 
         it('bad request: invalid limit value', async () => {
-            const models = { messages: new MessagesMock(), conversations: new ConversationsMock() };
+            const context = new AppContext({
+                messages: new MessagesMock(),
+                conversations: new ConversationsMock()
+            });
 
             const testCases = [
                 "",
@@ -294,7 +333,7 @@ module.exports = () => {
                     query: { limit: testCase }
                 });
 
-                const response = await api['GET:/v1/messages'](request, models);
+                const response = await api['GET:/v1/messages'](context, request);
 
                 expect(response.status, `Invalid status for ${JSON.stringify(testCase)}`).to.equal(400);
                 expect(response.body.errorCode, `Invalid error code for ${testCase}`).to.deep.equal('bad_request');
@@ -303,12 +342,16 @@ module.exports = () => {
 
 
         it('not found: unknown conversation ID', async () => {
-            const models = { messages: new MessagesMock(), conversations: new ConversationsMock() };
+            const context = new AppContext()
+                .setModels({
+                    messages: new MessagesMock(),
+                    conversations: new ConversationsMock()
+                });
             const request = new Request({
                 query: { conversationId: "C10" }
             });
 
-            const response = await api['GET:/v1/messages'](request, models);
+            const response = await api['GET:/v1/messages'](context, request);
 
             expect(response.status).to.equal(404);
             expect(response.body.errorCode).to.equal('conversation_not_found');
@@ -316,7 +359,11 @@ module.exports = () => {
 
 
         it('not found: unknown thread ts', async () => {
-            const models = { messages: new MessagesMock(), conversations: new ConversationsMock() };
+            const context = new AppContext()
+                .setModels({
+                    messages: new MessagesMock(),
+                    conversations: new ConversationsMock()
+                });
 
 
             // invalid ts
@@ -324,7 +371,7 @@ module.exports = () => {
                 query: { thread: "1500000100.000001" }
             });
 
-            let response = await api['GET:/v1/messages'](request, models);
+            let response = await api['GET:/v1/messages'](context, request);
 
             expect(response.status).to.equal(404);
             expect(response.body.errorCode).to.equal('thread_not_found');
@@ -335,7 +382,7 @@ module.exports = () => {
                 query: { thread: "1500000010.000000", conversationId: "C3" }
             });
 
-            response = await api['GET:/v1/messages'](request, models);
+            response = await api['GET:/v1/messages'](context, request);
 
             expect(response.status).to.equal(404);
             expect(response.body.errorCode).to.equal('thread_not_found');

@@ -2,8 +2,8 @@ const axios = require('axios');
 const constants = require('../constants');
 const { withRateLimiting } = require('../util/slack');
 
-const backupConversations = async (backupId, token, models) => {
-    await models.backups.setStatus(backupId, 'COLLECTING_INFO');
+const backupConversations = async (context, backupId, token) => {
+    await context.models.backups.setStatus(backupId, 'COLLECTING_INFO');
     const axiosInstance = axios.create({ baseURL: constants.slack.apiBaseUrl });
 
     // TODO log stuff
@@ -47,7 +47,7 @@ const backupConversations = async (backupId, token, models) => {
         }
 
         const conversations = response.data.channels;
-        await models.conversations.add(conversations);
+        await context.models.conversations.add(conversations);
 
         nextCursor = (response.data.response_metadata || {}).next_cursor || "";
     } while (nextCursor != "");

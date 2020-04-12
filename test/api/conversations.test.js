@@ -1,17 +1,10 @@
+const api = require('../../src/api');
+const AppContext = require('../../src/AppContext')
 const Conversations = require('../../src/models/Conversations');
-const decache = require('decache');
 const expect = require('chai').expect;
 const Request = require('../../src/types/Request');
 
 module.exports = () => {
-    let api;
-
-    before(() => {
-        decache('../../src/api');
-        decache('../../src/constants');
-        api = require('../../src/api');
-    });
-
     describe('GET:/v1/conversations', () => {
         it('list all conversations', async () => {
             const conversationList = [
@@ -25,9 +18,10 @@ module.exports = () => {
                 }
             }
             const conversations = new ConversationsMock();
-            const models = { conversations };
+            const context = new AppContext()
+                .setModels({ conversations });
 
-            const response = await api['GET:/v1/conversations'](models);
+            const response = await api['GET:/v1/conversations'](context);
 
             expect(response.status).to.equal(200);
             expect(response.body).to.deep.equal({ conversations: conversationList });
@@ -49,9 +43,10 @@ module.exports = () => {
                 }
             }
             const conversations = new ConversationsMock();
-            const models = { conversations };
+            const context = new AppContext()
+                .setModels({ conversations });
 
-            const response = await api['GET:/v1/conversations/:id'](request, models);
+            const response = await api['GET:/v1/conversations/:id'](context, request);
 
             expect(response.status).to.equal(200);
             expect(response.body).to.deep.equal(conversationObj);
@@ -67,9 +62,10 @@ module.exports = () => {
                 }
             }
             const conversations = new ConversationsMock();
-            const models = { conversations };
+            const context = new AppContext()
+                .setModels({ conversations });
 
-            const response = await api['GET:/v1/conversations/:id'](request, models);
+            const response = await api['GET:/v1/conversations/:id'](context, request);
 
             expect(response.status).to.equal(404);
             expect(response.body.errorCode).to.equal('conversation_not_found');

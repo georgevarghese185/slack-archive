@@ -1,7 +1,9 @@
+const api = require('../../src/api');
+const AppContext = require('../../src/AppContext')
+const constants = require('../../src/constants');
 const cookie = require('cookie');
 const chai = require('chai');
 const chaiAsPromised = require('chai-as-promised');
-const decache = require('decache');
 const expect = chai.expect;
 const jwt = require('../../src/util/jwt');
 const moxios = require('moxios');
@@ -12,43 +14,48 @@ const Response = require('../../src/types/Response');
 chai.use(chaiAsPromised);
 
 module.exports = () => {
-    let constants;
-    let api;
-    before(() => {
-        decache('../../src/constants');
-        decache('../../src/api');
-        process.env.ENV = "prod";
-        process.env.SLACK_CLIENT_ID = "client id";
-        process.env.SLACK_CLIENT_SECRET = "client secret";
-        process.env.SLACK_TEAM_ID = "team id";
-        process.env.TOKEN_SECRET = "secret";
-        constants = require('../../src/constants');
-        api = require('../../src/api');
-    });
+    class MockContext extends AppContext {
+        getLogger() {
+            return { log: () => {}, warn: () => {}, error: () => {} }
+        }
 
-    after(() => {
-        delete process.env.ENV;
-        delete process.env.SLACK_CLIENT_ID;
-        delete process.env.SLACK_CLIENT_SECRET;
-        delete process.env.SLACK_TEAM_ID;
-        delete process.env.TOKEN_SECRET;
-    })
+        getSlackClientId() {
+            return "client id"
+        }
+
+        getSlackClientSecret() {
+            return "client secret"
+        }
+
+        getSlackTeamId() {
+            return "team id"
+        }
+
+        getAuthTokenSecret() {
+            return "secret"
+        }
+
+        isDevEnvironment() {
+            return false
+        }
+    }
 
 
     describe('GET:/v1/login/auth-url', () => {
 
         it('get auth URL', () => {
-            const response = api['GET:/v1/login/auth-url'](new Request());
+            const context = new MockContext()
+            const response = api['GET:/v1/login/auth-url'](context, new Request());
 
             const expectedResponse = new Response({
                 status: 200,
                 body: {
                     url: constants.slack.oauthUrl,
                     parameters: {
-                        client_id: constants.slack.clientId,
+                        client_id: context.getSlackClientId(),
                         scope: constants.slack.scope.publicMessages,
                         redirect_uri: constants.slack.oauthRedirectUrl,
-                        team: constants.slack.teamId
+                        team: context.getSlackTeamId()
                     }
                 }
             });
@@ -88,10 +95,11 @@ module.exports = () => {
                 }
             });
 
-            const response = await api['POST:/v1/login'](request);
+            const context = new MockContext()
+            const response = await api['POST:/v1/login'](context, request);
             const slackRequest = moxios.requests.mostRecent();
             const token = cookie.parse(response.headers['Set-Cookie']).loginToken;
-            const decodedToken = jwt.verify(token, constants.tokenSecret);
+            const decodedToken = jwt.verify(token, context.getAuthTokenSecret());
 
 
 
@@ -99,7 +107,7 @@ module.exports = () => {
                 code: verificationCode,
                 redirect_uri: constants.slack.oauthRedirectUrl
             });
-            const expectedSlackAuthorization = "Basic " + Buffer.from(constants.slack.clientId + ":" + constants.slack.clientSecret).toString('base64');
+            const expectedSlackAuthorization = "Basic " + Buffer.from(context.getSlackClientId() + ":" + context.getSlackClientSecret()).toString('base64');
 
             expect(slackRequest.config.method).to.equal('post');
             expect(slackRequest.headers['Content-Type']).to.equal('application/x-www-form-urlencoded');
@@ -117,8 +125,9 @@ module.exports = () => {
 
 
         it('bad request: invalid body type', async () => {
+            const context = new MockContext()
             const request = new Request({ body: "XYZ" });
-            const response = await api['POST:/v1/login'](request);
+            const response = await api['POST:/v1/login'](context, request);
 
             expect(response.status).to.equal(400);
             expect(response.body.errorCode).to.equal("bad_request");
@@ -126,8 +135,9 @@ module.exports = () => {
 
 
         it('bad request: missing verification code', async () => {
+            const context = new MockContext()
             const request = new Request({});
-            const response = await api['POST:/v1/login'](request);
+            const response = await api['POST:/v1/login'](context, request);
 
             expect(response.status).to.equal(400);
             expect(response.body.errorCode).to.equal("bad_request");
@@ -145,7 +155,8 @@ module.exports = () => {
                 }
             });
 
-            const response = await api['POST:/v1/login'](request);
+            const context = new MockContext()
+            const response = await api['POST:/v1/login'](context, request);
 
             expect(response.status).to.equal(400);
             expect(response.body.errorCode).to.equal("invalid_code");
@@ -172,6 +183,7 @@ module.exports = () => {
                 }
             ];
 
+            const context = new MockContext()
             const request = new Request({
                 body: { verificationCode: "XYZ" }
             });
@@ -184,7 +196,7 @@ module.exports = () => {
                         response: { ok: false, error: slackErrorCode }
                     });
 
-                    const response = await api['POST:/v1/login'](request);
+                    const response = await api['POST:/v1/login'](context, request);
 
                     expect(response.status, `Incorrect status for '${slackErrorCode}'`)
                         .to.equal(e.expectedResponse.status);
@@ -207,10 +219,11 @@ module.exports = () => {
         });
 
         it('valid login token', async () => {
+            const context = new MockContext();
             const accessToken = "XYZ";
             const token = jwt.sign(
                 { accessToken },
-                constants.tokenSecret,
+                context.getAuthTokenSecret(),
                 { expiresIn: constants.loginTokenExpiry }
             );
             const request = new Request({
@@ -226,7 +239,7 @@ module.exports = () => {
                 }
             });
 
-            const response = await api['GET:/v1/login/status'](request);
+            const response = await api['GET:/v1/login/status'](context, request);
 
             const slackRequest = moxios.requests.mostRecent();
 
@@ -237,8 +250,9 @@ module.exports = () => {
 
 
         it('bad request: missing token', async () => {
+            const context = new MockContext()
             const request = new Request();
-            const response = await api['GET:/v1/login/status'](request);
+            const response = await api['GET:/v1/login/status'](context, request);
 
             expect(response.status).to.equal(400);
             expect(response.body.errorCode).to.equal('bad_request');
@@ -252,7 +266,8 @@ module.exports = () => {
                 }
             });
 
-            const response = await api['GET:/v1/login/status'](request);
+            const context = new MockContext()
+            const response = await api['GET:/v1/login/status'](context, request);
 
             expect(response.status).to.equal(401);
             expect(response.body.errorCode).to.equal('unauthorized');
@@ -260,10 +275,11 @@ module.exports = () => {
 
 
         it('unauthorized: expired token', async () => {
+            const context = new MockContext()
             const accessToken = "XYZ";
             const token = jwt.sign(
                 { accessToken },
-                constants.tokenSecret,
+                context.getAuthTokenSecret(),
                 { expiresIn: '0 ms' }
             );
             const request = new Request({
@@ -273,7 +289,7 @@ module.exports = () => {
             });
 
             const makeRequest = async () => {
-                const response = await api['GET:/v1/login/status'](request);
+                const response = await api['GET:/v1/login/status'](context, request);
                 const slackRequest = moxios.requests.mostRecent();
 
                 expect(response.status).to.equal(401);
@@ -305,9 +321,10 @@ module.exports = () => {
 
 
         it('slack error handling', async () => {
+            const context = new MockContext();
             const token = jwt.sign(
                 { accessToken: "XYZ" },
-                constants.tokenSecret,
+                context.getAuthTokenSecret(),
                 { expiresIn: constants.loginTokenExpiry }
             );
             const request = new Request({
@@ -338,7 +355,7 @@ module.exports = () => {
                         response: { ok: false, error: slackErrorCode }
                     });
 
-                    const response = await api['GET:/v1/login/status'](request);
+                    const response = await api['GET:/v1/login/status'](context, request);
 
                     expect(response.status, `Incorrect status for '${slackErrorCode}'`)
                         .to.equal(e.expectedResponse.status);
@@ -362,10 +379,11 @@ module.exports = () => {
 
 
         it('delete token', async() => {
+            const context = new MockContext()
             const accessToken = "XYZ";
             const token = jwt.sign(
                 { accessToken: "XYZ" },
-                constants.tokenSecret,
+                context.getAuthTokenSecret(),
                 { expiresIn: constants.loginTokenExpiry }
             );
             const request = new Request({
@@ -381,7 +399,7 @@ module.exports = () => {
                 }
             });
 
-            const response = await api['DELETE:/v1/login'](request);
+            const response = await api['DELETE:/v1/login'](context, request);
             const slackRequest = moxios.requests.mostRecent();
 
             expect(slackRequest.config.method).to.equal('post');
@@ -391,10 +409,11 @@ module.exports = () => {
 
 
         it('expired token', async () => {
+            const context = new MockContext();
             const accessToken = "XYZ";
             const token = jwt.sign(
                 { accessToken },
-                constants.tokenSecret,
+                context.getAuthTokenSecret(),
                 { expiresIn: '0 ms' }
             );
             const request = new Request({
@@ -410,7 +429,7 @@ module.exports = () => {
                 }
             });
 
-            const response = await api['DELETE:/v1/login'](request);
+            const response = await api['DELETE:/v1/login'](context, request);
             const slackRequest = moxios.requests.mostRecent();
 
             expect(response.status).to.equal(200);
@@ -419,8 +438,9 @@ module.exports = () => {
 
 
         it('bad request: missing token', async () => {
+            const context = new MockContext();
             const request = new Request();
-            const response = await await api['DELETE:/v1/login'](request);
+            const response = await await api['DELETE:/v1/login'](context, request);
 
             expect(response.status).to.equal(400);
             expect(response.body.errorCode).to.equal('bad_request');
@@ -428,13 +448,14 @@ module.exports = () => {
 
 
         it('unauthorized: invalid token', async () => {
+            const context = new MockContext();
             const request = new Request({
                 headers: {
                     'Cookie': cookie.serialize('loginToken', 'not a token')
                 }
             });
 
-            const response = await api['DELETE:/v1/login'](request);
+            const response = await api['DELETE:/v1/login'](context, request);
 
             expect(response.status).to.equal(401);
             expect(response.body.errorCode).to.equal('unauthorized');

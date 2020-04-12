@@ -1,20 +1,12 @@
+const api = require('../../src/api');
+const AppContext = require('../../src/AppContext')
 const Backups = require('../../src/models/Backups');
 const Conversations = require('../../src/models/Conversations');
-const decache = require('decache');
 const expect = require('chai').expect;
 const Messages = require('../../src/models/Messages');
 const Request = require('../../src/types/Request');
 
 module.exports = () => {
-    let api;
-
-    before(() => {
-        decache('../../src/api');
-        decache('../../src/constants');
-        api = require('../../src/api');
-    });
-
-
     class MessagesMock extends Messages {
         async count() {
             return 100
@@ -27,7 +19,6 @@ module.exports = () => {
             return 5
         }
     }
-
 
 
 
@@ -47,13 +38,14 @@ module.exports = () => {
                 }
             }
 
-            const models = {
-                messages: new MessagesMock(),
-                conversations: new ConversationsMock(),
-                backups: new BackupsMock()
-            }
+            const context = new AppContext()
+                .setModels({
+                    messages: new MessagesMock(),
+                    conversations: new ConversationsMock(),
+                    backups: new BackupsMock()
+                });
 
-            const response = await api['GET:/v1/backup/stats'](new Request(), models);
+            const response = await api['GET:/v1/backup/stats'](context, new Request());
 
             expect(response.status).to.equal(200);
             expect(response.body).to.deep.equal(expectedBody);
@@ -73,13 +65,14 @@ module.exports = () => {
                 }
             }
 
-            const models = {
-                messages: new MessagesMock(),
-                conversations: new ConversationsMock(),
-                backups: new BackupsMock()
-            }
+            const context = new AppContext()
+                .setModels({
+                    messages: new MessagesMock(),
+                    conversations: new ConversationsMock(),
+                    backups: new BackupsMock()
+                });
 
-            const response = await api['GET:/v1/backup/stats'](new Request(), models);
+            const response = await api['GET:/v1/backup/stats'](context, new Request());
 
             expect(response.status).to.equal(200);
             expect(response.body).to.deep.equal(expectedBody);
@@ -101,16 +94,17 @@ module.exports = () => {
                 }
             }
 
-            const models = { backups: new BackupsMock() }
+            const context = new AppContext()
+                .setModels({ backups: new BackupsMock() })
+                .setAuthToken(token)
+                .setActions({
+                    startBackup(backupId1) {
+                        expect(backupId1).to.equal(backupId);
+                        backupStarted = true;
+                    }
+                });
 
-            const actions = {
-                startBackup(backupId1) {
-                    expect(backupId1).to.equal(backupId);
-                    backupStarted = true;
-                }
-            }
-
-            const response = await api['POST:/v1/backup'](new Request(), token, models, actions);
+            const response = await api['POST:/v1/backup'](context, new Request());
 
             expect(backupStarted).to.be.true;
             expect(response.status).to.equal(200);
@@ -140,10 +134,12 @@ module.exports = () => {
                     return JSON.parse(JSON.stringify(backupTask));
                 }
             }
-            const models = { backups: new BackupsMock() };
+
+            const context = new AppContext()
+                .setModels({ backups: new BackupsMock() });
 
             const test = async () => {
-                let response = await api['GET:/v1/backup/:id'](request, models);
+                let response = await api['GET:/v1/backup/:id'](context, request);
 
                 expect(response.status).to.equal(200);
                 expect(response.body).to.deep.equal(backupTask);
@@ -177,9 +173,10 @@ module.exports = () => {
                 }
             }
 
-            const models = { backups: new BackupsMock() };
+            const context = new AppContext()
+                .setModels({ backups: new BackupsMock() });
 
-            const response = await api['GET:/v1/backup/:id'](request, models);
+            const response = await api['GET:/v1/backup/:id'](context, request);
 
             expect(response.status).to.equal(404);
             expect(response.body.errorCode).to.equal('backup_not_found');
@@ -204,9 +201,11 @@ module.exports = () => {
                     expect(id).to.equal(backupId);
                 }
             }
-            const models = { backups: new BackupsMock() }
 
-            const response = await api['POST:/v1/backup/:id/cancel'](request, models);
+            const context = new AppContext()
+                .setModels({ backups: new BackupsMock() })
+
+            const response = await api['POST:/v1/backup/:id/cancel'](context, request);
 
             expect(response.status).to.equal(200);
         });
@@ -223,9 +222,10 @@ module.exports = () => {
                 }
             }
 
-            const models = { backups: new BackupsMock() };
+            const context = new AppContext()
+                .setModels({ backups: new BackupsMock() });
 
-            const response = await api['POST:/v1/backup/:id/cancel'](request, models);
+            const response = await api['POST:/v1/backup/:id/cancel'](context, request);
 
             expect(response.status).to.equal(404);
             expect(response.body.errorCode).to.equal('backup_not_found');

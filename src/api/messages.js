@@ -3,7 +3,7 @@ const Response = require('../types/Response');
 const { badRequest, notFound } = require('../util/response');
 
 
-const get = async (request, models) => {
+const get = async (context, request) => {
     const conversationId = request.query.conversationId;
     const postsOnly = request.query.postsOnly === 'true';
     const thread = request.query.thread;
@@ -41,7 +41,7 @@ const get = async (request, models) => {
 
 
     if(conversationId) {
-        const conversationExists = await models.conversations.exists(conversationId);
+        const conversationExists = await context.models.conversations.exists(conversationId);
         if(!conversationExists) {
             return notFound(constants.errorCodes.conversationNotFound, "Could find a conversation with the given ID");
         }
@@ -49,7 +49,7 @@ const get = async (request, models) => {
 
 
     if(thread) {
-        const threadExists = await models.messages.threadExists(thread, conversationId);
+        const threadExists = await context.models.messages.threadExists(thread, conversationId);
         if(!threadExists) {
             return notFound(constants.errorCodes.threadNotFound, "The given thread could be found");
         }
@@ -73,7 +73,7 @@ const get = async (request, models) => {
         to = { value: request.query.before, inclusive: false };
     }
 
-    const messages = await models.messages.get(from, to, conversationId, postsOnly, thread, limit);
+    const messages = await context.models.messages.get(from, to, conversationId, postsOnly, thread, limit);
 
     return new Response({
         status: 200,

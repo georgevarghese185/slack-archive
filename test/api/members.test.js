@@ -1,18 +1,10 @@
-const decache = require('decache');
+const api = require('../../src/api');
+const AppContext = require('../../src/AppContext')
 const expect = require('chai').expect;
 const Members = require('../../src/models/Members');
 const Request = require('../../src/types/Request');
 
 module.exports = () => {
-    let api;
-
-    before(() => {
-        decache('../../src/api');
-        decache('../../src/constants');
-        api = require('../../src/api');
-    });
-
-
     describe('GET:/v1/members/:id', () => {
         it('get member', async () => {
             const memberId = 'U1';
@@ -28,9 +20,10 @@ module.exports = () => {
                 }
             }
             const members = new MembersMock();
-            const models = { members };
+            const context = new AppContext()
+                .setModels({ members });
 
-            const response = await api['GET:/v1/members/:id'](request, models);
+            const response = await api['GET:/v1/members/:id'](context, request);
 
             expect(response.status).to.equal(200);
             expect(response.body).to.equal(memberObj);
@@ -47,9 +40,10 @@ module.exports = () => {
                 }
             }
             const members = new MembersMock();
-            const models = { members };
+            const context = new AppContext()
+                .setModels({ members });
 
-            const response = await api['GET:/v1/members/:id'](request, models);
+            const response = await api['GET:/v1/members/:id'](context, request);
 
             expect(response.status).to.equal(404);
             expect(response.body.errorCode).to.equal('member_not_found');

@@ -2,8 +2,8 @@ const axios = require('axios');
 const constants = require('../constants');
 const { withRateLimiting } = require('../util/slack');
 
-const backupMessages = async (backupId, token, models) => {
-    await models.backups.setStatus(backupId, 'BACKING_UP');
+const backupMessages = async (context, backupId, token) => {
+    await context.models.backups.setStatus(backupId, 'BACKING_UP');
     const axiosInstance = axios.create({
         baseURL: constants.slack.apiBaseUrl,
         headers: {
@@ -13,17 +13,17 @@ const backupMessages = async (backupId, token, models) => {
 
     withRateLimiting(axiosInstance);
 
-    const conversations = await models.conversations.listAll();
+    const conversations = await context.models.conversations.listAll();
 
     let backedUp = { count: 0 };
 
     for (const conversation of conversations) {
-        await backupMessagesIn(conversation.id, backedUp, axiosInstance, backupId, models);
+        await backupMessagesIn(context, conversation.id, backedUp, axiosInstance, backupId);
     }
 }
 
 
-const backupMessagesIn = async (conversationId, backedUp, axiosInstance, backupId, models) => {
+const backupMessagesIn = async (context, conversationId, backedUp, axiosInstance, backupId) => {
     const config = {
         params: {
             channel: conversationId
@@ -61,12 +61,12 @@ const backupMessagesIn = async (conversationId, backedUp, axiosInstance, backupI
 
         const messages = response.data.messages;
 
-        await addMessages(messages, conversationId, backedUp, backupId, models);
+        await addMessages(context, messages, conversationId, backedUp, backupId);
 
 
         for (const message of messages) {
             if (message.thread_ts && message.thread_ts === message.ts) { // only thread parents, no thread broadcasts
-                await backupThread(conversationId, message.thread_ts, backedUp, axiosInstance, backupId, models);
+                await backupThread(context, conversationId, message.thread_ts, backedUp, axiosInstance, backupId);
             }
         }
 
@@ -75,7 +75,7 @@ const backupMessagesIn = async (conversationId, backedUp, axiosInstance, backupI
 }
 
 
-const backupThread = async (conversationId, threadTs, backedUp, axiosInstance, backupId, models) => {
+const backupThread = async (context, conversationId, threadTs, backedUp, axiosInstance, backupId) => {
     const config = {
         params: {
             channel: conversationId,
@@ -114,18 +114,18 @@ const backupThread = async (conversationId, threadTs, backedUp, axiosInstance, b
 
         const messages = response.data.messages;
 
-        await addMessages(messages, conversationId, backedUp, backupId, models);
+        await addMessages(context, messages, conversationId, backedUp, backupId);
 
         nextCursor = (response.data.response_metadata || {}).next_cursor || "";
     } while (nextCursor);
 }
 
 
-const addMessages = async (messages, conversationId, backedUp, backupId, models) => {
-    await models.messages.add(conversationId, messages);
+const addMessages = async (context, messages, conversationId, backedUp, backupId) => {
+    await context.models.messages.add(conversationId, messages);
 
     backedUp.count += messages.length;
-    await models.backups.setMessagesBackedUp(backupId, backedUp.count);
+    await context.models.backups.setMessagesBackedUp(backupId, backedUp.count);
 }
 
 

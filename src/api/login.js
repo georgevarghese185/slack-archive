@@ -2,20 +2,18 @@ const axios = require('axios');
 const constants = require('../constants');
 const cookie = require('cookie');
 const jwt = require('../util/jwt');
-const Logger = require('../util/Logger');
-const logger = new Logger();
 const qs = require('query-string');
 const Response = require('../types/Response');
 const { fromAxiosError, fromSlackError, badRequest, unauthorized, internalError } = require('../util/response');
 
-const getAuthUrl = () => {
+const getAuthUrl = (context) => {
     const body = {
         url: constants.slack.oauthUrl,
         parameters: {
-            client_id: constants.slack.clientId,
+            client_id: context.getSlackClientId(),
             scope: constants.slack.scope.publicMessages,
             redirect_uri: constants.slack.oauthRedirectUrl,
-            team: constants.slack.teamId
+            team: context.getSlackTeamId()
         }
     };
 
@@ -23,7 +21,9 @@ const getAuthUrl = () => {
 }
 
 
-const login = async (request) => {
+const login = async (context, request) => {
+    const logger = context.getLogger();
+
     if(typeof request.body !== 'object') {
         return badRequest("Expected body of type 'application/json'");
     }
@@ -45,7 +45,7 @@ const login = async (request) => {
             }),
             {
                 headers: {
-                    'Authorization': "Basic " + Buffer.from(constants.slack.clientId + ":" + constants.slack.clientSecret).toString('base64')
+                    'Authorization': "Basic " + Buffer.from(context.getSlackClientId() + ":" + context.getSlackClientSecret()).toString('base64')
                 }
             }
         );
@@ -71,7 +71,7 @@ const login = async (request) => {
     const { access_token, user_id } = response.data;
     const token = jwt.sign(
         { accessToken: access_token, userId: user_id },
-        constants.tokenSecret,
+        context.getAuthTokenSecret(),
         { expiresIn: constants.loginTokenExpiry }
     );
 
@@ -88,7 +88,8 @@ const login = async (request) => {
     });
 }
 
-const validLogin = async (request) => {
+const validLogin = async (context, request) => {
+    const logger = context.getLogger()
     let loginToken;
     let accessToken;
 
@@ -103,14 +104,14 @@ const validLogin = async (request) => {
     }
 
     try {
-        accessToken = jwt.verify(loginToken, constants.tokenSecret).accessToken;
+        accessToken = jwt.verify(loginToken, context.getAuthTokenSecret()).accessToken;
         if(typeof accessToken != 'string') {
             throw new Error('Invalid login token');
         }
     } catch (e) {
         if(e instanceof jwt.TokenExpiredError) {
-            const token = jwt.verify(loginToken, constants.tokenSecret, { ignoreExpiration: true }).accessToken;
-            await revokeSlackToken(token);
+            const token = jwt.verify(loginToken, context.getAuthTokenSecret(), { ignoreExpiration: true }).accessToken;
+            await revokeSlackToken(context, token);
             return unauthorized(constants.errorCodes.tokenExpired, "Login token expired");
         } else {
             return unauthorized('Invalid login token');
@@ -148,7 +149,7 @@ const validLogin = async (request) => {
 }
 
 
-const deleteToken = async (request) => {
+const deleteToken = async (context, request) => {
     let loginToken;
     let accessToken;
 
@@ -163,18 +164,19 @@ const deleteToken = async (request) => {
     }
 
     try {
-        accessToken = jwt.verify(loginToken, constants.tokenSecret, { ignoreExpiration: true }).accessToken;
+        accessToken = jwt.verify(loginToken, context.getAuthTokenSecret(), { ignoreExpiration: true }).accessToken;
     } catch (e) {
         return unauthorized('Invalid login token');
     }
 
-    await revokeSlackToken(accessToken);
+    await revokeSlackToken(context, accessToken);
 
     return new Response({ status: 200 });
 }
 
 
-const revokeSlackToken = async (token) => {
+const revokeSlackToken = async (context, token) => {
+    const logger = context.getLogger();
     const axiosInstance = axios.create({ baseURL: constants.slack.apiBaseUrl });
     try {
         await axiosInstance.post('/auth.revoke', {}, {

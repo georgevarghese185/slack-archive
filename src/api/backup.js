@@ -3,10 +3,10 @@ const Response = require('../types/Response');
 const uuid = require('uuid').v4;
 const { notFound } = require('../util/response');
 
-const getStats = async (request, models) => {
-    const messages = await models.messages.count();
-    const conversations = await models.conversations.count();
-    const lastBackup = await models.backups.last();
+const getStats = async (context, request) => {
+    const messages = await context.models.messages.count();
+    const conversations = await context.models.conversations.count();
+    const lastBackup = await context.models.backups.last();
     const lastBackupAt = lastBackup ? lastBackup.endedAt : null;
 
     const stats = { messages, conversations, lastBackupAt };
@@ -18,14 +18,14 @@ const getStats = async (request, models) => {
 }
 
 
-const create = async (request, token, models, actions) => {
-    const userId = token.userId;
+const create = async (context, request) => {
+    const userId = context.token.userId;
     const backupId = uuid();
 
     // TODO don't allow backup if another is in progress
 
-    await models.backups.create(backupId, userId);
-    actions.startBackup(backupId);
+    await context.models.backups.create(backupId, userId);
+    context.actions.startBackup(backupId);
 
     return new Response({
         status: 200,
@@ -39,9 +39,9 @@ const create = async (request, token, models, actions) => {
 // TODO API to list all currently running backups created by the user
 
 
-const get = async (request, models) => {
+const get = async (context, request) => {
     const backupId = request.parameters.id;
-    const backup = await models.backups.get(backupId);
+    const backup = await context.models.backups.get(backupId);
 
     if(!backup) {
         return notFound(constants.errorCodes.backupNotFound, "Could not find a backup task with the given ID");
@@ -62,15 +62,15 @@ const get = async (request, models) => {
 }
 
 
-const cancel = async (request, models) => {
+const cancel = async (context, request) => {
     const backupId = request.parameters.id;
-    const backupTask = await models.backups.get(backupId);
+    const backupTask = await context.models.backups.get(backupId);
 
     if(!backupTask) {
         return notFound(constants.errorCodes.backupNotFound, "Could not find a backup task with the given ID");
     }
 
-    await models.backups.cancel(backupId);
+    await context.models.backups.cancel(backupId);
     return new Response({ status: 200 });
 }
 

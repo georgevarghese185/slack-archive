@@ -1,3 +1,4 @@
+const AppContext = require('../../src/AppContext')
 const Backups = require('../../src/models/Backups');
 const expect = require('chai').expect;
 const Members = require('../../src/models/Members');
@@ -57,10 +58,11 @@ module.exports = () => {
             }
         }
 
-        const models = {
-            backups: new BackupsMock(),
-            members: new MembersMock()
-        }
+        const context = new AppContext()
+            .setModels({
+                backups: new BackupsMock(),
+                members: new MembersMock()
+            });
 
         moxios.stubRequest('/users.list', {
             status: 200,
@@ -70,7 +72,7 @@ module.exports = () => {
             }
         });
 
-        await backupMembers(backupId, token, models);
+        await backupMembers(context, backupId, token);
         const slackRequest = moxios.requests.mostRecent();
 
         expect(statusSet).to.be.true;
@@ -95,10 +97,11 @@ module.exports = () => {
             }
         }
 
-        const models = {
-            backups: new BackupsMock(),
-            members: new MembersMock()
-        }
+        const context = new AppContext()
+            .setModels({
+                backups: new BackupsMock(),
+                members: new MembersMock()
+            });
 
         let requestNo = 0;
 
@@ -122,7 +125,7 @@ module.exports = () => {
             }
         });
 
-        await backupMembers(backupId, token, models);
+        await backupMembers(context, backupId, token);
         expect(addedMembers).to.deep.equal(memberList);
 
         expect(moxios.requests.count()).to.equal(2);
@@ -151,10 +154,11 @@ module.exports = () => {
             }
         }
 
-        const models = {
-            backups: new BackupsMock(),
-            members: new MembersMock()
-        }
+        const context = new AppContext()
+            .setModels({
+                backups: new BackupsMock(),
+                members: new MembersMock()
+            });
 
         let delayStart;
         let requestNo = 0;
@@ -198,7 +202,7 @@ module.exports = () => {
             }
         });
 
-        await backupMembers(backupId, token, models);
+        await backupMembers(context, backupId, token);
 
         expect(addedMembers).to.deep.equal(memberList);
         expect(Date.now() - delayStart).to.be.gte(1000);
@@ -220,12 +224,11 @@ module.exports = () => {
             }
         });
 
-        const models = {
-            backups: new BackupsMock()
-        }
+        const context = new AppContext()
+            .setModels({ backups: new BackupsMock() });
 
         try {
-            await backupMembers('123', token, models);
+            await backupMembers(context, '123', token);
             throw new Error('Should have failed');
         } catch (e) {
             expect(e.message).to.equal('/users.list API failed with code some_error');
@@ -249,12 +252,11 @@ module.exports = () => {
             response: errorResponse
         });
 
-        const models = {
-            backups: new BackupsMock()
-        }
+        const context = new AppContext()
+            .setModels({ backups: new BackupsMock() });
 
         try {
-            await backupMembers('123', token, models);
+            await backupMembers(context, '123', token);
             throw new Error('Should have failed');
         } catch (e) {
             expect(e.message).to.equal('/users.list failed. status: 500, message: ' + JSON.stringify(errorResponse, null, 2));
