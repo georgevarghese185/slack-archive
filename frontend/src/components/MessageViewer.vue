@@ -1,24 +1,24 @@
 <template>
   <div class="message-viewer-container">
     <div class="message-list">
-      <div v-for="item in items" :key="item.ts">
-        <div v-if="item.type === 'no-messages'" class="no-messages"> No messages </div>
-        <div v-if="item.type === 'day-separator'" class="day-separator"> {{item.text}} </div>
-        <div v-if="item.type === 'message'" class="message">
+      <div v-if="messages.length == 0" class="no-messages"> No messages </div>
+      <div v-for="(message, i) in messages" :key="message.ts">
+        <div v-if="shouldShowDate(i)" class="day-separator"> {{getDate(message)}} </div>
+        <div class="message">
           <div class="user-image-container">
-            <img v-if="!item.continued" class="user-image" :src="item.userImage"/>
+            <img v-if="!isContinuedMessage(i)" class="user-image" :src="message.userImage"/>
           </div>
           <div class="message-contents">
-            <div v-if="!item.continued" class="message-header">
-              <span class="user-name"> {{item.user}} </span>
-              <span class="message-time"> {{getTime(item.ts)}} </span>
+            <div v-if="!isContinuedMessage(i)" class="message-header">
+              <span class="user-name"> {{message.user}} </span>
+              <span class="message-time"> {{getTime(message)}} </span>
             </div>
-            <p :class="{ 'message-body': true, 'message-continued': item.continued }">
-              {{item.text}}
+            <p :class="{ 'message-body': true, 'message-continued': isContinuedMessage(i) }">
+              {{message.text}}
             </p>
           </div>
         </div>
-    </div>
+      </div>
     </div>
   </div>
 </template>
@@ -35,55 +35,50 @@ export default {
   props: ['day'],
   data () {
     return {
-      items: []
+      items: [],
+      messages: []
     }
   },
   async mounted () {
     const response = await axiosInstance.get('/v1/messages?chronological=true')
+    this.messages = response.data.messages
+
     const messages = response.data.messages
 
-    if (messages.length === 0) {
-      this.items.push({
-        type: 'no-messages',
-        ts: 'no-messages'
-      })
-      return
-    }
-
-    this.items.push({
-      type: 'day-separator',
-      text: getDate(messages[0].ts),
-      ts: 'day-' + getDayMillis(messages[0].ts) // just need this for `key` in v-for
+    // TODO use real images
+    messages.forEach(m => {
+      m.userImage = 'https://secure.gravatar.com/avatar/24bc11de4159fb0d76733f76fd936a37.jpg?s=24&d=https%3A%2F%2Fa.slack-edge.com%2Fdf10d%2Fimg%2Favatars%2Fava_0010-24.png'
     })
-
-    for (let i = 0; i < messages.length; i++) {
-      const message = messages[i]
-      const prevMessage = messages[i - 1]
-
-      message.itemType = 'message'
-
-      if (prevMessage && getDayMillis(message.ts) !== getDayMillis(prevMessage.ts)) {
-        this.items.push({
-          type: 'day-separator',
-          text: getDate(message.ts),
-          ts: 'day-' + getDayMillis(message.ts) // just need this for `key` in v-for
-        })
-      }
-
-      // TODO use real images
-      message.userImage = 'https://secure.gravatar.com/avatar/24bc11de4159fb0d76733f76fd936a37.jpg?s=24&d=https%3A%2F%2Fa.slack-edge.com%2Fdf10d%2Fimg%2Favatars%2Fava_0010-24.png'
-
-      if (prevMessage && prevMessage.user === message.user &&
-          getMillis(message.ts) - getMillis(prevMessage.ts) <= 15 * 60 * 1000 &&
-          getDayMillis(message.ts) === getDayMillis(prevMessage.ts)) {
-        message.continued = true
-      }
-
-      this.items.push(message)
-    }
   },
   methods: {
-    getTime: getTime
+    shouldShowDate (messageIndex) {
+      if (messageIndex === 0) {
+        return true
+      }
+
+      const message = this.messages[messageIndex]
+      const prevMessage = this.messages[messageIndex - 1]
+
+      return !this.isContinuedMessage(messageIndex) && getDayMillis(message.ts) !== getDayMillis(prevMessage.ts)
+    },
+    getDate (message) {
+      return getDate(message.ts)
+    },
+    getTime (message) {
+      return getTime(message.ts)
+    },
+    isContinuedMessage (messageIndex) {
+      if (messageIndex === 0) {
+        return false
+      }
+
+      const message = this.messages[messageIndex]
+      const prevMessage = this.messages[messageIndex - 1]
+
+      return prevMessage.user === message.user &&
+        getDayMillis(message.ts) === getDayMillis(prevMessage.ts) &&
+        getMillis(message.ts) - getMillis(prevMessage.ts) <= 15 * 60 * 1000
+    }
   }
 }
 
