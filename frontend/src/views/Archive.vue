@@ -25,7 +25,7 @@ export default {
     today.setHours(0, 0, 0, 0)
 
     return {
-      day: today.getTime()
+      day: 1580728712000 // TODO remove hardcoded date
     }
   },
   components: {
