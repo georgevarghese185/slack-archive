@@ -37,9 +37,7 @@ app.get('/v1/messages', (req, res) => {
     responseMessages.sort()
   }
 
-  if (limit) {
-    responseMessages = responseMessages.slice(0, limit)
-  }
+  responseMessages = responseMessages.slice(0, limit || 100)
 
   res.json({ messages: responseMessages })
 })
