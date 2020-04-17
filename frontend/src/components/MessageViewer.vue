@@ -1,8 +1,8 @@
 <template>
   <div class="message-viewer-container">
-    <div class="message-list">
+    <div class="message-list" ref="messages">
       <div v-if="messages.length == 0" class="no-messages"> No messages </div>
-      <div v-for="(message, i) in messages" :key="message.ts">
+      <div class="message-item" v-for="(message, i) in messages" :key="message.ts">
         <div v-if="shouldShowDate(i)" class="day-separator"> {{getDate(message)}} </div>
         <div class="message">
           <div class="user-image-container">
@@ -27,7 +27,7 @@
 import axios from 'axios'
 import slackTime from '../util/slackTime'
 
-const { getMillis, getTime, getDayMillis, getDate } = slackTime
+const { getMillis, getTime, getDayMillis, getDate, toSlackTs } = slackTime
 
 const axiosInstance = axios.create({ baseURL: process.env.VUE_APP_API_BASE_URL })
 
@@ -40,14 +40,48 @@ export default {
     }
   },
   async mounted () {
-    const response = await axiosInstance.get('/v1/messages?chronological=true')
-    this.messages = response.data.messages
+    const dayTs = toSlackTs(this.day)
 
-    const messages = response.data.messages
+    let messagesBefore
+    let messagesAfter
+
+    try {
+      // TODO authenticate
+      let response = await axiosInstance.get('/v1/messages', {
+        params: {
+          chronological: true,
+          from: dayTs
+        }
+      })
+
+      messagesAfter = response.data.messages
+
+      // TODO authenticate
+      response = await axiosInstance.get('/v1/messages', {
+        params: {
+          chronological: true,
+          before: dayTs
+        }
+      })
+
+      messagesBefore = response.data.messages
+    } catch (e) {
+      // TODO handle error
+      return
+    }
+
+    this.messages = messagesBefore.concat(messagesAfter)
 
     // TODO use real images
-    messages.forEach(m => {
+    this.messages.forEach(m => {
       m.userImage = 'https://secure.gravatar.com/avatar/24bc11de4159fb0d76733f76fd936a37.jpg?s=24&d=https%3A%2F%2Fa.slack-edge.com%2Fdf10d%2Fimg%2Favatars%2Fava_0010-24.png'
+    })
+
+    const focusIndex = messagesBefore.length // element to scroll into view
+
+    this.$nextTick(() => {
+      const e = this.$refs.messages.querySelectorAll('.message-item')[focusIndex]
+      e.scrollIntoView()
     })
   },
   methods: {
