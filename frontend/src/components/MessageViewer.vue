@@ -2,6 +2,10 @@
   <div class="message-viewer-container">
     <div class="message-list" ref="messages">
       <div v-if="messages.length == 0" class="no-messages"> No messages </div>
+      <div v-if="hasOlderMessages" class="loading-messages" ref="earlierMessagesLoader">
+        <img class="progress" src="../assets/progress.png">
+        <p class="loading-messages-text"> Looking for earlier messages </p>
+      </div>
       <div class="message-item" v-for="(message, i) in messages" :key="message.ts">
         <div v-if="shouldShowDate(i)" class="day-separator"> {{getDate(message)}} </div>
         <div class="message">
@@ -18,6 +22,10 @@
             </p>
           </div>
         </div>
+      </div>
+      <div v-if="hasNewerMessages" class="loading-messages" ref="newerMessagesLoader">
+        <img class="progress" src="../assets/progress.png">
+        <p class="loading-messages-text"> Looking for newer messages </p>
       </div>
     </div>
   </div>
@@ -36,7 +44,9 @@ export default {
   data () {
     return {
       items: [],
-      messages: []
+      messages: [],
+      hasOlderMessages: false,
+      hasNewerMessages: false
     }
   },
   async mounted () {
@@ -50,21 +60,25 @@ export default {
       let response = await axiosInstance.get('/v1/messages', {
         params: {
           chronological: true,
-          from: dayTs
+          from: dayTs,
+          limit: 50
         }
       })
 
       messagesAfter = response.data.messages
+      this.hasNewerMessages = messagesAfter.length >= 50
 
       // TODO authenticate
       response = await axiosInstance.get('/v1/messages', {
         params: {
           chronological: true,
-          before: dayTs
+          before: dayTs,
+          limit: 50
         }
       })
 
       messagesBefore = response.data.messages
+      this.hasOlderMessages = messagesBefore.length >= 50
     } catch (e) {
       // TODO handle error
       return
@@ -140,6 +154,31 @@ export default {
     width: 100%;
     bottom: 0;
     overflow: auto;
+  }
+
+  .loading-messages {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    margin: 8px 0 8px 0;
+    opacity: 0.7;
+  }
+
+  .loading-messages-text {
+    font-size: 14px;
+    margin-left: 4px;
+  }
+
+  .progress {
+    width: 16px;
+    margin-right: 4px;
+    animation: spin 2s linear infinite;
+  }
+
+  @keyframes spin {
+    from { transform: rotate(0deg) }
+    from { transform: rotate(-360deg) }
   }
 
   .message {
