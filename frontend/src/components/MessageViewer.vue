@@ -160,12 +160,18 @@ export default {
     overflow: auto;
   }
 
+  .no-messages {
+    text-align: center;
+    color: #818181;
+    margin-bottom: 18px;
+  }
+
   .loading-messages {
     display: flex;
     flex-direction: row;
     justify-content: center;
     align-items: center;
-    margin: 8px 0 8px 0;
+    margin: 20px 0 20px 0;
     opacity: 0.7;
   }
 
