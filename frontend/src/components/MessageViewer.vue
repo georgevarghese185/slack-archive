@@ -86,6 +86,10 @@ export default {
 
     this.messages = messagesBefore.concat(messagesAfter)
 
+    if (this.messages.length === 0) {
+      return
+    }
+
     // TODO use real images
     this.messages.forEach(m => {
       m.userImage = 'https://secure.gravatar.com/avatar/24bc11de4159fb0d76733f76fd936a37.jpg?s=24&d=https%3A%2F%2Fa.slack-edge.com%2Fdf10d%2Fimg%2Favatars%2Fava_0010-24.png'
