@@ -77,7 +77,7 @@ export default {
       m.userImage = 'https://secure.gravatar.com/avatar/24bc11de4159fb0d76733f76fd936a37.jpg?s=24&d=https%3A%2F%2Fa.slack-edge.com%2Fdf10d%2Fimg%2Favatars%2Fava_0010-24.png'
     })
 
-    const focusIndex = messagesBefore.length // element to scroll into view
+    const focusIndex = Math.min(messagesBefore.length, this.messages.length - 1) // element to scroll into view
 
     this.$nextTick(() => {
       const e = this.$refs.messages.querySelectorAll('.message-item')[focusIndex]
