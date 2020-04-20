@@ -44,6 +44,7 @@ import slackTime from '../util/slackTime'
 const { getMillis, getTime, getDayMillis, getDate, toSlackTs } = slackTime
 
 const axiosInstance = axios.create({ baseURL: process.env.VUE_APP_API_BASE_URL })
+const MESSAGE_API_LIMIT = 50
 
 const getMessages = async (params) => {
   // TODO authenticate
@@ -79,8 +80,8 @@ export default {
       return
     }
 
-    this.hasNewerMessages = messagesAfter.length >= 50
-    this.hasOlderMessages = messagesBefore.length >= 50
+    this.hasNewerMessages = messagesAfter.length >= MESSAGE_API_LIMIT
+    this.hasOlderMessages = messagesBefore.length >= MESSAGE_API_LIMIT
 
     this.messages = messagesBefore.concat(messagesAfter)
 
