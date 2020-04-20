@@ -96,9 +96,11 @@ export default {
 
     const focusIndex = Math.min(messagesBefore.length, this.messages.length - 1) // element to scroll into view
 
+    // This work needs to be done after the messages are rendered so do it on the next Vue tick
     this.$nextTick(() => {
-      const e = this.$refs.messages.querySelectorAll('.message-item')[focusIndex]
-      e.scrollIntoView()
+      // scroll to the first message from the requested day
+      this.scrollToMessage(focusIndex)
+
     })
   },
   methods: {
@@ -129,6 +131,13 @@ export default {
       return prevMessage.user === message.user &&
         getDayMillis(message.ts) === getDayMillis(prevMessage.ts) &&
         getMillis(message.ts) - getMillis(prevMessage.ts) <= 15 * 60 * 1000
+    },
+    scrollToMessage (i) {
+      const messageList = this.$refs.messages
+
+      // scroll to the first message from the requested day
+      const e = messageList.querySelectorAll('.message-item')[i]
+      e.scrollIntoView()
     }
   }
 }
