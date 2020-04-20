@@ -10,8 +10,10 @@ app.use((req, res, next) => {
 
 app.get('/', (req, res) => res.send('up'))
 
-app.get('/v1/messages', (req, res) => {
-  const { from, after, to, before, limit, chronological } = req.query || {}
+app.get('/v1/messages', async (req, res) => {
+  const { from, after, to, before, limit } = req.query || {}
+
+  await new Promise((resolve) => setTimeout(resolve, 1000))
 
   let responseMessages = messages.slice()
 
@@ -31,13 +33,13 @@ app.get('/v1/messages', (req, res) => {
     responseMessages = responseMessages.filter(m => m.ts < before)
   }
 
-  if (chronological === 'true') {
-    responseMessages.sort().reverse()
-  } else {
-    responseMessages.sort()
-  }
+  responseMessages = responseMessages.sort().reverse()
 
-  responseMessages = responseMessages.slice(0, limit || 100)
+  if ((from || after)) {
+    responseMessages = responseMessages.slice(0, limit || 100)
+  } else {
+    responseMessages = responseMessages.slice(-(limit || 100))
+  }
 
   res.json({ messages: responseMessages })
 })
