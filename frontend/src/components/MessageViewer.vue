@@ -45,6 +45,16 @@ const { getMillis, getTime, getDayMillis, getDate, toSlackTs } = slackTime
 
 const axiosInstance = axios.create({ baseURL: process.env.VUE_APP_API_BASE_URL })
 
+const getMessages = async (params) => {
+  // TODO authenticate
+  // TODO add conversation ID param
+  const response = await axiosInstance.get('/v1/messages', {
+    params: { limit: MESSAGE_API_LIMIT, ...params }
+  })
+
+  return response.data.messages
+}
+
 export default {
   props: ['day'],
   data () {
@@ -62,33 +72,15 @@ export default {
     let messagesAfter
 
     try {
-      // TODO authenticate
-      let response = await axiosInstance.get('/v1/messages', {
-        params: {
-          chronological: true,
-          from: dayTs,
-          limit: 50
-        }
-      })
-
-      messagesAfter = response.data.messages
-      this.hasNewerMessages = messagesAfter.length >= 50
-
-      // TODO authenticate
-      response = await axiosInstance.get('/v1/messages', {
-        params: {
-          chronological: true,
-          before: dayTs,
-          limit: 50
-        }
-      })
-
-      messagesBefore = response.data.messages
-      this.hasOlderMessages = messagesBefore.length >= 50
+      messagesBefore = await getMessages({ before: dayTs })
+      messagesAfter = await getMessages({ from: dayTs })
     } catch (e) {
       // TODO handle error
       return
     }
+
+    this.hasNewerMessages = messagesAfter.length >= 50
+    this.hasOlderMessages = messagesBefore.length >= 50
 
     this.messages = messagesBefore.concat(messagesAfter)
 
