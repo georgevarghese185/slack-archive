@@ -40,11 +40,13 @@
 <script>
 import axios from 'axios'
 import slackTime from '../util/slackTime'
+import ScrollListener from '../util/ScrollListener'
 
 const { getMillis, getTime, getDayMillis, getDate, toSlackTs } = slackTime
 
 const axiosInstance = axios.create({ baseURL: process.env.VUE_APP_API_BASE_URL })
 const MESSAGE_API_LIMIT = 50
+const MAX_MESSAGES = 300
 
 const getMessages = async (params) => {
   // TODO authenticate
@@ -101,6 +103,18 @@ export default {
       // scroll to the first message from the requested day
       this.scrollToMessage(focusIndex)
 
+      // load more messages if user scrolls to the top/bottom
+      this.scrollListener = new ScrollListener(this.$refs.messages)
+      const olderMessagesLoader = this.$refs.olderMessagesLoader
+      const newerMessagesLoader = this.$refs.newerMessagesLoader
+
+      if (olderMessagesLoader) {
+        this.scrollListener.whenInView(olderMessagesLoader, () => this.loadOlderMessages())
+      }
+
+      if (newerMessagesLoader) {
+        this.scrollListener.whenInView(newerMessagesLoader, () => this.loadNewerMessages())
+      }
     })
   },
   methods: {
@@ -138,6 +152,77 @@ export default {
       // scroll to the first message from the requested day
       const e = messageList.querySelectorAll('.message-item')[i]
       e.scrollIntoView()
+    },
+    async loadOlderMessages () {
+      if (this.loadingOlderMessages) {
+        // another load is already happening. Don't run 2 in parallel
+        return
+      }
+
+      this.loadingOlderMessages = true
+      let olderMessages
+
+      try {
+        olderMessages = await getMessages({ before: this.messages[0].ts })
+      } catch (e) {
+        // TODO handle errors
+      }
+
+      if (olderMessages.length < MESSAGE_API_LIMIT) {
+        this.moreOlderMessages = false
+      } else {
+        this.moreOlderMessages = true
+      }
+
+      const messageList = this.$refs.messages
+      const oldScrollHeight = messageList.scrollHeight
+      const oldScrollTop = messageList.scrollTop
+
+      this.messages = olderMessages.concat(this.messages)
+
+      this.$nextTick(() => {
+        // New scroll position after the message list changes could be off. This will fix it
+        messageList.scrollTop = messageList.scrollHeight - oldScrollHeight + oldScrollTop
+
+        if (this.messages.length > MAX_MESSAGES) {
+          this.messages = this.messages.slice(0, MAX_MESSAGES)
+          this.moreNewerMessages = true
+        }
+      })
+
+      this.loadingOlderMessages = false
+    },
+    async loadNewerMessages () {
+      if (this.loadingNewerMessages) {
+        // another load is already happening. Don't run 2 in parallel
+        return
+      }
+
+      this.loadingNewerMessages = true
+      let newerMessages
+
+      try {
+        newerMessages = await getMessages({ after: this.messages[this.messages.length - 1].ts })
+      } catch (e) {
+        // TODO handle errors
+      }
+
+      if (newerMessages.length < MESSAGE_API_LIMIT) {
+        this.moreNewerMessages = false
+      } else {
+        this.moreNewerMessages = true
+      }
+
+      this.messages = this.messages.concat(newerMessages)
+
+      this.$nextTick(() => {
+        if (this.messages.length > MAX_MESSAGES) {
+          this.messages = this.messages.slice(-MAX_MESSAGES)
+          this.moreOlderMessages = true
+        }
+      })
+
+      this.loadingNewerMessages = false
     }
   }
 }
