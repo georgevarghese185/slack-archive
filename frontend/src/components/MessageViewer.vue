@@ -7,7 +7,7 @@
       </div>
       <div v-if="messages != null">
         <div v-if="messages.length == 0" class="no-messages"> No messages </div>
-        <div v-if="hasOlderMessages" class="loader" ref="olderMessagesLoader">
+        <div v-if="moreOlderMessages" class="loader" ref="olderMessagesLoader">
           <img class="progress" src="../assets/progress.png">
           <p class="loader-text"> Looking for earlier messages </p>
         </div>
@@ -28,7 +28,7 @@
             </div>
           </div>
         </div>
-        <div v-if="hasNewerMessages" class="loader" ref="newerMessagesLoader">
+        <div v-if="moreNewerMessages" class="loader" ref="newerMessagesLoader">
           <img class="progress" src="../assets/progress.png">
           <p class="loader-text"> Looking for newer messages </p>
         </div>
@@ -62,8 +62,8 @@ export default {
     return {
       items: [],
       messages: null,
-      hasOlderMessages: false,
-      hasNewerMessages: false
+      moreOlderMessages: false, // are there more older messages available to fetch
+      moreNewerMessages: false // are there more newer messages available to fetch
     }
   },
   async mounted () {
@@ -80,8 +80,8 @@ export default {
       return
     }
 
-    this.hasNewerMessages = messagesAfter.length >= MESSAGE_API_LIMIT
-    this.hasOlderMessages = messagesBefore.length >= MESSAGE_API_LIMIT
+    this.moreOlderMessages = messagesBefore.length >= MESSAGE_API_LIMIT
+    this.moreNewerMessages = messagesAfter.length >= MESSAGE_API_LIMIT
 
     this.messages = messagesBefore.concat(messagesAfter)
 
