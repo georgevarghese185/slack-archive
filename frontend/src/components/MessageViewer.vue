@@ -2,9 +2,9 @@
   <div class="message-viewer-container">
     <div class="message-list" ref="messages">
       <div v-if="messages.length == 0" class="no-messages"> No messages </div>
-      <div v-if="hasOlderMessages" class="loading-messages" ref="earlierMessagesLoader">
+      <div v-if="hasOlderMessages" class="loader" ref="earlierMessagesLoader">
         <img class="progress" src="../assets/progress.png">
-        <p class="loading-messages-text"> Looking for earlier messages </p>
+        <p class="loader-text"> Loading messages </p>
       </div>
       <div class="message-item" v-for="(message, i) in messages" :key="message.ts">
         <div v-if="shouldShowDate(i)" class="day-separator"> {{getDate(message)}} </div>
@@ -23,9 +23,9 @@
           </div>
         </div>
       </div>
-      <div v-if="hasNewerMessages" class="loading-messages" ref="newerMessagesLoader">
+      <div v-if="hasNewerMessages" class="loader" ref="newerMessagesLoader">
         <img class="progress" src="../assets/progress.png">
-        <p class="loading-messages-text"> Looking for newer messages </p>
+        <p class="loader-text"> Looking for newer messages </p>
       </div>
     </div>
   </div>
@@ -166,7 +166,7 @@ export default {
     margin-bottom: 18px;
   }
 
-  .loading-messages {
+  .loader {
     display: flex;
     flex-direction: row;
     justify-content: center;
@@ -175,7 +175,7 @@ export default {
     opacity: 0.7;
   }
 
-  .loading-messages-text {
+  .loader-text {
     font-size: 14px;
     margin-left: 4px;
   }
