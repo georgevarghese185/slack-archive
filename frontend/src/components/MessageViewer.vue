@@ -1,31 +1,37 @@
 <template>
   <div class="message-viewer-container">
     <div class="message-list" ref="messages">
-      <div v-if="messages.length == 0" class="no-messages"> No messages </div>
-      <div v-if="hasOlderMessages" class="loader" ref="earlierMessagesLoader">
+      <div v-if="messages == null" class="loader">
         <img class="progress" src="../assets/progress.png">
         <p class="loader-text"> Loading messages </p>
       </div>
-      <div class="message-item" v-for="(message, i) in messages" :key="message.ts">
-        <div v-if="shouldShowDate(i)" class="day-separator"> {{getDate(message)}} </div>
-        <div class="message">
-          <div class="user-image-container">
-            <img v-if="!isContinuedMessage(i)" class="user-image" :src="message.userImage"/>
-          </div>
-          <div class="message-contents">
-            <div v-if="!isContinuedMessage(i)" class="message-header">
-              <span class="user-name"> {{message.user}} </span>
-              <span class="message-time"> {{getTime(message)}} </span>
+      <div v-if="messages != null">
+        <div v-if="messages.length == 0" class="no-messages"> No messages </div>
+        <div v-if="hasOlderMessages" class="loader" ref="olderMessagesLoader">
+          <img class="progress" src="../assets/progress.png">
+          <p class="loader-text"> Looking for earlier messages </p>
+        </div>
+        <div class="message-item" v-for="(message, i) in messages" :key="message.ts">
+          <div v-if="shouldShowDate(i)" class="day-separator"> {{getDate(message)}} </div>
+          <div class="message">
+            <div class="user-image-container">
+              <img v-if="!isContinuedMessage(i)" class="user-image" :src="message.userImage"/>
             </div>
-            <p :class="{ 'message-body': true, 'message-continued': isContinuedMessage(i) }">
-              {{message.text}}
-            </p>
+            <div class="message-contents">
+              <div v-if="!isContinuedMessage(i)" class="message-header">
+                <span class="user-name"> {{message.user}} </span>
+                <span class="message-time"> {{getTime(message)}} </span>
+              </div>
+              <p :class="{ 'message-body': true, 'message-continued': isContinuedMessage(i) }">
+                {{message.text}}
+              </p>
+            </div>
           </div>
         </div>
-      </div>
-      <div v-if="hasNewerMessages" class="loader" ref="newerMessagesLoader">
-        <img class="progress" src="../assets/progress.png">
-        <p class="loader-text"> Looking for newer messages </p>
+        <div v-if="hasNewerMessages" class="loader" ref="newerMessagesLoader">
+          <img class="progress" src="../assets/progress.png">
+          <p class="loader-text"> Looking for newer messages </p>
+        </div>
       </div>
     </div>
   </div>
@@ -44,7 +50,7 @@ export default {
   data () {
     return {
       items: [],
-      messages: [],
+      messages: null,
       hasOlderMessages: false,
       hasNewerMessages: false
     }
