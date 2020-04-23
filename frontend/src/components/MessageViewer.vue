@@ -9,20 +9,7 @@
         </Loader>
         <div class="message-item" v-for="(message, i) in messages" :key="message.ts">
           <div v-if="shouldShowDate(i)" class="day-separator"> {{getDate(message)}} </div>
-          <div class="message" :title="getDateString(message)">
-            <div class="user-image-container">
-              <img v-if="!isContinuedMessage(i)" class="user-image" :src="message.userImage"/>
-            </div>
-            <div class="message-contents">
-              <div v-if="!isContinuedMessage(i)" class="message-header">
-                <span class="user-name"> {{message.user}} </span>
-                <span class="message-time"> {{getTime(message)}} </span>
-              </div>
-              <p :class="{ 'message-body': true, 'message-continued': isContinuedMessage(i) }">
-                {{message.text}}
-              </p>
-            </div>
-          </div>
+          <Message :message="message" :shouldShowUserImage="!isContinuedMessage(i)" :shouldShowHeader="!isContinuedMessage(i)" />
         </div>
         <Loader v-if="moreNewerMessages" ref="newerMessagesLoader">
           Looking for newer messages
@@ -36,9 +23,10 @@
 import axios from 'axios'
 import slackTime from '../util/slackTime'
 import Loader from './MessageViewerLoader'
+import Message from './MessageViewerMessage'
 import ScrollListener from '../util/ScrollListener'
 
-const { getMillis, getTime, getDayMillis, getDate, getDateString, toSlackTs } = slackTime
+const { getMillis, getDayMillis, getDate, toSlackTs } = slackTime
 
 const axiosInstance = axios.create({ baseURL: process.env.VUE_APP_API_BASE_URL })
 const MESSAGE_API_LIMIT = 50
@@ -58,7 +46,6 @@ export default {
   props: ['day'],
   data () {
     return {
-      items: [],
       messages: null,
       moreOlderMessages: false, // are there more older messages available to fetch
       moreNewerMessages: false // are there more newer messages available to fetch
@@ -126,12 +113,6 @@ export default {
     },
     getDate (message) {
       return getDate(message.ts)
-    },
-    getDateString (message) {
-      return getDateString(message.ts)
-    },
-    getTime (message) {
-      return getTime(message.ts)
     },
     isContinuedMessage (messageIndex) {
       if (messageIndex === 0) {
@@ -225,7 +206,8 @@ export default {
     }
   },
   components: {
-    Loader
+    Loader,
+    Message
   }
 }
 
@@ -255,48 +237,6 @@ export default {
     text-align: center;
     color: #818181;
     margin-bottom: 18px;
-  }
-
-  .message {
-    display: flex;
-    padding: 10px 14px 10px 10px;
-    transition: background 0.1s;
-  }
-
-  .message:hover {
-    background: #aaaaaa52
-  }
-
-  .message-contents {
-    margin-left: 14px;
-  }
-
-  .user-image-container {
-    width: 38px;
-  }
-
-  .user-image {
-    width: 38px;
-    height: 38px;
-  }
-
-  .user-name {
-    font-size: 14px;
-    font-weight: bold;
-  }
-
-  .message-time {
-    font-size: 12px;
-    color: #818181;
-  }
-
-  .message-body {
-    font-size: 14px;
-    margin-top: 12px;
-  }
-
-  .message-continued {
-    margin-top: -8px;
   }
 
   .day-separator {
