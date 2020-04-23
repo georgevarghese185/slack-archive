@@ -1,16 +1,12 @@
 <template>
   <div class="message-viewer-container">
     <div class="message-list" ref="messages">
-      <div v-if="messages == null" class="loader">
-        <img class="progress" src="../assets/progress.png">
-        <p class="loader-text"> Loading messages </p>
-      </div>
+      <Loader v-if="messages == null"> Loading messages </Loader>
       <div v-if="messages != null">
         <div v-if="messages.length == 0" class="no-messages"> No messages </div>
-        <div v-if="moreOlderMessages" class="loader" ref="olderMessagesLoader">
-          <img class="progress" src="../assets/progress.png">
-          <p class="loader-text"> Looking for earlier messages </p>
-        </div>
+        <Loader v-if="moreOlderMessages" ref="olderMessagesLoader">
+          Looking for earlier messages
+        </Loader>
         <div class="message-item" v-for="(message, i) in messages" :key="message.ts">
           <div v-if="shouldShowDate(i)" class="day-separator"> {{getDate(message)}} </div>
           <div class="message" :title="getDateString(message)">
@@ -28,10 +24,9 @@
             </div>
           </div>
         </div>
-        <div v-if="moreNewerMessages" class="loader" ref="newerMessagesLoader">
-          <img class="progress" src="../assets/progress.png">
-          <p class="loader-text"> Looking for newer messages </p>
-        </div>
+        <Loader v-if="moreNewerMessages" ref="newerMessagesLoader">
+          Looking for newer messages
+        </Loader>
       </div>
     </div>
   </div>
@@ -40,6 +35,7 @@
 <script>
 import axios from 'axios'
 import slackTime from '../util/slackTime'
+import Loader from './MessageViewerLoader'
 import ScrollListener from '../util/ScrollListener'
 
 const { getMillis, getTime, getDayMillis, getDate, getDateString, toSlackTs } = slackTime
@@ -105,8 +101,8 @@ export default {
 
       // load more messages if user scrolls to the top/bottom
       this.scrollListener = new ScrollListener(this.$refs.messages)
-      const olderMessagesLoader = this.$refs.olderMessagesLoader
-      const newerMessagesLoader = this.$refs.newerMessagesLoader
+      const olderMessagesLoader = this.$refs.olderMessagesLoader.$el
+      const newerMessagesLoader = this.$refs.newerMessagesLoader.$el
 
       if (olderMessagesLoader) {
         this.scrollListener.whenInView(olderMessagesLoader, () => this.loadOlderMessages())
@@ -227,6 +223,9 @@ export default {
 
       this.loadingNewerMessages = false
     }
+  },
+  components: {
+    Loader
   }
 }
 
@@ -256,31 +255,6 @@ export default {
     text-align: center;
     color: #818181;
     margin-bottom: 18px;
-  }
-
-  .loader {
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-    align-items: center;
-    margin: 20px 0 20px 0;
-    opacity: 0.7;
-  }
-
-  .loader-text {
-    font-size: 14px;
-    margin-left: 4px;
-  }
-
-  .progress {
-    width: 16px;
-    margin-right: 4px;
-    animation: spin 2s linear infinite;
-  }
-
-  @keyframes spin {
-    from { transform: rotate(0deg) }
-    from { transform: rotate(-360deg) }
   }
 
   .message {
