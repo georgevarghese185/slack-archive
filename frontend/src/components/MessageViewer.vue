@@ -234,10 +234,6 @@ export default {
     font-family: sans-serif;
   }
 
-  p {
-    margin: 0;
-  }
-
   .message-viewer-container {
     position: relative;
     background: white;
