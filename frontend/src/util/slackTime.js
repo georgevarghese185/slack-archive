@@ -22,6 +22,10 @@ const getDate = (ts) => {
   return new Date(getMillis(ts)).toString().replace(/.* ([\w]+) ([\d]{1,2}) ([\d]{4}).*/, '$1 $2, $3')
 }
 
+const getDateString = (ts) => {
+  return new Date(getMillis(ts)).toString()
+}
+
 const toSlackTs = (millis) => {
   return (Math.floor(millis / 1000)).toString() + '.000000'
 }
@@ -31,5 +35,6 @@ export default {
   getTime,
   getDayMillis,
   getDate,
+  getDateString,
   toSlackTs
 }

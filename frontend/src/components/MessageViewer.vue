@@ -13,7 +13,7 @@
         </div>
         <div class="message-item" v-for="(message, i) in messages" :key="message.ts">
           <div v-if="shouldShowDate(i)" class="day-separator"> {{getDate(message)}} </div>
-          <div class="message">
+          <div class="message" :title="getDateString(message)">
             <div class="user-image-container">
               <img v-if="!isContinuedMessage(i)" class="user-image" :src="message.userImage"/>
             </div>
@@ -42,7 +42,7 @@ import axios from 'axios'
 import slackTime from '../util/slackTime'
 import ScrollListener from '../util/ScrollListener'
 
-const { getMillis, getTime, getDayMillis, getDate, toSlackTs } = slackTime
+const { getMillis, getTime, getDayMillis, getDate, getDateString, toSlackTs } = slackTime
 
 const axiosInstance = axios.create({ baseURL: process.env.VUE_APP_API_BASE_URL })
 const MESSAGE_API_LIMIT = 50
@@ -130,6 +130,9 @@ export default {
     },
     getDate (message) {
       return getDate(message.ts)
+    },
+    getDateString (message) {
+      return getDateString(message.ts)
     },
     getTime (message) {
       return getTime(message.ts)
