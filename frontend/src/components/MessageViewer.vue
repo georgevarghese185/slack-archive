@@ -39,20 +39,7 @@ export default {
     }
   },
   async mounted () {
-    // Listen for message list updates
-    this.$store.subscribe((mutation, state) => {
-      if (mutation.type === 'updateMessages') {
-        const { list, hasOlder, hasNewer } = state.archive.messages
-        this.messages = list
-        this.hasOlder = hasOlder
-        this.hasNewer = hasNewer
-
-        this.$nextTick(() => {
-          this.scrollToFocusDate()
-          if (!this.scrollListener) this.setupScrollListener()
-        })
-      }
-    })
+    this.$store.subscribe(this.onStoreUpdate.bind(this))
 
     // This work needs to be done after the messages are rendered so do it on the next Vue tick
     this.$nextTick(() => {
@@ -87,6 +74,20 @@ export default {
       return prevMessage.user === message.user &&
         getDayMillis(message.ts) === getDayMillis(prevMessage.ts) &&
         getMillis(message.ts) - getMillis(prevMessage.ts) <= 15 * 60 * 1000
+    },
+    onStoreUpdate (mutation, state) {
+      // Listen for message list updates
+      const { list, hasOlder, hasNewer } = state.archive.messages
+      this.messages = list
+      this.hasOlder = hasOlder
+      this.hasNewer = hasNewer
+
+      if (mutation.type === 'updateMessages') {
+        this.$nextTick(() => {
+          this.scrollToFocusDate()
+          if (!this.scrollListener) this.setupScrollListener()
+        })
+      }
     },
     scrollToFocusDate () { // scroll to the first message from day in focus
       if (!this.messages) {
