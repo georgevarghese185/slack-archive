@@ -4,14 +4,14 @@
       <Loader v-if="messages == null"> Loading messages </Loader>
       <div v-if="messages != null">
         <div v-if="messages.length == 0" class="no-messages"> No messages </div>
-        <Loader v-if="moreOlderMessages" ref="olderMessagesLoader">
+        <Loader v-if="hasOlder" ref="olderMessagesLoader">
           Looking for earlier messages
         </Loader>
         <div class="message-item" v-for="(message, i) in messages" :key="message.ts">
           <div v-if="shouldShowDate(i)" class="day-separator"> {{getDate(message)}} </div>
           <Message :message="message" :shouldShowUserImage="!isContinuedMessage(i)" :shouldShowHeader="!isContinuedMessage(i)" />
         </div>
-        <Loader v-if="moreNewerMessages" ref="newerMessagesLoader">
+        <Loader v-if="hasNewer" ref="newerMessagesLoader">
           Looking for newer messages
         </Loader>
       </div>
@@ -20,83 +20,45 @@
 </template>
 
 <script>
-import axios from 'axios'
 import slackTime from '../util/slackTime'
 import Loader from './MessageViewerLoader'
 import Message from './MessageViewerMessage'
 import ScrollListener from '../util/ScrollListener'
 
-const { getMillis, getDayMillis, getDate, toSlackTs } = slackTime
+const { getMillis, getDayMillis, getDate } = slackTime
 
-const axiosInstance = axios.create({ baseURL: process.env.VUE_APP_API_BASE_URL })
-const MESSAGE_API_LIMIT = 50
-const MAX_MESSAGES = 300
-
-const getMessages = async (params) => {
-  // TODO authenticate
-  // TODO add conversation ID param
-  const response = await axiosInstance.get('/v1/messages', {
-    params: { limit: MESSAGE_API_LIMIT, ...params }
-  })
-
-  return response.data.messages
-}
+// TODO Replace "moreNewerMessages with hasNewer and hasOlder"
 
 export default {
-  props: ['day'],
   data () {
+    const { list, hasOlder, hasNewer } = this.$store.state.archive.messages
     return {
-      messages: null,
-      moreOlderMessages: false, // are there more older messages available to fetch
-      moreNewerMessages: false // are there more newer messages available to fetch
+      messages: list,
+      hasOlder,
+      hasNewer
     }
   },
   async mounted () {
-    const dayTs = toSlackTs(this.day)
+    // Listen for message list updates
+    this.$store.subscribe((mutation, state) => {
+      if (mutation.type === 'updateMessages') {
+        const { list, hasOlder, hasNewer } = state.archive.messages
+        this.messages = list
+        this.hasOlder = hasOlder
+        this.hasNewer = hasNewer
 
-    let messagesBefore
-    let messagesAfter
-
-    try {
-      messagesBefore = await getMessages({ before: dayTs })
-      messagesAfter = await getMessages({ from: dayTs })
-    } catch (e) {
-      // TODO handle error
-      return
-    }
-
-    this.moreOlderMessages = messagesBefore.length >= MESSAGE_API_LIMIT
-    this.moreNewerMessages = messagesAfter.length >= MESSAGE_API_LIMIT
-
-    this.messages = messagesBefore.concat(messagesAfter)
-
-    if (this.messages.length === 0) {
-      return
-    }
-
-    // TODO use real images
-    this.messages.forEach(m => {
-      m.userImage = 'https://secure.gravatar.com/avatar/24bc11de4159fb0d76733f76fd936a37.jpg?s=24&d=https%3A%2F%2Fa.slack-edge.com%2Fdf10d%2Fimg%2Favatars%2Fava_0010-24.png'
+        this.$nextTick(() => {
+          this.scrollToFocusDate()
+          if (!this.scrollListener) this.setupScrollListener()
+        })
+      }
     })
-
-    const focusIndex = Math.min(messagesBefore.length, this.messages.length - 1) // element to scroll into view
 
     // This work needs to be done after the messages are rendered so do it on the next Vue tick
     this.$nextTick(() => {
-      // scroll to the first message from the requested day
-      this.scrollToMessage(focusIndex)
-
-      // load more messages if user scrolls to the top/bottom
-      this.scrollListener = new ScrollListener(this.$refs.messages)
-      const olderMessagesLoader = this.$refs.olderMessagesLoader.$el
-      const newerMessagesLoader = this.$refs.newerMessagesLoader.$el
-
-      if (olderMessagesLoader) {
-        this.scrollListener.whenInView(olderMessagesLoader, () => this.loadOlderMessages())
-      }
-
-      if (newerMessagesLoader) {
-        this.scrollListener.whenInView(newerMessagesLoader, () => this.loadNewerMessages())
+      if (this.messages) {
+        this.scrollToFocusDate()
+        this.setupScrollListener()
       }
     })
   },
@@ -126,83 +88,38 @@ export default {
         getDayMillis(message.ts) === getDayMillis(prevMessage.ts) &&
         getMillis(message.ts) - getMillis(prevMessage.ts) <= 15 * 60 * 1000
     },
-    scrollToMessage (i) {
+    scrollToFocusDate () { // scroll to the first message from day in focus
+      if (!this.messages) {
+        return
+      }
+
+      const focusDate = this.$store.state.archive.messages.focusDate
+      const index = this.messages.findIndex(m => m.ts >= focusDate)
       const messageList = this.$refs.messages
 
       // scroll to the first message from the requested day
-      const e = messageList.querySelectorAll('.message-item')[i]
+      const e = messageList.querySelectorAll('.message-item')[index]
       e.scrollIntoView()
     },
+    setupScrollListener () {
+      // load more messages if user scrolls to the top/bottom
+      this.scrollListener = new ScrollListener(this.$refs.messages)
+      const olderMessagesLoader = (this.$refs.olderMessagesLoader || {}).$el
+      const newerMessagesLoader = (this.$refs.newerMessagesLoader || {}).$el
+
+      if (olderMessagesLoader) {
+        this.scrollListener.whenInView(olderMessagesLoader, () => this.loadOlderMessages())
+      }
+
+      if (newerMessagesLoader) {
+        this.scrollListener.whenInView(newerMessagesLoader, () => this.loadNewerMessages())
+      }
+    },
     async loadOlderMessages () {
-      if (this.loadingOlderMessages) {
-        // another load is already happening. Don't run 2 in parallel
-        return
-      }
-
-      this.loadingOlderMessages = true
-      let olderMessages
-
-      try {
-        olderMessages = await getMessages({ before: this.messages[0].ts })
-      } catch (e) {
-        // TODO handle errors
-      }
-
-      if (olderMessages.length < MESSAGE_API_LIMIT) {
-        this.moreOlderMessages = false
-      } else {
-        this.moreOlderMessages = true
-      }
-
-      const messageList = this.$refs.messages
-      const oldScrollHeight = messageList.scrollHeight
-      const oldScrollTop = messageList.scrollTop
-
-      this.messages = olderMessages.concat(this.messages)
-
-      this.$nextTick(() => {
-        // New scroll position after the message list changes could be off. This will fix it
-        messageList.scrollTop = messageList.scrollHeight - oldScrollHeight + oldScrollTop
-
-        if (this.messages.length > MAX_MESSAGES) {
-          this.messages = this.messages.slice(0, MAX_MESSAGES)
-          this.moreNewerMessages = true
-        }
-      })
-
-      this.loadingOlderMessages = false
+      this.$store.dispatch('loadOlderMessages')
     },
     async loadNewerMessages () {
-      if (this.loadingNewerMessages) {
-        // another load is already happening. Don't run 2 in parallel
-        return
-      }
-
-      this.loadingNewerMessages = true
-      let newerMessages
-
-      try {
-        newerMessages = await getMessages({ after: this.messages[this.messages.length - 1].ts })
-      } catch (e) {
-        // TODO handle errors
-      }
-
-      if (newerMessages.length < MESSAGE_API_LIMIT) {
-        this.moreNewerMessages = false
-      } else {
-        this.moreNewerMessages = true
-      }
-
-      this.messages = this.messages.concat(newerMessages)
-
-      this.$nextTick(() => {
-        if (this.messages.length > MAX_MESSAGES) {
-          this.messages = this.messages.slice(-MAX_MESSAGES)
-          this.moreOlderMessages = true
-        }
-      })
-
-      this.loadingNewerMessages = false
+      this.$store.dispatch('loadNewerMessages')
     }
   },
   components: {
