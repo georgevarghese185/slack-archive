@@ -34,6 +34,13 @@ export default {
         list: messages.concat(state.messages.list),
         hasOlder
       }
+    },
+    appendMessages (state, { messages, hasNewer }) {
+      state.messages = {
+        ...state.messages,
+        list: state.messages.list.concat(messages),
+        hasNewer
+      }
     }
   },
   actions: {
@@ -87,6 +94,30 @@ export default {
         context.commit('prependMessages', {
           messages,
           hasOlder: messages.length >= MESSAGE_API_LIMIT
+        })
+      } catch (e) {
+        console.error(e)
+        // TODO handle error
+      }
+    },
+    async loadNewerMessages (context) {
+      try {
+        const list = context.state.messages.list
+        const ts = list[list.length - 1].ts
+        const conversationId = context.state.messages.conversationId
+
+        const messages = await models.messages.remote.get(
+          { inclusive: false, value: ts },
+          null,
+          conversationId,
+          true,
+          null,
+          MESSAGE_API_LIMIT
+        )
+
+        context.commit('appendMessages', {
+          messages,
+          hasNewer: messages.length >= MESSAGE_API_LIMIT
         })
       } catch (e) {
         console.error(e)
