@@ -87,6 +87,15 @@ export default {
           this.scrollToFocusDate()
           if (!this.scrollListener) this.setupScrollListener()
         })
+      } else if (mutation.type === 'prependMessages') {
+        const messageList = this.$refs.messages
+        const oldScrollHeight = messageList.scrollHeight
+        const oldScrollTop = messageList.scrollTop
+
+        this.$nextTick(() => {
+          // New scroll position after the message list changes could be off. This will fix it
+          messageList.scrollTop = messageList.scrollHeight - oldScrollHeight + oldScrollTop
+        })
       }
     },
     scrollToFocusDate () { // scroll to the first message from day in focus

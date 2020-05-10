@@ -11,6 +11,8 @@ const models = {
 export default {
   state: () => ({
     messages: {
+      conversationId: null,
+      focusDate: null,
       list: null,
       hasOlder: false, // are there more older messages available to fetch
       hasNewer: false // are there more newer messages available to fetch
@@ -23,6 +25,13 @@ export default {
         focusDate,
         list: messages,
         hasNewer,
+        hasOlder
+      }
+    },
+    prependMessages (state, { messages, hasOlder }) {
+      state.messages = {
+        ...state.messages,
+        list: messages.concat(state.messages.list),
         hasOlder
       }
     }
@@ -55,6 +64,29 @@ export default {
           messages: olderMessages.concat(newerMessages),
           hasOlder: olderMessages.length >= MESSAGE_API_LIMIT,
           hasNewer: newerMessages.length >= MESSAGE_API_LIMIT
+        })
+      } catch (e) {
+        console.error(e)
+        // TODO handle error
+      }
+    },
+    async loadOlderMessages (context) {
+      try {
+        const ts = context.state.messages.list[0].ts
+        const conversationId = context.state.messages.conversationId
+
+        const messages = await models.messages.remote.get(
+          null,
+          { inclusive: false, value: ts },
+          conversationId,
+          true,
+          null,
+          MESSAGE_API_LIMIT
+        )
+
+        context.commit('prependMessages', {
+          messages,
+          hasOlder: messages.length >= MESSAGE_API_LIMIT
         })
       } catch (e) {
         console.error(e)
