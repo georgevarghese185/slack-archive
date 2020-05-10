@@ -32,7 +32,7 @@ export default {
     }
   },
   mounted () {
-    this.$store.dispatch('getMessages', { conversationId: 'C1', ts: this.day }) // TODO remove hardcoded conversation ID
+    this.$store.dispatch('loadMessages', { conversationId: 'C1', ts: this.day }) // TODO remove hardcoded conversation ID
   },
   components: {
     ChannelList,

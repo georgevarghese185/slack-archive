@@ -28,7 +28,7 @@ export default {
     }
   },
   actions: {
-    async getMessages (context, { conversationId, ts }) {
+    async loadMessages (context, { conversationId, ts }) {
       try {
         const [olderMessages, newerMessages] = await Promise.all([
           models.messages.remote.get(
