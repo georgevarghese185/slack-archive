@@ -22,8 +22,6 @@ const create = async (context, request) => {
     const userId = context.token.userId;
     const backupId = uuid();
 
-    // TODO don't allow backup if another is in progress
-
     await context.models.backups.create(backupId, userId);
     context.actions.startBackup(backupId);
 
@@ -34,9 +32,6 @@ const create = async (context, request) => {
         }
     });
 }
-
-
-// TODO API to list all currently running backups created by the user
 
 
 const get = async (context, request) => {

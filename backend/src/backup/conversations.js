@@ -6,9 +6,6 @@ const backupConversations = async (context, backupId, token) => {
     await context.models.backups.setStatus(backupId, 'COLLECTING_INFO');
     const axiosInstance = axios.create({ baseURL: constants.slack.apiBaseUrl });
 
-    // TODO log stuff
-    // TODO log all error objects. Since we're only re-throwing e.message, the stack trace will be lost
-
     withRateLimiting(axiosInstance);
 
     let nextCursor;

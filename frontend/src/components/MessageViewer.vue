@@ -27,8 +27,6 @@ import ScrollListener from '../util/ScrollListener'
 
 const { getMillis, getDayMillis, getDate } = slackTime
 
-// TODO Replace "moreNewerMessages with hasNewer and hasOlder"
-
 export default {
   data () {
     const { list, hasOlder, hasNewer } = this.$store.state.archive.messages
