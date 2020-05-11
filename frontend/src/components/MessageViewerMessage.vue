@@ -1,7 +1,7 @@
 <template>
   <div class="message" :title="getDateString(message)">
     <div class="user-image-container">
-      <img v-if="shouldShowUserImage" class="user-image" :src="message.userImage"/>
+      <img v-if="shouldShowUserImage" class="user-image" :src="profileImage"/>
     </div>
     <div class="message-contents">
       <div v-if="shouldShowHeader">
@@ -22,6 +22,16 @@ const { getTime, getDateString } = slackTime
 
 export default {
   props: ['message', 'shouldShowUserImage', 'shouldShowHeader'],
+  mounted () {
+    if (!this.profileImage) {
+      this.$store.dispatch('loadMember', this.message.user)
+    }
+  },
+  computed: {
+    profileImage () {
+      return this.$store.getters.profilePicture(this.message.user)
+    }
+  },
   methods: {
     getDateString (message) {
       return getDateString(message.ts)
