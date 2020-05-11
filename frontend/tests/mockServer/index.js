@@ -2,6 +2,7 @@ const express = require('express')
 const app = express()
 const port = 3000
 const messages = require('./messages.json').messages
+const members = require('./members.json')
 
 app.use((req, res, next) => {
   res.set('Access-Control-Allow-Origin', '*')
@@ -42,6 +43,19 @@ app.get('/v1/messages', async (req, res) => {
   }
 
   res.json({ messages: responseMessages })
+})
+
+app.get('/v1/members/:id', async (req, res) => {
+  const id = req.params.id
+
+  const member = members[id]
+
+  if (!member) {
+    res.status(404).send()
+    return
+  }
+
+  res.json(member)
 })
 
 app.listen(port, () => console.log(`Mock server: http://localhost:${port}`))
