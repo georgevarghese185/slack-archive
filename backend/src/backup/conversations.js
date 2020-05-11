@@ -12,15 +12,13 @@ const backupConversations = async (context, backupId, token) => {
     withRateLimiting(axiosInstance);
 
     let nextCursor;
+    const config = {
+        headers: {
+            'Authorization': `Bearer ${token.accessToken}`
+        }
+    };
 
     do {
-        // TODO move this outside. No point re-initializing every loop
-        const config = {
-            headers: {
-                'Authorization': `Bearer ${token.accessToken}`
-            }
-        };
-
         if(nextCursor) {
             config.params = { cursor: nextCursor };
         }
