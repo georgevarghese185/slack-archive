@@ -1,5 +1,6 @@
 const express = require('express')
 const app = express()
+const fs = require('fs')
 const port = 3000
 const messages = require('./messages.json').messages
 const members = require('./members.json')
@@ -56,6 +57,22 @@ app.get('/v1/members/:id', async (req, res) => {
   }
 
   res.json(member)
+})
+
+app.get('/images/:file', (req, resp) => {
+  const file = req.params.file
+  fs.readFile('./tests/mockServer/images/' + file, (err, data) => {
+    if (err) {
+      console.log(err)
+      resp.status(404).send()
+    } else {
+      console.log('success')
+      resp
+        .set('Content-Type', 'image/png')
+        .status(200)
+        .send(data)
+    }
+  })
 })
 
 app.listen(port, () => console.log(`Mock server: http://localhost:${port}`))
