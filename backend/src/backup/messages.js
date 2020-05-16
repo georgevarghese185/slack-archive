@@ -122,7 +122,14 @@ const backupThread = async (context, conversationId, threadTs, backedUp, axiosIn
 
 
 const addMessages = async (context, messages, conversationId, backedUp, backupId) => {
-    await context.models.messages.add(conversationId, messages);
+    await context.models.messages.add(
+        conversationId,
+        messages.map(m => ({
+            isPost: !m.thread_ts || m.ts === m.thread_ts || m.subtype === 'thread_broadcast',
+            threadTs: m.thread_ts,
+            message: m
+        }))
+    );
 
     backedUp.count += messages.length;
     await context.models.backups.setMessagesBackedUp(backupId, backedUp.count);
