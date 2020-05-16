@@ -59,7 +59,9 @@ class Messages {
      *
      * @abstract
      * @param {string} conversationId The ID of the conversation these messages are from
-     * @param {Array<Object>} messages An Array of [message objects]{@link https://api.slack.com/events/message}
+     * @param {Array<Object>} messages An Array of objects with the structure { isPost, threadTs, message }.
+     * `isPost` should be a boolean, `threadTs` can be a Slack time stamp string or `null` and `message`
+     * should be a Slack [message objects]{@link https://api.slack.com/events/message}
      */
     async add(conversationId, messages) {
         throw new Error('Not implemented');

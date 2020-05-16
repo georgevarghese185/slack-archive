@@ -28,6 +28,7 @@ describe('Messages Backup', () => {
             "thread_ts": "1500000003.000001"
         },
         {
+            "subtype": "thread_broadcast",
             "ts": "1500000006.000001",                      // reply in thread thread, broadcasted to conversation
             "thread_ts": "1500000003.000001"
         }
@@ -52,6 +53,10 @@ describe('Messages Backup', () => {
             "thread_ts": "1500000003.000001"                // broadcasted reply
         }
     ];
+
+    const isPost = m => !m.thread_ts || m.thread_ts === m.ts || m.subtype === 'thread_broadcast'
+
+    const toMessageObject = m => ({ isPost: isPost(m), threadTs: m.thread_ts, message: m })
 
     it('backup messages and replies', async () => {
         const backupId = '1234';
@@ -147,8 +152,8 @@ describe('Messages Backup', () => {
         await backupMessages(context, backupId, token);
 
         expect(statusSet).to.be.true;
-        expect(c1Messages).to.deep.equal(messageList.concat(replies));
-        expect(c2Messages).to.deep.equal(messageList.concat(replies));
+        expect(c1Messages).to.deep.equal(messageList.concat(replies).map(toMessageObject));
+        expect(c2Messages).to.deep.equal(messageList.concat(replies).map(toMessageObject));
 
         expect(moxios.requests.at(0).headers['Authorization']).to.equal(`Bearer ${accessToken}`);
         expect(moxios.requests.at(0).url).to.equal(`/conversations.history?channel=C1`);
@@ -250,7 +255,7 @@ describe('Messages Backup', () => {
 
 
         await backupMessages(context, backupId, token);
-        expect(addedMessages).to.deep.equal(messageList.concat(replies));
+        expect(addedMessages).to.deep.equal(messageList.concat(replies).map(toMessageObject));
 
         expect(moxios.requests.count()).to.equal(4);
 
@@ -396,7 +401,7 @@ describe('Messages Backup', () => {
         });
 
         await backupMessages(context, backupId, token);
-        expect(addedMessages).to.deep.equal(messageList.concat(replies));
+        expect(addedMessages).to.deep.equal(messageList.concat(replies).map(toMessageObject));
         expect(historyReqDelayEnd - historyReqDelayStart).to.be.gte(1000);
         expect(repliesReqDelayEnd - repliesReqDelayStart).to.be.gte(1000);
     }).timeout(3000);
