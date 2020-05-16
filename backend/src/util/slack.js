@@ -8,7 +8,7 @@
  */
 const withRateLimiting = (axiosInstance) => {
     axiosInstance.interceptors.response.use(null, async (error) => {
-        if (error.response.status !== 429) {
+        if ((error.response || {}).status !== 429) {
             throw error;
         }
 
