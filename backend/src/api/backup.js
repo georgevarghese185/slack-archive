@@ -18,8 +18,8 @@ const getStats = async (context, request) => {
 }
 
 
-const create = async (context, request) => {
-    const userId = context.token.userId;
+const create = async (context, request, token) => {
+    const userId = token.userId;
     const backupId = uuid();
 
     await context.models.backups.create(backupId, userId);

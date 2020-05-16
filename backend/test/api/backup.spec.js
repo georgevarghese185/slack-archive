@@ -96,7 +96,6 @@ describe('Backup APIs', () => {
 
             const context = new AppContext()
                 .setModels({ backups: new BackupsMock() })
-                .setAuthToken(token)
                 .setActions({
                     startBackup(backupId1) {
                         expect(backupId1).to.equal(backupId);
@@ -104,7 +103,7 @@ describe('Backup APIs', () => {
                     }
                 });
 
-            const response = await api['POST:/v1/backup'](context, new Request());
+            const response = await api['POST:/v1/backup'](context, new Request(), token);
 
             expect(backupStarted).to.be.true;
             expect(response.status).to.equal(200);

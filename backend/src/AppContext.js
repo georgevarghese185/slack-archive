@@ -4,7 +4,6 @@ class AppContext {
     constructor() {
         this.models = {}
         this.actions = {}
-        this.token = null
     }
 
     setModels(models) {
@@ -14,11 +13,6 @@ class AppContext {
 
     setActions(actions) {
         this.actions = actions;
-        return this;
-    }
-
-    setAuthToken(token) {
-        this.token = token;
         return this;
     }
 
