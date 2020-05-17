@@ -1,7 +1,7 @@
 const axios = require('axios');
 const moxios = require('moxios');
 const { expect } = require('chai');
-const { fromAxiosError } = require('../../src/util/response');
+const { fromAxiosError } = require('../../../src/util/response');
 
 describe('Response util functions', () => {
     describe('fromAxiosError()', () => {

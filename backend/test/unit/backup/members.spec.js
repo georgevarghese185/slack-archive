@@ -1,9 +1,9 @@
-const AppContext = require('../../src/AppContext')
-const Backups = require('../../src/models/Backups');
+const AppContext = require('../../../src/AppContext')
+const Backups = require('../../../src/models/Backups');
 const expect = require('chai').expect;
-const Members = require('../../src/models/Members');
+const Members = require('../../../src/models/Members');
 const moxios = require('moxios');
-const { backupMembers } = require('../../src/backup/members');
+const { backupMembers } = require('../../../src/backup/members');
 
 
 

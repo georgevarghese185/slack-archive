@@ -1,8 +1,8 @@
-const api = require('../../src/api');
-const AppContext = require('../../src/AppContext')
+const api = require('../../../src/api');
+const AppContext = require('../../../src/AppContext')
 const expect = require('chai').expect;
-const Members = require('../../src/models/Members');
-const Request = require('../../src/types/Request');
+const Members = require('../../../src/models/Members');
+const Request = require('../../../src/types/Request');
 
 describe('Member APIs', () => {
     describe('GET:/v1/members/:id', () => {

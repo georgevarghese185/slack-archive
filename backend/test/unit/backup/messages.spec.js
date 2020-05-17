@@ -1,10 +1,10 @@
-const AppContext = require('../../src/AppContext')
-const Backups = require('../../src/models/Backups');
-const Conversations = require('../../src/models/Conversations');
-const Messages = require('../../src/models/Messages');
+const AppContext = require('../../../src/AppContext')
+const Backups = require('../../../src/models/Backups');
+const Conversations = require('../../../src/models/Conversations');
+const Messages = require('../../../src/models/Messages');
 const moxios = require('moxios');
 const { expect } = require('chai');
-const { backupMessages } = require('../../src/backup/messages');
+const { backupMessages } = require('../../../src/backup/messages');
 
 describe('Messages Backup', () => {
     beforeEach(() => {

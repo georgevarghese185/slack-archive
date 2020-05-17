@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "description": "A webapp to backup content in a Slack Workspace",
   "scripts": {
-    "test": "mocha test/**/*.spec.js",
+    "test:unit": "mocha test/unit/**/*.spec.js",
     "mockSlack:start": "node test/mockSlack",
     "mockSlack:generate": "node test/mockSlack/data/generator/generate.js"
   },

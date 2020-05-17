@@ -1,9 +1,9 @@
-const api = require('../../src/api');
-const AppContext = require('../../src/AppContext');
-const Conversations = require('../../src/models/Conversations');
+const api = require('../../../src/api');
+const AppContext = require('../../../src/AppContext');
+const Conversations = require('../../../src/models/Conversations');
 const expect = require('chai').expect;
-const Messages = require('../../src/models/Messages');
-const Request = require('../../src/types/Request');
+const Messages = require('../../../src/models/Messages');
+const Request = require('../../../src/types/Request');
 
 describe('Message APIs', () => {
     describe('GET:/v1/messages', () => {

@@ -1,15 +1,15 @@
-const api = require('../../src/api');
-const AppContext = require('../../src/AppContext')
-const constants = require('../../src/constants');
+const api = require('../../../src/api');
+const AppContext = require('../../../src/AppContext')
+const constants = require('../../../src/constants');
 const cookie = require('cookie');
 const chai = require('chai');
 const chaiAsPromised = require('chai-as-promised');
 const expect = chai.expect;
-const jwt = require('../../src/util/jwt');
+const jwt = require('../../../src/util/jwt');
 const moxios = require('moxios');
 const qs = require('query-string');
-const Request = require('../../src/types/Request');
-const Response = require('../../src/types/Response');
+const Request = require('../../../src/types/Request');
+const Response = require('../../../src/types/Response');
 
 chai.use(chaiAsPromised);
 

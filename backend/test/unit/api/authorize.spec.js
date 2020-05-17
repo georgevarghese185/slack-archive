@@ -1,9 +1,9 @@
-const AppContext = require('../../src/AppContext')
-const constants = require('../../src/constants');
+const AppContext = require('../../../src/AppContext')
+const constants = require('../../../src/constants');
 const cookie = require('cookie');
-const jwt = require('../../src/util/jwt');
-const Request = require('../../src/types/Request');
-const { authorizeRequest } = require('../../src/api/authorize');
+const jwt = require('../../../src/util/jwt');
+const Request = require('../../../src/types/Request');
+const { authorizeRequest } = require('../../../src/api/authorize');
 const { expect } = require('chai');
 
 describe('authorizeRequest()', () => {
