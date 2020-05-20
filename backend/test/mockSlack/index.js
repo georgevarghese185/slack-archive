@@ -13,6 +13,7 @@ const MEMBERS_BATCH = 100
 const MESSAGES_BATCH = 100
 const REPLIES_BATCH = 100
 const MAX_REQUESTS_PER_SECOND = 5
+const USER_ID = members[Math.floor(Math.random() * members.length)].id
 
 const cursors = {
     members: {
@@ -67,6 +68,8 @@ const getItems = (name, cursor, allItems, batchSize) => {
 let requestsPerSecond = 0
 let timer = null
 let tooManyRequests = false
+let authCode
+let accessToken
 
 app.use((req, resp, next) => {
     if (tooManyRequests) {
@@ -92,11 +95,48 @@ app.use((req, resp, next) => {
 
 app.get('/', (req, res) => res.send('up'))
 
-app.get('/oauth/authorize', (req, resp) => resp.status(501).send('TODO'))
+app.get('/oauth/authorize', (req, resp) => {
+    authCode = uuid()
+    const redirect = req.query.redirect_uri
+    const state = req.query.state
 
-app.get('/api/oauth.access', (req, resp) => resp.status(501).send('TODO'))
+    resp.status(302).send(`${redirect}?code=${authCode}&state=${encodeURIComponent(state)}`)
+})
 
-app.post('/api/auth.test', (req, resp) => resp.status(501).send('TODO'))
+app.post('/api/oauth.access', (req, resp) => {
+    if (req.query.code !== authCode) {
+        accessToken = uuid()
+        resp.status(200).send({
+            ok: true,
+            access_token: accessToken,
+            user_id: USER_ID
+        })
+    } else {
+        resp.status(200).send({
+            ok: false,
+            error: "invalid_code"
+        })
+    }
+})
+
+app.use((req, resp, next) => {
+    const token = ((req.headers.authorization || "").match('Bearer (.*)') || [])[1]
+
+    if (token != null && token === accessToken) {
+        next()
+    } else {
+        resp.status(200).send({
+            ok: false,
+            error: "invalid_auth"
+        })
+    }
+})
+
+app.post('/api/auth.test', (req, resp) => {
+    resp.status(200).send({
+        ok: true
+    })
+})
 
 app.get('/api/conversations.list', (req, resp) => {
     const { items, nextCursor } = getItems('conversations', req.query.cursor, conversations, CONVERSATIONS_BATCH)
@@ -184,6 +224,11 @@ app.get('/api/conversations.replies', (req, resp) => {
     })
 })
 
-app.post('/api/auth.revoke', (req, resp) => resp.status(501).send('TODO'))
+app.post('/api/auth.revoke', (req, resp) => {
+    accessToken = null
+    resp.send({
+        ok: true
+    })
+})
 
 app.listen(port, () => console.log(`Slack Mock Server running on http://localhost:${port}`))
