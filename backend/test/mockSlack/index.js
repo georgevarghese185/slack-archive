@@ -2,6 +2,7 @@ const conversations = require('./data/conversations.json').conversations
 const members = require('./data/members.json').members
 const messages = require('./data/messages.json')
 const replies = require('./data/replies.json')
+const uuid = require('uuid').v4;
 
 const express = require('express')
 const app = express()
@@ -41,7 +42,7 @@ const getItems = (name, cursor, allItems, batchSize) => {
         items = allItems.slice(0, batchSize)
         if (items.length < allItems.length) {
             nextIndex = batchSize
-            nextCursor = Math.random().toString()
+            nextCursor = uuid()
         }
     } else if (cursor == cursors[name].cursor) {
         const index = cursors[name].index
@@ -51,7 +52,7 @@ const getItems = (name, cursor, allItems, batchSize) => {
             nextCursor = null
         } else {
             nextIndex = index + batchSize
-            nextCursor = Math.random().toString()
+            nextCursor = uuid()
         }
     } else {
         return { items: null }
