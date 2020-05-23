@@ -4,6 +4,7 @@
   "description": "A webapp to backup content in a Slack Workspace",
   "scripts": {
     "test:unit": "mocha test/unit/**/*.spec.js",
+    "test:integration": "mocha test/integration/**/*.spec.js",
     "express:start": "node src/server/express",
     "mockSlack:start": "node test/mockSlack",
     "mockSlack:generate": "node test/mockSlack/data/generator/generate.js"
