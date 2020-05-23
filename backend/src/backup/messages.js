@@ -5,7 +5,7 @@ const { withRateLimiting } = require('../util/slack');
 const backupMessages = async (context, backupId, token) => {
     await context.models.backups.setStatus(backupId, 'BACKING_UP');
     const axiosInstance = axios.create({
-        baseURL: constants.slack.apiBaseUrl,
+        baseURL: context.getSlackBaseUrl(),
         headers: {
             'Authorization': `Bearer ${token.accessToken}`
         }
@@ -40,7 +40,7 @@ const backupMessagesIn = async (context, conversationId, backedUp, axiosInstance
         let response;
 
         try {
-            response = await axiosInstance.get('/conversations.history', config);
+            response = await axiosInstance.get('/api/conversations.history', config);
         } catch (e) {
             let message = (e.response || {}).data || e.message;
             const status = (e.response || {}).status || -1;
@@ -49,13 +49,13 @@ const backupMessagesIn = async (context, conversationId, backedUp, axiosInstance
                 message = JSON.stringify(message, null, 2);
             }
 
-            const err = new Error(`/conversations.history failed. status: ${status}, message: ${message}`);
+            const err = new Error(`/api/conversations.history failed. status: ${status}, message: ${message}`);
 
             throw err;
         }
 
         if (!response.data.ok) {
-            const error = new Error('/conversations.history API failed with code ' + response.data.error);
+            const error = new Error('/api/conversations.history API failed with code ' + response.data.error);
             throw error;
         }
 
@@ -93,7 +93,7 @@ const backupThread = async (context, conversationId, threadTs, backedUp, axiosIn
         let response;
 
         try {
-            response = await axiosInstance.get('/conversations.replies', config);
+            response = await axiosInstance.get('/api/conversations.replies', config);
         } catch (e) {
             let message = (e.response || {}).data || e.message;
             const status = (e.response || {}).status || -1;
@@ -102,13 +102,13 @@ const backupThread = async (context, conversationId, threadTs, backedUp, axiosIn
                 message = JSON.stringify(message, null, 2);
             }
 
-            const err = new Error(`/conversations.replies failed. status: ${status}, message: ${message}`);
+            const err = new Error(`/api/conversations.replies failed. status: ${status}, message: ${message}`);
 
             throw err;
         }
 
         if (!response.data.ok) {
-            const error = new Error('/conversations.replies API failed with code ' + response.data.error);
+            const error = new Error('/api/conversations.replies API failed with code ' + response.data.error);
             throw error;
         }
 

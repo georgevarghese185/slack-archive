@@ -24,6 +24,10 @@ class AppContext {
         return this.logger
     }
 
+    getSlackBaseUrl() {
+        return process.env.SLACK_BASE_URL;
+    }
+
     getSlackTeamId() {
         return process.env.SLACK_TEAM_ID;
     }

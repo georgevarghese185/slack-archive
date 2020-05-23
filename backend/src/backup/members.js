@@ -4,7 +4,7 @@ const { withRateLimiting } = require('../util/slack');
 
 const backupMembers = async (context, backupId, token) => {
     await context.models.backups.setStatus(backupId, 'COLLECTING_INFO');
-    const axiosInstance = axios.create({ baseURL: constants.slack.apiBaseUrl });
+    const axiosInstance = axios.create({ baseURL: context.getSlackBaseUrl() });
 
     withRateLimiting(axiosInstance);
 
@@ -24,7 +24,7 @@ const backupMembers = async (context, backupId, token) => {
         let response;
 
         try {
-            response = await axiosInstance.get('/users.list', config);
+            response = await axiosInstance.get('/api/users.list', config);
         } catch (e) {
             let message = (e.response || {}).data || e.message;
             const status = (e.response || {}).status || -1;
@@ -33,13 +33,13 @@ const backupMembers = async (context, backupId, token) => {
                 message = JSON.stringify(message, null, 2);
             }
 
-            const err = new Error(`/users.list failed. status: ${status}, message: ${message}`);
+            const err = new Error(`/api/users.list failed. status: ${status}, message: ${message}`);
 
             throw err;
         }
 
         if (!response.data.ok) {
-            const error = new Error('/users.list API failed with code ' + response.data.error);
+            const error = new Error('/api/users.list API failed with code ' + response.data.error);
             throw error;
         }
 

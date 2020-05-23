@@ -19,6 +19,10 @@ describe('Login APIs', () => {
             return { log: () => {}, warn: () => {}, error: () => {} }
         }
 
+        getSlackBaseUrl() {
+            return "https://slack.com"
+        }
+
         getOauthRedirectUri() {
             return "http://localhost:8080/redirect"
         }
@@ -54,7 +58,7 @@ describe('Login APIs', () => {
             const expectedResponse = new Response({
                 status: 200,
                 body: {
-                    url: constants.slack.oauthUrl,
+                    url: context.getSlackBaseUrl() + '/oauth/authorize',
                     parameters: {
                         client_id: context.getSlackClientId(),
                         scope: constants.slack.scope.publicMessages,
@@ -90,7 +94,7 @@ describe('Login APIs', () => {
                 }
             });
 
-            moxios.stubRequest('/oauth.access', {
+            moxios.stubRequest('/api/oauth.access', {
                 status: 200,
                 response: {
                     ok: true,
@@ -116,7 +120,7 @@ describe('Login APIs', () => {
             expect(slackRequest.config.method).to.equal('post');
             expect(slackRequest.headers['Content-Type']).to.equal('application/x-www-form-urlencoded');
             expect(slackRequest.headers['Authorization']).to.equal(expectedSlackAuthorization);
-            expect(slackRequest.config.baseURL).to.equal(constants.slack.apiBaseUrl);
+            expect(slackRequest.config.baseURL).to.equal(context.getSlackBaseUrl());
             expect(slackRequest.config.data).to.equal(excpectedSlackBody);
 
             expect(response.status).to.equal(200);
@@ -151,7 +155,7 @@ describe('Login APIs', () => {
         it('bad request: invalid verification code', async () => {
             const request = new Request({ body: { verificationCode: "XYZ" } });
 
-            moxios.stubRequest('/oauth.access', {
+            moxios.stubRequest('/api/oauth.access', {
                 status: 200,
                 response: {
                     okay: false,
@@ -195,7 +199,7 @@ describe('Login APIs', () => {
             for (const e of slackErrors) {
                 for (const slackErrorCode of e.slackCodes) {
                     moxios.stubs.reset();
-                    moxios.stubRequest('/oauth.access', {
+                    moxios.stubRequest('/api/oauth.access', {
                         status: 200,
                         response: { ok: false, error: slackErrorCode }
                     });
@@ -236,7 +240,7 @@ describe('Login APIs', () => {
                 }
             });
 
-            moxios.stubRequest('/auth.test', {
+            moxios.stubRequest('/api/auth.test', {
                 status: 200,
                 response: {
                     ok: true
@@ -301,7 +305,7 @@ describe('Login APIs', () => {
                 expect(slackRequest.headers['Authorization']).to.equal(`Bearer ${accessToken}`);
             }
 
-            moxios.stubRequest('/auth.revoke', {
+            moxios.stubRequest('/api/auth.revoke', {
                 status: 200,
                 response: {
                     ok: true
@@ -312,7 +316,7 @@ describe('Login APIs', () => {
 
             // Run again but this time, /auth.revoke will return an error.
             moxios.stubs.reset();
-            moxios.stubRequest('/auth.revoke', {
+            moxios.stubRequest('/api/auth.revoke', {
                 status: 200,
                 response: {
                     ok: false,
@@ -320,7 +324,7 @@ describe('Login APIs', () => {
                 }
             });
 
-            await expect(makeRequest(), "Should not have failed even if '/auth.revoke' failed").to.be.fulfilled;
+            await expect(makeRequest(), "Should not have failed even if '/api/auth.revoke' failed").to.be.fulfilled;
         });
 
 
@@ -354,7 +358,7 @@ describe('Login APIs', () => {
             for (const e of slackErrors) {
                 for (const slackErrorCode of e.slackCodes) {
                     moxios.stubs.reset();
-                    moxios.stubRequest('/auth.test', {
+                    moxios.stubRequest('/api/auth.test', {
                         status: 200,
                         response: { ok: false, error: slackErrorCode }
                     });
@@ -396,7 +400,7 @@ describe('Login APIs', () => {
                 }
             });
 
-            moxios.stubRequest('/auth.revoke', {
+            moxios.stubRequest('/api/auth.revoke', {
                 status: 200,
                 response: {
                     ok: true
@@ -426,7 +430,7 @@ describe('Login APIs', () => {
                 }
             });
 
-            moxios.stubRequest('/auth.revoke', {
+            moxios.stubRequest('/api/auth.revoke', {
                 status: 200,
                 response: {
                     ok: true

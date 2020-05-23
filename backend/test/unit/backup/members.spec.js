@@ -16,6 +16,11 @@ describe('Members Backup', () => {
         moxios.uninstall();
     });
 
+    class MockContext extends AppContext {
+        getSlackBaseUrl() {
+            return "https://slack.com"
+        }
+    }
 
     const memberList = [
         {
@@ -58,13 +63,13 @@ describe('Members Backup', () => {
             }
         }
 
-        const context = new AppContext()
+        const context = new MockContext()
             .setModels({
                 backups: new BackupsMock(),
                 members: new MembersMock()
             });
 
-        moxios.stubRequest('/users.list', {
+        moxios.stubRequest('/api/users.list', {
             status: 200,
             response: {
                 ok: true,
@@ -76,6 +81,7 @@ describe('Members Backup', () => {
         const slackRequest = moxios.requests.mostRecent();
 
         expect(statusSet).to.be.true;
+        expect(slackRequest.config.baseURL).to.equal(context.getSlackBaseUrl());
         expect(slackRequest.headers['Authorization']).to.equal('Bearer ' + accessToken);
         expect(addedMembers).to.deep.equal(memberList);
     });
@@ -97,7 +103,7 @@ describe('Members Backup', () => {
             }
         }
 
-        const context = new AppContext()
+        const context = new MockContext()
             .setModels({
                 backups: new BackupsMock(),
                 members: new MembersMock()
@@ -130,9 +136,11 @@ describe('Members Backup', () => {
 
         expect(moxios.requests.count()).to.equal(2);
 
+        expect(moxios.requests.at(0).config.baseURL).to.equal(context.getSlackBaseUrl());
         expect(moxios.requests.at(0).headers['Authorization']).to.equal(`Bearer ${accessToken}`);
         expect(moxios.requests.at(0).config.params).to.be.undefined;
 
+        expect(moxios.requests.at(1).config.baseURL).to.equal(context.getSlackBaseUrl());
         expect(moxios.requests.at(1).headers['Authorization']).to.equal(`Bearer ${accessToken}`);
         expect(moxios.requests.at(1).config.params.cursor).to.equal('abc');
     });
@@ -154,7 +162,7 @@ describe('Members Backup', () => {
             }
         }
 
-        const context = new AppContext()
+        const context = new MockContext()
             .setModels({
                 backups: new BackupsMock(),
                 members: new MembersMock()
@@ -216,7 +224,7 @@ describe('Members Backup', () => {
             }
         }
 
-        moxios.stubRequest('/users.list', {
+        moxios.stubRequest('/api/users.list', {
             status: 200,
             response: {
                 ok: false,
@@ -224,14 +232,14 @@ describe('Members Backup', () => {
             }
         });
 
-        const context = new AppContext()
+        const context = new MockContext()
             .setModels({ backups: new BackupsMock() });
 
         try {
             await backupMembers(context, '123', token);
             throw new Error('Should have failed');
         } catch (e) {
-            expect(e.message).to.equal('/users.list API failed with code some_error');
+            expect(e.message).to.equal('/api/users.list API failed with code some_error');
         }
     });
 
@@ -247,19 +255,19 @@ describe('Members Backup', () => {
             message: "Something went wrong"
         }
 
-        moxios.stubRequest('/users.list', {
+        moxios.stubRequest('/api/users.list', {
             status: 500,
             response: errorResponse
         });
 
-        const context = new AppContext()
+        const context = new MockContext()
             .setModels({ backups: new BackupsMock() });
 
         try {
             await backupMembers(context, '123', token);
             throw new Error('Should have failed');
         } catch (e) {
-            expect(e.message).to.equal('/users.list failed. status: 500, message: ' + JSON.stringify(errorResponse, null, 2));
+            expect(e.message).to.equal('/api/users.list failed. status: 500, message: ' + JSON.stringify(errorResponse, null, 2));
         }
     });
 })

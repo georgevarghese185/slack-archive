@@ -8,7 +8,7 @@ const { fromAxiosError, fromSlackError, badRequest, unauthorized, internalError 
 
 const getAuthUrl = async (context) => {
     const body = {
-        url: constants.slack.oauthUrl,
+        url: context.getSlackBaseUrl() + '/oauth/authorize',
         parameters: {
             client_id: context.getSlackClientId(),
             scope: constants.slack.scope.publicMessages,
@@ -34,11 +34,11 @@ const login = async (context, request) => {
         return badRequest("Missing string: verificationCode");
     }
 
-    const axiosInstance = axios.create({ baseURL: constants.slack.apiBaseUrl });
+    const axiosInstance = axios.create({ baseURL: context.getSlackBaseUrl() });
     let response;
 
     try {
-        response = await axiosInstance.post('/oauth.access',
+        response = await axiosInstance.post('/api/oauth.access',
             qs.stringify({
                 code: verificationCode,
                 redirect_uri: context.getOauthRedirectUri()
@@ -50,7 +50,7 @@ const login = async (context, request) => {
             }
         );
     } catch(e) {
-        logger.error("Slack '/oauth.access' error: " + e.message);
+        logger.error("Slack '/api/oauth.access' error: " + e.message);
         logger.error(e);
         return fromAxiosError(e);
     }
@@ -123,13 +123,13 @@ const validLogin = async (context, request) => {
     let response;
 
     try {
-        response = await axiosInstance.post('/auth.test', {}, {
+        response = await axiosInstance.post('/api/auth.test', {}, {
             headers: {
                 'Authorization': 'Bearer ' + accessToken
             }
         });
     } catch (e) {
-        logger.error("Slack '/auth.test' error: " + e.message);
+        logger.error("Slack '/api/auth.test' error: " + e.message);
         logger.error(e);
         return fromAxiosError(e);
     }
@@ -179,7 +179,7 @@ const revokeSlackToken = async (context, token) => {
     const logger = context.getLogger();
     const axiosInstance = axios.create({ baseURL: constants.slack.apiBaseUrl });
     try {
-        await axiosInstance.post('/auth.revoke', {}, {
+        await axiosInstance.post('/api/auth.revoke', {}, {
             headers: {
                 'Authorization': 'Bearer ' + token
             }

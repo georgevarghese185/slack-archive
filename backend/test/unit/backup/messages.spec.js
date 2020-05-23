@@ -15,6 +15,12 @@ describe('Messages Backup', () => {
         moxios.uninstall();
     });
 
+    class MockContext extends AppContext {
+        getSlackBaseUrl() {
+            return "https://slack.com"
+        }
+    }
+
 
     const messageList = [
         {
@@ -66,7 +72,7 @@ describe('Messages Backup', () => {
         let c2Messages = [];
         let statusSet = false;
 
-        moxios.stubRequest(/\/conversations.history.*/, {
+        moxios.stubRequest(/\/api\/conversations.history.*/, {
             status: 200,
             response: {
                 ok: true,
@@ -74,7 +80,7 @@ describe('Messages Backup', () => {
             }
         });
 
-        moxios.stubRequest(/\/conversations.replies.*/, {
+        moxios.stubRequest(/\/api\/conversations.replies.*/, {
             status: 200,
             response: {
                 ok: true,
@@ -142,7 +148,7 @@ describe('Messages Backup', () => {
             }
         }
 
-        const context = new AppContext()
+        const context = new MockContext()
             .setModels({
                 backups: new BackupsMock(),
                 conversations: new ConversationsMock(),
@@ -155,17 +161,21 @@ describe('Messages Backup', () => {
         expect(c1Messages).to.deep.equal(messageList.concat(replies).map(toMessageObject));
         expect(c2Messages).to.deep.equal(messageList.concat(replies).map(toMessageObject));
 
+        expect(moxios.requests.at(0).config.baseURL).to.equal(context.getSlackBaseUrl());
         expect(moxios.requests.at(0).headers['Authorization']).to.equal(`Bearer ${accessToken}`);
-        expect(moxios.requests.at(0).url).to.equal(`/conversations.history?channel=C1`);
+        expect(moxios.requests.at(0).url).to.equal(`/api/conversations.history?channel=C1`);
 
+        expect(moxios.requests.at(1).config.baseURL).to.equal(context.getSlackBaseUrl());
         expect(moxios.requests.at(1).headers['Authorization']).to.equal(`Bearer ${accessToken}`);
-        expect(moxios.requests.at(1).url).to.equal(`/conversations.replies?channel=C1&ts=${messageList[2].thread_ts}`);
+        expect(moxios.requests.at(1).url).to.equal(`/api/conversations.replies?channel=C1&ts=${messageList[2].thread_ts}`);
 
+        expect(moxios.requests.at(2).config.baseURL).to.equal(context.getSlackBaseUrl());
         expect(moxios.requests.at(2).headers['Authorization']).to.equal(`Bearer ${accessToken}`);
-        expect(moxios.requests.at(2).url).to.equal(`/conversations.history?channel=C2`);
+        expect(moxios.requests.at(2).url).to.equal(`/api/conversations.history?channel=C2`);
 
+        expect(moxios.requests.at(3).config.baseURL).to.equal(context.getSlackBaseUrl());
         expect(moxios.requests.at(3).headers['Authorization']).to.equal(`Bearer ${accessToken}`);
-        expect(moxios.requests.at(3).url).to.equal(`/conversations.replies?channel=C2&ts=${messageList[2].thread_ts}`);
+        expect(moxios.requests.at(3).url).to.equal(`/api/conversations.replies?channel=C2&ts=${messageList[2].thread_ts}`);
     });
 
     it('paginated messages and replies', async () => {
@@ -201,7 +211,7 @@ describe('Messages Backup', () => {
             }
         }
 
-        const context = new AppContext()
+        const context = new MockContext()
             .setModels({
                 backups: new BackupsMock(),
                 conversations: new ConversationsMock(),
@@ -212,7 +222,7 @@ describe('Messages Backup', () => {
         let historyRequestNo = 0;
 
         moxios.stubs.track({
-            url: /\/conversations\.history.*/,
+            url: /\/api\/conversations\.history.*/,
             get response() {
                 historyRequestNo++;
                 const messages = historyRequestNo == 1 ? messageList.slice(0, 2) : messageList.slice(2);
@@ -234,7 +244,7 @@ describe('Messages Backup', () => {
         let repliesRequestNo = 0;
 
         moxios.stubs.track({
-            url: /\/conversations\.replies.*/,
+            url: /\/api\/conversations\.replies.*/,
             get response() {
                 repliesRequestNo++;
                 const messages = repliesRequestNo == 1 ? replies.slice(0, 2) : replies.slice(2);
@@ -259,17 +269,21 @@ describe('Messages Backup', () => {
 
         expect(moxios.requests.count()).to.equal(4);
 
+        expect(moxios.requests.at(0).config.baseURL).to.equal(context.getSlackBaseUrl());
         expect(moxios.requests.at(0).headers['Authorization']).to.equal(`Bearer ${accessToken}`);
-        expect(moxios.requests.at(0).url).to.equal(`/conversations.history?channel=C1`);
+        expect(moxios.requests.at(0).url).to.equal(`/api/conversations.history?channel=C1`);
 
+        expect(moxios.requests.at(1).config.baseURL).to.equal(context.getSlackBaseUrl());
         expect(moxios.requests.at(1).headers['Authorization']).to.equal(`Bearer ${accessToken}`);
-        expect(moxios.requests.at(1).url).to.equal(`/conversations.history?channel=C1&cursor=abc`);
+        expect(moxios.requests.at(1).url).to.equal(`/api/conversations.history?channel=C1&cursor=abc`);
 
+        expect(moxios.requests.at(2).config.baseURL).to.equal(context.getSlackBaseUrl());
         expect(moxios.requests.at(2).headers['Authorization']).to.equal(`Bearer ${accessToken}`);
-        expect(moxios.requests.at(2).url).to.equal(`/conversations.replies?channel=C1&ts=${messageList[2].thread_ts}`);
+        expect(moxios.requests.at(2).url).to.equal(`/api/conversations.replies?channel=C1&ts=${messageList[2].thread_ts}`);
 
+        expect(moxios.requests.at(3).config.baseURL).to.equal(context.getSlackBaseUrl());
         expect(moxios.requests.at(3).headers['Authorization']).to.equal(`Bearer ${accessToken}`);
-        expect(moxios.requests.at(3).url).to.equal(`/conversations.replies?channel=C1&ts=${messageList[2].thread_ts}&cursor=def`);
+        expect(moxios.requests.at(3).url).to.equal(`/api/conversations.replies?channel=C1&ts=${messageList[2].thread_ts}&cursor=def`);
     });
 
     it('rate limited', async () => {
@@ -304,7 +318,7 @@ describe('Messages Backup', () => {
             }
         }
 
-        const context = new AppContext()
+        const context = new MockContext()
             .setModels({
                 backups: new BackupsMock(),
                 conversations: new ConversationsMock(),
@@ -317,7 +331,7 @@ describe('Messages Backup', () => {
         let historyReqDelayEnd;
 
         moxios.stubs.track({
-            url: /\/conversations\.history.*/,
+            url: /\/api\/conversations\.history.*/,
             get response() {
                 historyRequestNo++;
 
@@ -361,7 +375,7 @@ describe('Messages Backup', () => {
         let repliesReqDelayEnd;
 
         moxios.stubs.track({
-            url: /\/conversations\.replies.*/,
+            url: /\/api\/conversations\.replies.*/,
             get response() {
                 repliesRequestNo++;
 
@@ -433,7 +447,7 @@ describe('Messages Backup', () => {
             }
         }
 
-        const context = new AppContext()
+        const context = new MockContext()
             .setModels({
                 backups: new BackupsMock(),
                 conversations: new ConversationsMock(),
@@ -442,7 +456,7 @@ describe('Messages Backup', () => {
 
         // conversations.history error
 
-        moxios.stubRequest(/\/conversations.history.*/, {
+        moxios.stubRequest(/\/api\/conversations.history.*/, {
             status: 200,
             response: {
                 ok: false,
@@ -454,14 +468,14 @@ describe('Messages Backup', () => {
             await backupMessages(context, '123', token);
             throw new Error('Should have failed');
         } catch (e) {
-            expect(e.message).to.equal('/conversations.history API failed with code some_error');
+            expect(e.message).to.equal('/api/conversations.history API failed with code some_error');
         }
 
         // conversations.replies error this time
 
         moxios.stubs.reset();
 
-        moxios.stubRequest(/\/conversations.history.*/, {
+        moxios.stubRequest(/\/api\/conversations.history.*/, {
             status: 200,
             response: {
                 ok: true,
@@ -481,7 +495,7 @@ describe('Messages Backup', () => {
             await backupMessages(context, '123', token);
             throw new Error('Should have failed');
         } catch (e) {
-            expect(e.message).to.equal('/conversations.replies API failed with code some_error');
+            expect(e.message).to.equal('/api/conversations.replies API failed with code some_error');
         }
     });
 
@@ -512,7 +526,7 @@ describe('Messages Backup', () => {
             }
         }
 
-        const context = new AppContext()
+        const context = new MockContext()
             .setModels({
                 backups: new BackupsMock(),
                 conversations: new ConversationsMock(),
@@ -525,7 +539,7 @@ describe('Messages Backup', () => {
             message: "Something went wrong"
         }
 
-        moxios.stubRequest(/\/conversations.history.*/, {
+        moxios.stubRequest(/\/api\/conversations.history.*/, {
             status: 500,
             response: errorResponse
         });
@@ -534,14 +548,14 @@ describe('Messages Backup', () => {
             await backupMessages(context, '123', token);
             throw new Error('Should have failed');
         } catch (e) {
-            expect(e.message).to.equal('/conversations.history failed. status: 500, message: ' + JSON.stringify(errorResponse, null, 2));
+            expect(e.message).to.equal('/api/conversations.history failed. status: 500, message: ' + JSON.stringify(errorResponse, null, 2));
         }
 
         // conversations.replies error this time
 
         moxios.stubs.reset();
 
-        moxios.stubRequest(/\/conversations.history.*/, {
+        moxios.stubRequest(/\/api\/conversations.history.*/, {
             status: 200,
             response: {
                 ok: true,
@@ -549,7 +563,7 @@ describe('Messages Backup', () => {
             }
         });
 
-        moxios.stubRequest(/\/conversations.replies.*/, {
+        moxios.stubRequest(/\/api\/conversations.replies.*/, {
             status: 500,
             response: errorResponse
         });
@@ -558,7 +572,7 @@ describe('Messages Backup', () => {
             await backupMessages(context, '123', token);
             throw new Error('Should have failed');
         } catch (e) {
-            expect(e.message).to.equal('/conversations.replies failed. status: 500, message: ' + JSON.stringify(errorResponse, null, 2));
+            expect(e.message).to.equal('/api/conversations.replies failed. status: 500, message: ' + JSON.stringify(errorResponse, null, 2));
         }
     });
 })

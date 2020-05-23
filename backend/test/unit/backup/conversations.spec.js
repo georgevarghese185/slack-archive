@@ -14,6 +14,12 @@ describe('Conversations Backup', () => {
         moxios.uninstall();
     });
 
+    class MockContext extends AppContext {
+        getSlackBaseUrl() {
+            return "https://slack.com"
+        }
+    }
+
 
     const conversationList = [
         {
@@ -64,13 +70,13 @@ describe('Conversations Backup', () => {
             }
         }
 
-        const context = new AppContext()
+        const context = new MockContext()
             .setModels({
                 backups: new BackupsMock(),
                 conversations: new ConversationsMock()
             });
 
-        moxios.stubRequest('/conversations.list', {
+        moxios.stubRequest('/api/conversations.list', {
             status: 200,
             response: {
                 "ok": true,
@@ -86,6 +92,7 @@ describe('Conversations Backup', () => {
 
         expect(statusSet).to.be.true;
         expect(addedConversations).to.deep.equal(conversationList);
+        expect(slackRequest.config.baseURL).to.equal(context.getSlackBaseUrl());
         expect(slackRequest.headers['Authorization']).to.equal(`Bearer ${accessToken}`);
     });
 
@@ -108,7 +115,7 @@ describe('Conversations Backup', () => {
             }
         }
 
-        const context = new AppContext()
+        const context = new MockContext()
             .setModels({
                 backups: new BackupsMock(),
                 conversations: new ConversationsMock()
@@ -141,9 +148,11 @@ describe('Conversations Backup', () => {
 
         expect(moxios.requests.count()).to.equal(2);
 
+        expect(moxios.requests.at(0).config.baseURL).to.equal(context.getSlackBaseUrl());
         expect(moxios.requests.at(0).headers['Authorization']).to.equal(`Bearer ${accessToken}`);
         expect(moxios.requests.at(0).config.params).to.be.undefined;
 
+        expect(moxios.requests.at(1).config.baseURL).to.equal(context.getSlackBaseUrl());
         expect(moxios.requests.at(1).headers['Authorization']).to.equal(`Bearer ${accessToken}`);
         expect(moxios.requests.at(1).config.params.cursor).to.equal('abc');
     });
@@ -165,7 +174,7 @@ describe('Conversations Backup', () => {
             }
         }
 
-        const context = new AppContext()
+        const context = new MockContext()
             .setModels({
                 backups: new BackupsMock(),
                 conversations: new ConversationsMock()
@@ -227,7 +236,7 @@ describe('Conversations Backup', () => {
             }
         }
 
-        moxios.stubRequest('/conversations.list', {
+        moxios.stubRequest('/api/conversations.list', {
             status: 200,
             response: {
                 ok: false,
@@ -235,7 +244,7 @@ describe('Conversations Backup', () => {
             }
         });
 
-        const context = new AppContext()
+        const context = new MockContext()
             .setModels({
                 backups: new BackupsMock()
             });
@@ -244,7 +253,7 @@ describe('Conversations Backup', () => {
             await backupConversations(context, '123', token);
             throw new Error('Should have failed');
         } catch (e) {
-            expect(e.message).to.equal('/conversations.list API failed with code some_error');
+            expect(e.message).to.equal('/api/conversations.list API failed with code some_error');
         }
     });
 
@@ -260,12 +269,12 @@ describe('Conversations Backup', () => {
             message: "Something went wrong"
         }
 
-        moxios.stubRequest('/conversations.list', {
+        moxios.stubRequest('/api/conversations.list', {
             status: 500,
             response: errorResponse
         });
 
-        const context = new AppContext()
+        const context = new MockContext()
             .setModels({
                 backups: new BackupsMock()
             });
@@ -274,7 +283,7 @@ describe('Conversations Backup', () => {
             await backupConversations(context, '123', token);
             throw new Error('Should have failed');
         } catch (e) {
-            expect(e.message).to.equal('/conversations.list failed. status: 500, message: ' + JSON.stringify(errorResponse, null, 2));
+            expect(e.message).to.equal('/api/conversations.list failed. status: 500, message: ' + JSON.stringify(errorResponse, null, 2));
         }
     });
 })
