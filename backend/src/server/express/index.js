@@ -1,4 +1,3 @@
-require('dotenv').config()
 const AppContext = require('../../AppContext');
 const bodyParser = require('body-parser');
 const express = require('express');
@@ -12,7 +11,7 @@ const start = async() => {
     setupRoutes(app, context);
 
     app.listen(process.env.PORT, () =>
-        context.getLogger().log('Server started on port ' + process.env.PORT));
+        context.getLogger().log('Slack Archive running on port ' + process.env.PORT));
 }
 
 start().catch(console.error)

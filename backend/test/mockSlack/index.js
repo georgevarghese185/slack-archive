@@ -1,4 +1,3 @@
-require('dotenv').config()
 const conversations = require('./data/conversations.json').conversations
 const members = require('./data/members.json').members
 const messages = require('./data/messages.json')
@@ -250,4 +249,4 @@ app.get('/api/conversations.replies', (req, resp) => {
     })
 })
 
-app.listen(port, () => console.log(`Slack Mock Server running on http://localhost:${port}`))
+app.listen(port, () => console.log(`Slack Mock Server running on port ${port}`))

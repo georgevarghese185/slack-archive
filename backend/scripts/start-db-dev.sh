@@ -17,3 +17,5 @@ else
         -p 127.0.0.1:$DOCKER_PG_PORT:5432/tcp \
         postgres:12.3
 fi
+
+echo "Development DB running in docker on port $DOCKER_PG_PORT"
