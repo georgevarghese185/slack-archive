@@ -61,12 +61,22 @@ describe('Login flow', () => {
             headers: { 'Cookie': loginCookie }
         });
 
-        console.log(response.data)
-
         expect(response.status).to.equal(200);
     })
 
-    it('logout')
+    it('logout', async () => {
+        const { loginCookie } = await login();
 
-    it('check login status: should be unauthorized')
+        const response = await axiosInstance.delete('/v1/login', {
+            headers: { 'Cookie': loginCookie }
+        });
+
+        expect(response.status).to.equal(200);
+
+        const response2 = await axiosInstance.get('/v1/login/status', {
+            headers: { 'Cookie': loginCookie }
+        });
+
+        expect(response2.status).to.equal(401);
+    });
 })
