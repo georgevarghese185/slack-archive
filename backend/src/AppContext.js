@@ -36,6 +36,10 @@ class AppContext {
         return process.env.SLACK_CLIENT_SECRET;
     }
 
+    getOauthRedirectUri() {
+        return process.env.OAUTH_REDIRECT_URI;
+    }
+
     getAuthTokenSecret() {
         return process.env.TOKEN_SECRET
     }

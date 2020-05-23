@@ -19,6 +19,10 @@ describe('Login APIs', () => {
             return { log: () => {}, warn: () => {}, error: () => {} }
         }
 
+        getOauthRedirectUri() {
+            return "http://localhost:8080/redirect"
+        }
+
         getSlackClientId() {
             return "client id"
         }
@@ -54,7 +58,7 @@ describe('Login APIs', () => {
                     parameters: {
                         client_id: context.getSlackClientId(),
                         scope: constants.slack.scope.publicMessages,
-                        redirect_uri: constants.slack.oauthRedirectUrl,
+                        redirect_uri: context.getOauthRedirectUri(),
                         team: context.getSlackTeamId()
                     }
                 }
@@ -105,7 +109,7 @@ describe('Login APIs', () => {
 
             const excpectedSlackBody = qs.stringify({
                 code: verificationCode,
-                redirect_uri: constants.slack.oauthRedirectUrl
+                redirect_uri: context.getOauthRedirectUri()
             });
             const expectedSlackAuthorization = "Basic " + Buffer.from(context.getSlackClientId() + ":" + context.getSlackClientSecret()).toString('base64');
 

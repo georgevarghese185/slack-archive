@@ -12,7 +12,7 @@ const getAuthUrl = (context) => {
         parameters: {
             client_id: context.getSlackClientId(),
             scope: constants.slack.scope.publicMessages,
-            redirect_uri: constants.slack.oauthRedirectUrl,
+            redirect_uri: context.getOauthRedirectUri(),
             team: context.getSlackTeamId()
         }
     };
@@ -41,7 +41,7 @@ const login = async (context, request) => {
         response = await axiosInstance.post('/oauth.access',
             qs.stringify({
                 code: verificationCode,
-                redirect_uri: constants.slack.oauthRedirectUrl
+                redirect_uri: context.getOauthRedirectUri()
             }),
             {
                 headers: {
