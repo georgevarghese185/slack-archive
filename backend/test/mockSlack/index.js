@@ -74,27 +74,6 @@ let tooManyRequests = false
 let authCode = null
 let accessToken = null
 
-app.use((req, resp, next) => {
-    if (tooManyRequests) {
-        resp.status(429).set('Retry-After', '2').send()
-        return
-    }
-
-    if (timer == null) {
-        timer = setTimeout(() => {
-            requestsPerSecond = 0
-            timer = null
-        }, 1000)
-    }
-
-    if (++requestsPerSecond == MAX_REQUESTS_PER_SECOND) {
-        tooManyRequests = true;
-        setTimeout(() => { tooManyRequests = false }, 2000)
-    }
-
-    next()
-})
-
 
 app.get('/', (req, res) => res.send('up'))
 
@@ -136,6 +115,7 @@ app.post('/api/oauth.access', (req, resp) => {
     }
 })
 
+// auth middleware
 app.use((req, resp, next) => {
     const token = ((req.headers.authorization || "").match('Bearer (.*)') || [])[1]
 
@@ -153,6 +133,35 @@ app.post('/api/auth.test', (req, resp) => {
     resp.status(200).send({
         ok: true
     })
+})
+
+app.post('/api/auth.revoke', (req, resp) => {
+    accessToken = null
+    resp.send({
+        ok: true
+    })
+})
+
+// rate limiting simulation middleware
+app.use((req, resp, next) => {
+    if (tooManyRequests) {
+        resp.status(429).set('Retry-After', '2').send()
+        return
+    }
+
+    if (timer == null) {
+        timer = setTimeout(() => {
+            requestsPerSecond = 0
+            timer = null
+        }, 1000)
+    }
+
+    if (++requestsPerSecond == MAX_REQUESTS_PER_SECOND) {
+        tooManyRequests = true;
+        setTimeout(() => { tooManyRequests = false }, 2000)
+    }
+
+    next()
 })
 
 app.get('/api/conversations.list', (req, resp) => {
@@ -238,13 +247,6 @@ app.get('/api/conversations.replies', (req, resp) => {
         response_metadata: {
             next_cursor: nextCursor || ""
         }
-    })
-})
-
-app.post('/api/auth.revoke', (req, resp) => {
-    accessToken = null
-    resp.send({
-        ok: true
     })
 })
 
