@@ -14,7 +14,7 @@ const authorizeRequest = (context, request) => {
     let loginToken;
 
     try {
-        loginToken = cookie.parse(request.headers['Cookie']).loginToken;
+        loginToken = cookie.parse(request.headers['cookie']).loginToken;
     } catch (e) {
         logger.error('Error parsing token cookie');
         logger.error(e);

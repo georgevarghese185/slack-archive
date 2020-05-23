@@ -93,7 +93,7 @@ describe('Conversations Backup', () => {
         expect(statusSet).to.be.true;
         expect(addedConversations).to.deep.equal(conversationList);
         expect(slackRequest.config.baseURL).to.equal(context.getSlackBaseUrl());
-        expect(slackRequest.headers['Authorization']).to.equal(`Bearer ${accessToken}`);
+        expect(slackRequest.headers['authorization']).to.equal(`Bearer ${accessToken}`);
     });
 
 
@@ -149,11 +149,11 @@ describe('Conversations Backup', () => {
         expect(moxios.requests.count()).to.equal(2);
 
         expect(moxios.requests.at(0).config.baseURL).to.equal(context.getSlackBaseUrl());
-        expect(moxios.requests.at(0).headers['Authorization']).to.equal(`Bearer ${accessToken}`);
+        expect(moxios.requests.at(0).headers['authorization']).to.equal(`Bearer ${accessToken}`);
         expect(moxios.requests.at(0).config.params).to.be.undefined;
 
         expect(moxios.requests.at(1).config.baseURL).to.equal(context.getSlackBaseUrl());
-        expect(moxios.requests.at(1).headers['Authorization']).to.equal(`Bearer ${accessToken}`);
+        expect(moxios.requests.at(1).headers['authorization']).to.equal(`Bearer ${accessToken}`);
         expect(moxios.requests.at(1).config.params.cursor).to.equal('abc');
     });
 
@@ -204,7 +204,7 @@ describe('Conversations Backup', () => {
                     return {
                         status: 429,
                         headers: {
-                            'Retry-After': '1'
+                            'retry-after': '1'
                         }
                     }
                 } else {

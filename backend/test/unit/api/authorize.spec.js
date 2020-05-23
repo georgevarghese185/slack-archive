@@ -27,7 +27,7 @@ describe('authorizeRequest()', () => {
         );
         const request = new Request({
             headers: {
-                'Cookie': cookie.serialize('loginToken', encryptedToken)
+                'cookie': cookie.serialize('loginToken', encryptedToken)
             }
         });
 
@@ -47,7 +47,7 @@ describe('authorizeRequest()', () => {
         );
         const request = new Request({
             headers: {
-                'Cookie': cookie.serialize('loginToken', encryptedToken)
+                'cookie': cookie.serialize('loginToken', encryptedToken)
             }
         });
 

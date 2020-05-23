@@ -162,19 +162,19 @@ describe('Messages Backup', () => {
         expect(c2Messages).to.deep.equal(messageList.concat(replies).map(toMessageObject));
 
         expect(moxios.requests.at(0).config.baseURL).to.equal(context.getSlackBaseUrl());
-        expect(moxios.requests.at(0).headers['Authorization']).to.equal(`Bearer ${accessToken}`);
+        expect(moxios.requests.at(0).headers['authorization']).to.equal(`Bearer ${accessToken}`);
         expect(moxios.requests.at(0).url).to.equal(`/api/conversations.history?channel=C1`);
 
         expect(moxios.requests.at(1).config.baseURL).to.equal(context.getSlackBaseUrl());
-        expect(moxios.requests.at(1).headers['Authorization']).to.equal(`Bearer ${accessToken}`);
+        expect(moxios.requests.at(1).headers['authorization']).to.equal(`Bearer ${accessToken}`);
         expect(moxios.requests.at(1).url).to.equal(`/api/conversations.replies?channel=C1&ts=${messageList[2].thread_ts}`);
 
         expect(moxios.requests.at(2).config.baseURL).to.equal(context.getSlackBaseUrl());
-        expect(moxios.requests.at(2).headers['Authorization']).to.equal(`Bearer ${accessToken}`);
+        expect(moxios.requests.at(2).headers['authorization']).to.equal(`Bearer ${accessToken}`);
         expect(moxios.requests.at(2).url).to.equal(`/api/conversations.history?channel=C2`);
 
         expect(moxios.requests.at(3).config.baseURL).to.equal(context.getSlackBaseUrl());
-        expect(moxios.requests.at(3).headers['Authorization']).to.equal(`Bearer ${accessToken}`);
+        expect(moxios.requests.at(3).headers['authorization']).to.equal(`Bearer ${accessToken}`);
         expect(moxios.requests.at(3).url).to.equal(`/api/conversations.replies?channel=C2&ts=${messageList[2].thread_ts}`);
     });
 
@@ -270,19 +270,19 @@ describe('Messages Backup', () => {
         expect(moxios.requests.count()).to.equal(4);
 
         expect(moxios.requests.at(0).config.baseURL).to.equal(context.getSlackBaseUrl());
-        expect(moxios.requests.at(0).headers['Authorization']).to.equal(`Bearer ${accessToken}`);
+        expect(moxios.requests.at(0).headers['authorization']).to.equal(`Bearer ${accessToken}`);
         expect(moxios.requests.at(0).url).to.equal(`/api/conversations.history?channel=C1`);
 
         expect(moxios.requests.at(1).config.baseURL).to.equal(context.getSlackBaseUrl());
-        expect(moxios.requests.at(1).headers['Authorization']).to.equal(`Bearer ${accessToken}`);
+        expect(moxios.requests.at(1).headers['authorization']).to.equal(`Bearer ${accessToken}`);
         expect(moxios.requests.at(1).url).to.equal(`/api/conversations.history?channel=C1&cursor=abc`);
 
         expect(moxios.requests.at(2).config.baseURL).to.equal(context.getSlackBaseUrl());
-        expect(moxios.requests.at(2).headers['Authorization']).to.equal(`Bearer ${accessToken}`);
+        expect(moxios.requests.at(2).headers['authorization']).to.equal(`Bearer ${accessToken}`);
         expect(moxios.requests.at(2).url).to.equal(`/api/conversations.replies?channel=C1&ts=${messageList[2].thread_ts}`);
 
         expect(moxios.requests.at(3).config.baseURL).to.equal(context.getSlackBaseUrl());
-        expect(moxios.requests.at(3).headers['Authorization']).to.equal(`Bearer ${accessToken}`);
+        expect(moxios.requests.at(3).headers['authorization']).to.equal(`Bearer ${accessToken}`);
         expect(moxios.requests.at(3).url).to.equal(`/api/conversations.replies?channel=C1&ts=${messageList[2].thread_ts}&cursor=def`);
     });
 

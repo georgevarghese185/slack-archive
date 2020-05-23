@@ -10,7 +10,7 @@ const backupMembers = async (context, backupId, token) => {
 
     const config = {
         headers: {
-            'Authorization': `Bearer ${token.accessToken}`
+            'authorization': `Bearer ${token.accessToken}`
         }
     }
 

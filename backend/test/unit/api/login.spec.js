@@ -106,7 +106,7 @@ describe('Login APIs', () => {
             const context = new MockContext()
             const response = await api['POST:/v1/login'](context, request);
             const slackRequest = moxios.requests.mostRecent();
-            const token = cookie.parse(response.headers['Set-Cookie']).loginToken;
+            const token = cookie.parse(response.headers['set-cookie']).loginToken;
             const decodedToken = jwt.verify(token, context.getAuthTokenSecret());
 
 
@@ -119,13 +119,13 @@ describe('Login APIs', () => {
 
             expect(slackRequest.config.method).to.equal('post');
             expect(slackRequest.headers['Content-Type']).to.equal('application/x-www-form-urlencoded');
-            expect(slackRequest.headers['Authorization']).to.equal(expectedSlackAuthorization);
+            expect(slackRequest.headers['authorization']).to.equal(expectedSlackAuthorization);
             expect(slackRequest.config.baseURL).to.equal(context.getSlackBaseUrl());
             expect(slackRequest.config.data).to.equal(excpectedSlackBody);
 
             expect(response.status).to.equal(200);
-            expect(response.headers['Set-Cookie']).to.match(/Secure/);
-            expect(response.headers['Set-Cookie']).to.match(/HttpOnly/);
+            expect(response.headers['set-cookie']).to.match(/Secure/);
+            expect(response.headers['set-cookie']).to.match(/HttpOnly/);
             expect(decodedToken.userId).to.equal(userId);
             expect(decodedToken.accessToken).to.equal(accessToken);
             expect(decodedToken.exp - decodedToken.iat).to.equal(30 * 24 * 60 * 60);
@@ -236,7 +236,7 @@ describe('Login APIs', () => {
             );
             const request = new Request({
                 headers: {
-                    'Cookie': cookie.serialize('loginToken', token)
+                    'cookie': cookie.serialize('loginToken', token)
                 }
             });
 
@@ -252,7 +252,7 @@ describe('Login APIs', () => {
             const slackRequest = moxios.requests.mostRecent();
 
             expect(slackRequest.config.method).to.equal('post');
-            expect(slackRequest.headers['Authorization']).to.equal(`Bearer ${accessToken}`);
+            expect(slackRequest.headers['authorization']).to.equal(`Bearer ${accessToken}`);
             expect(response.status).to.equal(200);
         });
 
@@ -270,7 +270,7 @@ describe('Login APIs', () => {
         it('unauthorized: invalid token', async () => {
             const request = new Request({
                 headers: {
-                    'Cookie': cookie.serialize('loginToken', 'not a JWT')
+                    'cookie': cookie.serialize('loginToken', 'not a JWT')
                 }
             });
 
@@ -292,7 +292,7 @@ describe('Login APIs', () => {
             );
             const request = new Request({
                 headers: {
-                    'Cookie': cookie.serialize('loginToken', token)
+                    'cookie': cookie.serialize('loginToken', token)
                 }
             });
 
@@ -302,7 +302,7 @@ describe('Login APIs', () => {
 
                 expect(response.status).to.equal(401);
                 expect(response.body.errorCode).to.equal('token_expired');
-                expect(slackRequest.headers['Authorization']).to.equal(`Bearer ${accessToken}`);
+                expect(slackRequest.headers['authorization']).to.equal(`Bearer ${accessToken}`);
             }
 
             moxios.stubRequest('/api/auth.revoke', {
@@ -337,7 +337,7 @@ describe('Login APIs', () => {
             );
             const request = new Request({
                 headers: {
-                    'Cookie': cookie.serialize('loginToken', token)
+                    'cookie': cookie.serialize('loginToken', token)
                 }
             });
             const slackErrors = [
@@ -396,7 +396,7 @@ describe('Login APIs', () => {
             );
             const request = new Request({
                 headers: {
-                    'Cookie': cookie.serialize('loginToken', token)
+                    'cookie': cookie.serialize('loginToken', token)
                 }
             });
 
@@ -411,7 +411,7 @@ describe('Login APIs', () => {
             const slackRequest = moxios.requests.mostRecent();
 
             expect(slackRequest.config.method).to.equal('post');
-            expect(slackRequest.headers['Authorization']).to.equal(`Bearer ${accessToken}`);
+            expect(slackRequest.headers['authorization']).to.equal(`Bearer ${accessToken}`);
             expect(response.status).to.equal(200);
         });
 
@@ -426,7 +426,7 @@ describe('Login APIs', () => {
             );
             const request = new Request({
                 headers: {
-                    'Cookie': cookie.serialize('loginToken', token)
+                    'cookie': cookie.serialize('loginToken', token)
                 }
             });
 
@@ -441,7 +441,7 @@ describe('Login APIs', () => {
             const slackRequest = moxios.requests.mostRecent();
 
             expect(response.status).to.equal(200);
-            expect(slackRequest.headers['Authorization']).to.equal(`Bearer ${accessToken}`);
+            expect(slackRequest.headers['authorization']).to.equal(`Bearer ${accessToken}`);
         });
 
 
@@ -459,7 +459,7 @@ describe('Login APIs', () => {
             const context = new MockContext();
             const request = new Request({
                 headers: {
-                    'Cookie': cookie.serialize('loginToken', 'not a token')
+                    'cookie': cookie.serialize('loginToken', 'not a token')
                 }
             });
 

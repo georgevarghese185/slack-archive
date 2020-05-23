@@ -45,7 +45,8 @@ const login = async (context, request) => {
             }),
             {
                 headers: {
-                    'Authorization': "Basic " + Buffer.from(context.getSlackClientId() + ":" + context.getSlackClientSecret()).toString('base64')
+                    'authorization': "Basic " + Buffer.from(context.getSlackClientId() + ":" + context.getSlackClientSecret()).toString('base64'),
+                    'content-type': 'application/x-www-form-urlencoded'
                 }
             }
         );
@@ -78,7 +79,7 @@ const login = async (context, request) => {
     return new Response({
         status: 200,
         headers: {
-            'Set-Cookie': cookie.serialize(
+            'set-cookie': cookie.serialize(
                 'loginToken',
                 token,
                 { httpOnly: true, secure: !constants.isDevEnvironment }
@@ -94,7 +95,7 @@ const validLogin = async (context, request) => {
     let accessToken;
 
     try {
-        loginToken = cookie.parse(request.headers['Cookie']).loginToken;
+        loginToken = cookie.parse(request.headers['cookie']).loginToken;
     } catch (e) {
         loginToken = null;
     }
@@ -125,7 +126,7 @@ const validLogin = async (context, request) => {
     try {
         response = await axiosInstance.post('/api/auth.test', {}, {
             headers: {
-                'Authorization': 'Bearer ' + accessToken
+                'authorization': 'Bearer ' + accessToken
             }
         });
     } catch (e) {
@@ -154,7 +155,7 @@ const deleteToken = async (context, request) => {
     let accessToken;
 
     try {
-        loginToken = cookie.parse(request.headers['Cookie']).loginToken;
+        loginToken = cookie.parse(request.headers['cookie']).loginToken;
     } catch (e) {
         loginToken = null;
     }
@@ -181,7 +182,7 @@ const revokeSlackToken = async (context, token) => {
     try {
         await axiosInstance.post('/api/auth.revoke', {}, {
             headers: {
-                'Authorization': 'Bearer ' + token
+                'authorization': 'Bearer ' + token
             }
         });
     } catch (e) {

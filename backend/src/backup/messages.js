@@ -7,7 +7,7 @@ const backupMessages = async (context, backupId, token) => {
     const axiosInstance = axios.create({
         baseURL: context.getSlackBaseUrl(),
         headers: {
-            'Authorization': `Bearer ${token.accessToken}`
+            'authorization': `Bearer ${token.accessToken}`
         }
     });
 
