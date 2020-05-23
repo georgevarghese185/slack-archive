@@ -47,9 +47,9 @@ describe('Login APIs', () => {
 
     describe('GET:/v1/login/auth-url', () => {
 
-        it('get auth URL', () => {
+        it('get auth URL', async () => {
             const context = new MockContext()
-            const response = api['GET:/v1/login/auth-url'](context, new Request());
+            const response = await api['GET:/v1/login/auth-url'](context, new Request());
 
             const expectedResponse = new Response({
                 status: 200,

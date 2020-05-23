@@ -6,7 +6,7 @@ const qs = require('query-string');
 const Response = require('../types/Response');
 const { fromAxiosError, fromSlackError, badRequest, unauthorized, internalError } = require('../util/response');
 
-const getAuthUrl = (context) => {
+const getAuthUrl = async (context) => {
     const body = {
         url: constants.slack.oauthUrl,
         parameters: {
