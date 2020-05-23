@@ -120,7 +120,7 @@ const validLogin = async (context, request) => {
     }
 
 
-    const axiosInstance = axios.create({ baseURL: constants.slack.apiBaseUrl });
+    const axiosInstance = axios.create({ baseURL: context.getSlackBaseUrl() });
     let response;
 
     try {
@@ -178,7 +178,7 @@ const deleteToken = async (context, request) => {
 
 const revokeSlackToken = async (context, token) => {
     const logger = context.getLogger();
-    const axiosInstance = axios.create({ baseURL: constants.slack.apiBaseUrl });
+    const axiosInstance = axios.create({ baseURL: context.getSlackBaseUrl() });
     try {
         await axiosInstance.post('/api/auth.revoke', {}, {
             headers: {

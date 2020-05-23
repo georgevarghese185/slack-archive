@@ -117,6 +117,7 @@ describe('Login APIs', () => {
             });
             const expectedSlackAuthorization = "Basic " + Buffer.from(context.getSlackClientId() + ":" + context.getSlackClientSecret()).toString('base64');
 
+            expect(slackRequest.config.baseURL).to.equal(context.getSlackBaseUrl())
             expect(slackRequest.config.method).to.equal('post');
             expect(slackRequest.headers['Content-Type']).to.equal('application/x-www-form-urlencoded');
             expect(slackRequest.headers['authorization']).to.equal(expectedSlackAuthorization);
@@ -251,6 +252,7 @@ describe('Login APIs', () => {
 
             const slackRequest = moxios.requests.mostRecent();
 
+            expect(slackRequest.config.baseURL).to.equal(context.getSlackBaseUrl())
             expect(slackRequest.config.method).to.equal('post');
             expect(slackRequest.headers['authorization']).to.equal(`Bearer ${accessToken}`);
             expect(response.status).to.equal(200);
@@ -410,6 +412,7 @@ describe('Login APIs', () => {
             const response = await api['DELETE:/v1/login'](context, request);
             const slackRequest = moxios.requests.mostRecent();
 
+            expect(slackRequest.config.baseURL).to.equal(context.getSlackBaseUrl())
             expect(slackRequest.config.method).to.equal('post');
             expect(slackRequest.headers['authorization']).to.equal(`Bearer ${accessToken}`);
             expect(response.status).to.equal(200);
@@ -441,6 +444,7 @@ describe('Login APIs', () => {
             const slackRequest = moxios.requests.mostRecent();
 
             expect(response.status).to.equal(200);
+            expect(slackRequest.config.baseURL).to.equal(context.getSlackBaseUrl())
             expect(slackRequest.headers['authorization']).to.equal(`Bearer ${accessToken}`);
         });
 
