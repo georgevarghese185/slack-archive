@@ -1,12 +1,15 @@
+require('dotenv').config()
 const conversations = require('./data/conversations.json').conversations
 const members = require('./data/members.json').members
 const messages = require('./data/messages.json')
 const replies = require('./data/replies.json')
 const uuid = require('uuid').v4;
+const bodyParser = require('body-parser')
 
 const express = require('express')
 const app = express()
-const port = process.env.PORT || 8081
+app.use(bodyParser.urlencoded({ extended: true }))
+const port = process.env.MOCK_SLACK_PORT
 
 const CONVERSATIONS_BATCH = 100
 const MEMBERS_BATCH = 100
@@ -68,8 +71,8 @@ const getItems = (name, cursor, allItems, batchSize) => {
 let requestsPerSecond = 0
 let timer = null
 let tooManyRequests = false
-let authCode
-let accessToken
+let authCode = null
+let accessToken = null
 
 app.use((req, resp, next) => {
     if (tooManyRequests) {
@@ -104,17 +107,31 @@ app.get('/oauth/authorize', (req, resp) => {
 })
 
 app.post('/api/oauth.access', (req, resp) => {
-    if (req.query.code !== authCode) {
+    const auth = req.headers['authorization'] || "";
+    const token = Buffer.from(auth.match(/Basic (.*)/)[1], 'base64').toString() || "";
+    const [clientId, clientSecret] = token.split(':');
+
+    if (clientId !== process.env.SLACK_CLIENT_ID) {
+        resp.status(200).send({
+            ok: false,
+            error: "invalid_client_id"
+        })
+    } else if (clientSecret !== process.env.SLACK_CLIENT_SECRET) {
+        resp.status(200).send({
+            ok: false,
+            error: "bad_client_secret"
+        })
+    } else if (req.body.code !== authCode) {
+        resp.status(200).send({
+            ok: false,
+            error: "invalid_code"
+        })
+    } else {
         accessToken = uuid()
         resp.status(200).send({
             ok: true,
             access_token: accessToken,
             user_id: USER_ID
-        })
-    } else {
-        resp.status(200).send({
-            ok: false,
-            error: "invalid_code"
         })
     }
 })
