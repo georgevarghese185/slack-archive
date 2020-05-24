@@ -29,6 +29,12 @@ const handleError = (context, resp, e) => {
 }
 
 const setupRoutes = (app, context) => {
+    app.use((req, resp, next) => {
+        resp.set('Access-Control-Allow-Origin', process.env.CORS_ALLOW_ORIGIN)
+        resp.set('Access-Control-Allow-Headers', '*')
+        next();
+    })
+
     app.get('/', (req, resp) => resp.send('up'));
 
     app.get('/v1/login/auth-url', (req, resp) => {
