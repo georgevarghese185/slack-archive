@@ -1,17 +1,20 @@
 <template>
   <div class="sign-in-container">
-    <div class="card">
-      <p class="welcome">Welcome to Slack Archive</p>
-      <p class="instructions">To begin, sign into your workspace and give Slack Archive access to read public channels</p>
-      <button :class="{'sign-in': true, 'signing-in': this.signingIn}" @click="signIn">
-        <p v-if="!signingIn">Sign In</p>
-        <Spinner class="spinner" v-if="signingIn"/>
-      </button>
-    </div>
+    <Card class="welcome-card">
+      <div class="card-inner-container">
+        <p class="welcome">Welcome to Slack Archive</p>
+        <p class="instructions">To begin, sign into your workspace and give Slack Archive access to read your public channels</p>
+        <button :class="{'sign-in': true, 'signing-in': this.signingIn}" @click="signIn">
+          <p v-if="!signingIn">Sign In</p>
+          <Spinner class="spinner" v-if="signingIn"/>
+        </button>
+      </div>
+    </Card>
   </div>
 </template>
 
 <script>
+import Card from '../components/Card'
 import Spinner from '../components/Spinner'
 
 export default {
@@ -26,6 +29,7 @@ export default {
     }
   },
   components: {
+    Card,
     Spinner
   }
 }
@@ -40,16 +44,14 @@ export default {
     align-items: flex-start;
   }
 
-  .card {
+  .welcome-card {
+    margin-top: 46px;
+  }
+
+  .card-inner-container {
     display:flex;
     flex-direction: column;
     align-items: center;
-    background: white;
-    height: auto;
-    padding: 32px;
-    margin-top: 46px;
-    border-radius: 8px;
-    box-shadow: 0px 1px 6px 2px #0000000d;
   }
 
   .welcome {
