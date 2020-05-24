@@ -81,7 +81,7 @@ app.get('/oauth/authorize', (req, resp) => {
     const redirect = req.query.redirect_uri
     const state = req.query.state
 
-    resp.status(302).send(`${redirect}?code=${authCode}&state=${encodeURIComponent(state)}`)
+    resp.redirect(`${redirect}?code=${authCode}&state=${encodeURIComponent(state)}`)
 })
 
 app.post('/api/oauth.access', (req, resp) => {

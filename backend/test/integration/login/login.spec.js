@@ -21,11 +21,16 @@ describe('Login flow', () => {
     // helper function for logging into slack archive (assumes Mock Slack server is being used)
     const login = async () => {
         const { url, params } = await getAuthUrl();
-        const { data: redirect } = await axios.get(url, {
-            params,
-            validateStatus: (status) => status === 302
+        const { headers: { location } } = await axios.get(url, {
+            params: {
+                ...params,
+                redirect_uri: process.env.OAUTH_REDIRECT_URI
+            },
+            validateStatus: (status) => status === 302,
+            maxRedirects: 0
         });
-        const { query: { code } } = qs.parseUrl(redirect);
+
+        const { query: { code } } = qs.parseUrl(location);
 
         const response = await axiosInstance.post('/v1/login', { verificationCode: code });
         const loginCookie = response.headers['set-cookie'][0];
