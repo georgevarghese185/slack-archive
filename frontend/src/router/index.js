@@ -1,14 +1,25 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Archive from '../views/Archive.vue'
+import SignIn from '../views/SignIn.vue'
+import { isLoggedIn } from '../util/session'
 
 Vue.use(VueRouter)
 
-const routes = [
+const routes = isLoggedIn() ? [
   {
     path: '/archive',
     name: 'Archive',
     component: Archive
+  }, {
+    path: '*',
+    redirect: '/archive'
+  }
+] : [
+  {
+    path: '*',
+    name: 'SignIn',
+    component: SignIn
   }
 ]
 

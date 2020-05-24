@@ -1,12 +1,17 @@
 <template>
   <div class="loader">
-    <img class="progress" src="../assets/progress.png">
+    <Spinner class="spinner"/>
     <p class="loader-text"> <slot></slot> </p>
   </div>
 </template>
 
 <script>
+import Spinner from './Spinner'
+
 export default {
+  components: {
+    Spinner
+  }
 }
 </script>
 
@@ -25,14 +30,8 @@ export default {
     margin-left: 4px;
   }
 
-  .progress {
-    width: 16px;
+  .spinner {
     margin-right: 4px;
-    animation: spin 2s linear infinite;
-  }
-
-  @keyframes spin {
-    from { transform: rotate(0deg) }
-    from { transform: rotate(-360deg) }
+    width: 16px;
   }
 </style>
