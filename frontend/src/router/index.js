@@ -2,6 +2,7 @@ import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Archive from '../views/Archive.vue'
 import SignIn from '../views/SignIn.vue'
+import OauthRedirect from '../views/OauthRedirect.vue'
 import { isLoggedIn } from '../util/session'
 
 Vue.use(VueRouter)
@@ -17,9 +18,18 @@ const routes = isLoggedIn() ? [
   }
 ] : [
   {
-    path: '*',
+    path: '/sign-in',
     name: 'SignIn',
     component: SignIn
+  },
+  {
+    path: '/oauth/redirect',
+    name: 'OauthRedirect',
+    component: OauthRedirect
+  },
+  {
+    path: '*',
+    redirect: '/sign-in'
   }
 ]
 

@@ -16,6 +16,7 @@
 <script>
 import Card from '../components/Card'
 import Spinner from '../components/Spinner'
+import { startLogin } from '../util/session'
 
 export default {
   data () {
@@ -24,8 +25,13 @@ export default {
     }
   },
   methods: {
-    signIn () {
+    signIn: async function () {
       this.signingIn = true
+      try {
+        await startLogin()
+      } catch (e) {
+        // TODO handle error
+      }
     }
   },
   components: {
