@@ -1,7 +1,7 @@
 <template>
   <header>
     <router-link class="title" to="/"> Slack Archive </router-link>
-    <span>
+    <span v-if="loggedIn">
       <router-link :class="{ 'nav-link': true, 'nav-selected': this.isArchivePage }" to="archive">Archive</router-link>
       <router-link :class="{ 'nav-link': true, 'nav-selected': this.isBackupsPage }" to="backup">Backup</router-link>
     </span>
@@ -9,9 +9,12 @@
 </template>
 
 <script>
+import { isLoggedIn } from '../util/session'
+
 export default {
   data () {
     return {
+      loggedIn: isLoggedIn(),
       isArchivePage: this.$router.currentRoute.path.match('/archive') != null,
       isBackupsPage: this.$router.currentRoute.path.match('/backup') != null
     }
