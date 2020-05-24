@@ -36,3 +36,13 @@ export const completeLogin = async (code, state) => {
     return false
   }
 }
+
+export const logout = async () => {
+  try {
+    await axios.delete(`${process.env.VUE_APP_API_BASE_URL}/v1/login`)
+  } catch (e) {
+    console.error(e)
+  }
+
+  localStorage.clear('loggedIn')
+}

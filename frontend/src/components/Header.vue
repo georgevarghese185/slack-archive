@@ -4,12 +4,13 @@
     <span v-if="loggedIn">
       <router-link :class="{ 'nav-link': true, 'nav-selected': this.isArchivePage }" to="archive">Archive</router-link>
       <router-link :class="{ 'nav-link': true, 'nav-selected': this.isBackupsPage }" to="backup">Backup</router-link>
+      <span class="nav-link" @click="signOut">Sign Out</span>
     </span>
   </header>
 </template>
 
 <script>
-import { isLoggedIn } from '../util/session'
+import { isLoggedIn, logout } from '../util/session'
 
 export default {
   data () {
@@ -26,7 +27,10 @@ export default {
     }
   },
   methods: {
-
+    signOut: async function () {
+      await logout()
+      window.location.href = window.location.origin
+    }
   }
 }
 </script>
@@ -53,6 +57,7 @@ export default {
   }
 
   .nav-link {
+    cursor: pointer;
     font-family: sans-serif;
     font-weight: bold;
     font-size: 18px;
