@@ -1,6 +1,7 @@
 const api = require('../../api')
 const constants = require('../../constants');
 const Request = require('../../types/Request')
+const { authorizeRequest } = require('../../api/authorize');
 
 
 const toRequest = (req) => {
@@ -28,6 +29,23 @@ const handleError = (context, resp, e) => {
         errorCode: constants.errorCodes.internalError,
         message: "Unexpected/unforseen error"
     })
+}
+
+const authMiddleware = (context) => (req, resp, next) => {
+    const token = authorizeRequest(context, toRequest(req));
+
+    if (token == null) {
+        resp.status(401).send({
+            errorCode: constants.errorCodes.unauthorized,
+            message: "Unauthorized"
+        });
+
+        return;
+    }
+
+    req.token = token;
+
+    next();
 }
 
 const setupRoutes = (app, context) => {
@@ -62,6 +80,8 @@ const setupRoutes = (app, context) => {
             .then(response => sendResponse(resp, response))
             .catch(e => handleError(context, resp, e));
     })
+
+    app.use(authMiddleware(context));
 
     app.get('/v1/backup/stats', (req, resp) => {
         api['GET:/v1/backup/stats'](context, toRequest(req))
