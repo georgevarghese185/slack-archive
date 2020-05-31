@@ -11,13 +11,24 @@ const jwt = require('../util/jwt');
  */
 const authorizeRequest = (context, request) => {
     const logger = context.getLogger();
+    const requestCookie = request.headers['cookie'];
     let loginToken;
 
+    if (!requestCookie) {
+        logger.error('No cookie in request');
+        return null;
+    }
+
     try {
-        loginToken = cookie.parse(request.headers['cookie']).loginToken;
+        loginToken = cookie.parse(requestCookie).loginToken;
     } catch (e) {
         logger.error('Error parsing token cookie');
         logger.error(e);
+        return null;
+    }
+
+    if (!loginToken) {
+        logger.error('Missing login token in cookie');
         return null;
     }
 
