@@ -20,6 +20,7 @@ const sendResponse = (resp, response) => {
 
 const handleError = (context, resp, e) => {
     context.getLogger().error('Error while processing request')
+    context.getLogger().error(e)
 
     resp.status(500)
     resp.send({
