@@ -156,7 +156,7 @@ describe('Backup APIs', () => {
             backupTask.error = null;
             backupTask.status = 'COLLECTING_INFO';
             backupTask.currentConversation = null;
-            backupTask.messagesBackedUp = [];
+            backupTask.backedUpConversations = [];
             await test();
         });
 
