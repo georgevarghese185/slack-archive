@@ -60,6 +60,12 @@ const setupRoutes = (app, context) => {
             .then(response => sendResponse(resp, response))
             .catch(e => handleError(context, resp, e));
     })
+
+    app.get('/v1/backup/stats', (req, resp) => {
+        api['GET:/v1/backup/stats'](context, toRequest(req))
+            .then(response => sendResponse(resp, response))
+            .catch(e => handleError(context, resp, e));
+    })
 }
 
 module.exports = {
