@@ -25,4 +25,17 @@ describe('Backup', () => {
             lastBackupAt: null
         });
     })
+
+    it('backup stats should fail without login', async () => {
+        loginCookie = null;
+
+        try {
+            await axiosInstance.get('/v1/backup/stats');
+        } catch (e) {
+            expect(e.response.status).to.equal(401);
+            return;
+        }
+
+        throw new Error('Should have failed');
+    });
 })
