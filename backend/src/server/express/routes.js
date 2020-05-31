@@ -1,4 +1,5 @@
 const api = require('../../api')
+const constants = require('../../constants');
 const Request = require('../../types/Request')
 
 
@@ -24,7 +25,7 @@ const handleError = (context, resp, e) => {
 
     resp.status(500)
     resp.send({
-        errorCode: "internal_server_error",
+        errorCode: constants.errorCodes.internalError,
         message: "Unexpected/unforseen error"
     })
 }
