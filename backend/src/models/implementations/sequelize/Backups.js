@@ -57,7 +57,7 @@ module.exports = class BackupsSequelize extends Backups {
             status: row.status,
             messagesBackedUp: row.messages_backed_up,
             currentConversation: row.current_conversation,
-            backedUpConversations: JSON.parse(backed_up_conversations),
+            backedUpConversations: JSON.parse(row.backed_up_conversations),
             shouldCancel: row.should_cancel,
             error: row.error
         }
