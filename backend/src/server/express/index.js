@@ -10,7 +10,7 @@ const start = async() => {
 
     const context = new AppContext();
     await setupSequelize(context);
-    setupRoutes(app, context);``
+    setupRoutes(app, context);
 
     app.listen(process.env.PORT, () =>
         context.getLogger().log('Slack Archive running on port ' + process.env.PORT));
