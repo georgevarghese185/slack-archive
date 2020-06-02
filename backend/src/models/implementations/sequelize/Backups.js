@@ -63,6 +63,23 @@ module.exports = class BackupsSequelize extends Backups {
         }
     }
 
+    async create(backupId, userId) {
+        const backup = await this.backups.create({
+            id: backupId,
+            created_at: Date.now(),
+            created_by: userId,
+            ended_at: null,
+            status: 'CREATED',
+            messages_backed_up: 0,
+            current_conversation: null,
+            backed_up_conversations: JSON.stringify([]),
+            should_cancel: false,
+            error: null
+        });
+
+        return this._toBackupObject(backup);
+    }
+
     async last () {
         const lastBackup = await this.backups.findOne({ order: [['ended_at', 'DESC']] });
 
@@ -71,5 +88,24 @@ module.exports = class BackupsSequelize extends Backups {
         }
 
         return this._toBackupObject(lastBackup);
+    }
+
+    async get(id) {
+        const backup = await this.backups.findOne({ where: { id } });
+        return backup ? this._toBackupObject(backup) : null;
+    }
+
+    async setStatus(id, status) {
+        await this.backups.update(
+            { status },
+            { where: { id } }
+        );
+    }
+
+    async setError(id, message) {
+        await this.backups.update(
+            { error: message },
+            { where: { id } }
+        );
     }
 }

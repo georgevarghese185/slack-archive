@@ -88,6 +88,24 @@ const setupRoutes = (app, context) => {
             .then(response => sendResponse(resp, response))
             .catch(e => handleError(context, resp, e));
     })
+
+    app.post('/v1/backup', (req, resp) => {
+        api['POST:/v1/backup'](context, toRequest(req), req.token)
+            .then(response => sendResponse(resp, response))
+            .catch(e => handleError(context, resp, e));
+    });
+
+    app.get('/v1/backup/:id', (req, resp) => {
+        api['GET:/v1/backup/:id'](context, toRequest(req))
+            .then(response => sendResponse(resp, response))
+            .catch(e => handleError(context, resp, e));
+    });
+
+    app.get('/v1/conversations', (req, resp) => {
+        api['GET:/v1/conversations'](context)
+            .then(response => sendResponse(resp, response))
+            .catch(e => handleError(context, resp, e));
+    })
 }
 
 module.exports = {
