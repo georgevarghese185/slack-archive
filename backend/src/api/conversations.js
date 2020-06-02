@@ -2,7 +2,7 @@ const constants = require('../../src/constants');
 const Response = require('../types/Response');
 const { notFound } = require('../util/response');
 
-const list = async (context, models) => {
+const list = async (context) => {
     const conversations = await context.models.conversations.listAll();
     return new Response({
         status: 200,
