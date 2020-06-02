@@ -16,6 +16,8 @@ else
         -e POSTGRES_DB="$DOCKER_PG_DB" \
         -p 127.0.0.1:$DOCKER_PG_PORT:5432/tcp \
         postgres:12.3
+    echo "Giving PG docker container a sec to start up..."
+    sleep 3
 fi
 
 echo "Development DB running in docker on port $DOCKER_PG_PORT"
