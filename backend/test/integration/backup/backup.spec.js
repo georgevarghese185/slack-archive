@@ -66,7 +66,13 @@ describe('Backup', () => {
         const { data: { conversations }} = await axiosInstance.get('/v1/conversations');
 
         const expectedConversations = require('../../mockSlack/data/conversations.json').conversations;
-
         expect(conversations).to.deep.equal(expectedConversations);
+
+        const expectedMembers = require('../../mockSlack/data/members.json').members;
+
+        for (const expectedMember of expectedMembers) {
+            const { data: member } = await axiosInstance.get(`/v1/members/${expectedMember.id}`);
+            expect(member).to.deep.equal(expectedMember)
+        }
     }).timeout(5000);
 })

@@ -7,6 +7,7 @@ const startBackup = async (context, backupId, token) => {
 
     try {
         await backupConversations(context, backupId, token);
+        await backupMembers(context, backupId, token);
         context.models.backups.setStatus(backupId, 'COMPLETED');
     } catch (e) {
         logger.error('Error in backup');
