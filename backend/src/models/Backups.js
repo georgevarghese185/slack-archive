@@ -134,6 +134,17 @@ class Backups {
     async conversationBackupDone(id, conversationId) {
         throw new Error('Not implemented');
     }
+
+    /**
+     * Set the error field to a message explaining the failed backup
+     *
+     * @abstract
+     * @param {string} id - The backup task ID
+     * @param {string} message - Error message
+     */
+    async setError(id, message) {
+        throw new Error('Not implemented');
+    }
 }
 
 module.exports = Backups;
