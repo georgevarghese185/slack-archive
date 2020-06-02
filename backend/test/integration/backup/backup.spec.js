@@ -38,4 +38,35 @@ describe('Backup', () => {
 
         throw new Error('Should have failed');
     });
+
+    it('backup conversations', async () => {
+        loginCookie = (await login()).loginCookie;
+
+        const { data: { backupId } } = await axiosInstance.post('/v1/backup');
+
+        expect(backupId).not.to.be.null;
+
+        let backup;
+        let tries = 0;
+        while(tries++ < 3) {
+            const response = await axiosInstance.get(`/v1/backup/${backupId}`);
+            backup = response.data;
+
+            if (backup.status === 'COMPLETED' ||
+                backup.status === 'CANCELLED' ||
+                backup.status === 'FAILED') {
+                break;
+            }
+
+            await new Promise((resolve) => setTimeout(resolve, 1000));
+        }
+
+        expect(backup.status).to.equal('COMPLETED');
+
+        const { data: { conversations }} = await axiosInstance.get('/v1/conversations');
+
+        const expectedConversations = require('../../mockSlack/data/conversations.json').conversations;
+
+        expect(conversations).to.deep.equal(expectedConversations);
+    }).timeout(5000);
 })
