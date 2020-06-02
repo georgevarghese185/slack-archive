@@ -97,8 +97,9 @@ describe('Backup APIs', () => {
             const context = new AppContext()
                 .setModels({ backups: new BackupsMock() })
                 .setActions({
-                    startBackup(backupId1) {
+                    startBackup(backupId1, token1) {
                         expect(backupId1).to.equal(backupId);
+                        expect(token1).to.deep.equal(token)
                         backupStarted = true;
                     }
                 });

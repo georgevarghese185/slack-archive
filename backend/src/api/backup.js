@@ -23,7 +23,7 @@ const create = async (context, request, token) => {
     const backupId = uuid();
 
     await context.models.backups.create(backupId, userId);
-    context.actions.startBackup(backupId);
+    context.actions.startBackup(backupId, token);
 
     return new Response({
         status: 200,
