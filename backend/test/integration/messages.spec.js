@@ -3,18 +3,19 @@ const deepEqualInAnyOrder = require('deep-equal-in-any-order');
 const chai = require('chai');
 const chaiSorted = require('chai-sorted');
 const { login } = require('./login/loginHelper');
+const mockMessages = require('../mockSlack/data/messages.json');
+const mockReplies = require('../mockSlack/data/replies.json');
 
 chai.use(deepEqualInAnyOrder);
 chai.use(chaiSorted);
 const expect = chai.expect;
 
-const getMessages = async (axiosInstance, loginCookie, params) => {
+const getMessages = async (axiosInstance, params) => {
     let messages = [];
     let lastTs;
 
     while (true) {
         const { data } = await axiosInstance.get('/v1/messages', {
-            headers: { Cookie: loginCookie },
             params: { ...params, before: lastTs }
         });
 
@@ -32,22 +33,28 @@ const getMessages = async (axiosInstance, loginCookie, params) => {
 }
 
 describe('Messages', () => {
-    const axiosInstance = axios.create({ baseURL: `http://localhost:${process.env.PORT}` });
+    let axiosInstance;
 
-    it('all messages should be backed up', async () => {
-        const expectedMessages = require('../mockSlack/data/messages.json');
-        const expectedReplies = require('../mockSlack/data/replies.json');
+    before(async () => {
         const loginCookie = (await login()).loginCookie;
+        axiosInstance = axios.create({
+            baseURL: `http://localhost:${process.env.PORT}`,
+            headers: { Cookie: loginCookie }
+        });
+    });
 
-        for (const conversationId in expectedMessages) {
-            let messages = await getMessages(axiosInstance, loginCookie, { conversationId, postsOnly: true });
-            expect(messages).to.deep.equalInAnyOrder(expectedMessages[conversationId]);
+    it('all posts should be backed up', async () => {
+        for (const conversationId in mockMessages) {
+            let messages = await getMessages(axiosInstance, { conversationId, postsOnly: true });
+            expect(messages).to.deep.equalInAnyOrder(mockMessages[conversationId]);
         }
+    }).timeout(20000);
 
-        for (const conversationId in expectedReplies) {
-            for (const threadTs in expectedReplies[conversationId]) {
-                let replies = await getMessages(axiosInstance, loginCookie, { conversationId, thread: threadTs });
-                expect(replies).to.deep.equalInAnyOrder(expectedReplies[conversationId][threadTs]);
+    it('all replies should be backed up', async () => {
+        for (const conversationId in mockReplies) {
+            for (const threadTs in mockReplies[conversationId]) {
+                let replies = await getMessages(axiosInstance, { conversationId, thread: threadTs });
+                expect(replies).to.deep.equalInAnyOrder(mockReplies[conversationId][threadTs]);
             }
         }
     }).timeout(20000);
