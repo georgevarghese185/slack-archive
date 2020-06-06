@@ -8,6 +8,7 @@
     "test:integration": "mocha --config .mocharc.integ.json",
     "devDb:start": "sh ./scripts/start-db-dev.sh",
     "devDb:stop": "sh ./scripts/stop-db-dev.sh",
+    "devDb:clear": "sh ./scripts/clear-db-dev.sh",
     "devDb:delete": "sh ./scripts/delete-db-dev.sh",
     "mockSlack:start": "nodemon -w test/mockSlack --require dotenv/config test/mockSlack",
     "mockSlack:generate": "node test/mockSlack/data/generator/generate.js",
