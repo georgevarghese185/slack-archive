@@ -1,6 +1,10 @@
 const axios = require('axios');
-const { expect } = require('chai');
+const deepEqualInAnyOrder = require('deep-equal-in-any-order');
+const chai = require('chai');
 const { login } = require('./login/loginHelper');
+
+chai.use(deepEqualInAnyOrder);
+const expect = chai.expect;
 
 describe('Conversations', () => {
     const axiosInstance = axios.create({ baseURL: `http://localhost:${process.env.PORT}` });
@@ -13,7 +17,7 @@ describe('Conversations', () => {
             headers: { 'Cookie': loginCookie }
         });
 
-        expect(conversations).to.deep.equal(expectedConversations);
+        expect(conversations).to.deep.equalInAnyOrder(expectedConversations);
     });
 
 })
