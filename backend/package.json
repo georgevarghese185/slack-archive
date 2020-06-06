@@ -5,7 +5,7 @@
   "scripts": {
     "start:dev": "npm-run-all -l devDb:start --parallel mockSlack:start express:start",
     "test:unit": "mocha test/unit/**/*.spec.js",
-    "test:integration": "mocha --bail --require dotenv/config test/integration/**/*.spec.js",
+    "test:integration": "mocha --config .mocharc.integ.json",
     "devDb:start": "sh ./scripts/start-db-dev.sh",
     "devDb:stop": "sh ./scripts/stop-db-dev.sh",
     "devDb:delete": "sh ./scripts/delete-db-dev.sh",
