@@ -112,6 +112,12 @@ const setupRoutes = (app, context) => {
             .then(response => sendResponse(resp, response))
             .catch(e => handleError(context, resp, e));
     });
+
+    app.get('/v1/messages', (req, resp) => {
+        api['GET:/v1/messages'](context, toRequest(req))
+            .then(response => sendResponse(resp, response))
+            .catch(e => handleError(context, resp, e));
+    });
 }
 
 module.exports = {
