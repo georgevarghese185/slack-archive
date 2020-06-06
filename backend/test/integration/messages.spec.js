@@ -32,6 +32,16 @@ const getMessages = async (axiosInstance, params) => {
     return messages
 }
 
+const sortMessages = (message1, message2) => {
+    if (message1.ts < message2.ts) {
+        return -1;
+    } else if (message1.ts > message2.ts) {
+        return 1;
+    } else {
+        return 0;
+    }
+}
+
 describe('Messages', () => {
     let axiosInstance;
 
@@ -59,4 +69,59 @@ describe('Messages', () => {
         }
     }).timeout(20000);
 
+    it("get messages with 'from'", async () => {
+        const conversationId = Object.keys(mockMessages)[0];
+        const expectedMessages = Array.from(mockMessages[conversationId]).sort(sortMessages).slice(0, 100);
+
+        const { data: { messages: messages } } = await axiosInstance.get('/v1/messages', {
+            params: { conversationId, postsOnly: true, from: expectedMessages[0].ts }
+        });
+
+        expect(messages).to.deep.equal(expectedMessages);
+    });
+
+    it("get messages with 'after'", async () => {
+        const conversationId = Object.keys(mockMessages)[0];
+        const expectedMessages = Array.from(mockMessages[conversationId]).sort(sortMessages).slice(0, 101);
+
+        const { data: { messages: messages } } = await axiosInstance.get('/v1/messages', {
+            params: { conversationId, postsOnly: true, after: expectedMessages[0].ts }
+        });
+
+        expect(messages).to.deep.equal(expectedMessages.slice(1));
+    });
+
+    it("get messages with 'to'", async () => {
+        const conversationId = Object.keys(mockMessages)[0];
+        const expectedMessages = Array.from(mockMessages[conversationId]).sort(sortMessages).slice(-100);
+
+        const { data: { messages: messages } } = await axiosInstance.get('/v1/messages', {
+            params: { conversationId, postsOnly: true, to: expectedMessages[99].ts }
+        });
+
+        expect(messages).to.deep.equal(expectedMessages);
+    });
+
+    it("get messages with 'before'", async () => {
+        const conversationId = Object.keys(mockMessages)[0];
+        const expectedMessages = Array.from(mockMessages[conversationId]).sort(sortMessages).slice(-101);
+
+        const { data: { messages: messages } } = await axiosInstance.get('/v1/messages', {
+            params: { conversationId, postsOnly: true, before: expectedMessages[100].ts }
+        });
+
+        expect(messages).to.deep.equal(expectedMessages.slice(0, 100));
+    });
+
+    it("get messages with custom limit", async () => {
+        const limit = 20;
+        const conversationId = Object.keys(mockMessages)[0];
+        const expectedMessages = Array.from(mockMessages[conversationId]).sort(sortMessages).slice(-limit);
+
+        const { data: { messages: messages } } = await axiosInstance.get('/v1/messages', {
+            params: { conversationId, postsOnly: true, limit }
+        });
+
+        expect(messages).to.deep.equal(expectedMessages);
+    })
 })
