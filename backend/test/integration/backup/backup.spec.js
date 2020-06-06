@@ -48,7 +48,7 @@ describe('Backup', () => {
 
         let backup;
         let tries = 0;
-        while(tries++ < 3) {
+        while(tries++ < 20) {
             const response = await axiosInstance.get(`/v1/backup/${backupId}`);
             backup = response.data;
 
@@ -62,5 +62,5 @@ describe('Backup', () => {
         }
 
         expect(backup.status).to.equal('COMPLETED');
-    }).timeout(5000);
+    }).timeout(20000);
 })

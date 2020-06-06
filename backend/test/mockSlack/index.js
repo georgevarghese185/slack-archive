@@ -14,7 +14,7 @@ const CONVERSATIONS_BATCH = 100
 const MEMBERS_BATCH = 100
 const MESSAGES_BATCH = 100
 const REPLIES_BATCH = 100
-const MAX_REQUESTS_PER_SECOND = 5
+const MAX_REQUESTS_PER_SECOND = 70
 const USER_ID = members[Math.floor(Math.random() * members.length)].id
 
 const cursors = {

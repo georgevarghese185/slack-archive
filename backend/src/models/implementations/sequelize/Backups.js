@@ -102,6 +102,29 @@ module.exports = class BackupsSequelize extends Backups {
         );
     }
 
+    async setMessagesBackedUp(id, numOfMessages) {
+        await this.backups.update(
+            { messages_backed_up: numOfMessages },
+            { where: { id } }
+        );
+    }
+
+    async setCurrentConversation(id, conversationId) {
+        await this.backups.update(
+            { current_conversation: conversationId },
+            { where: { id } }
+        );
+    }
+
+    async conversationBackupDone(id, conversationId) {
+        const backup = await this.backups.findOne({ where: { id } });
+        const backedUpConversations = JSON.parse(backup.backed_up_conversations);
+        backedUpConversations.push(conversationId);
+        await backup
+            .set('backed_up_conversations', JSON.stringify(backedUpConversations))
+            .save();
+    }
+
     async setError(id, message) {
         await this.backups.update(
             { error: message },
