@@ -57,7 +57,7 @@ describe('Message APIs', () => {
                     messages = messages.slice(0, limit);
                 }
 
-                return messages;
+                return messages.map(m => m.json);
             }
 
             async threadExists(threadTs, conversationId) {

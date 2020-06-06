@@ -77,7 +77,7 @@ const get = async (context, request) => {
 
     return new Response({
         status: 200,
-        body: { messages: messages.map(m => m.json) }
+        body: { messages }
     });
 }
 
