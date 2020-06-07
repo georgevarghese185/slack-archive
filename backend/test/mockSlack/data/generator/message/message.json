@@ -1,0 +1,47 @@
+{
+    "plain_message": {
+        "client_msg_id": "5b939cac-c863-4d4e-974d-78ecaab543d1",
+        "type": "message",
+        "text": "<MESSAGE TEXT>",
+        "user": "<USER ID>",
+        "ts": "<TIMESTAMP>",
+        "team": "<TEAM ID>"
+    },
+    "thread_parent": {
+        "client_msg_id": "0ce92bb0-23fc-4016-9e5d-de4efdf238e2",
+        "type": "message",
+        "text": "<MESSAGE TEXT>",
+        "user": "<USER ID>",
+        "ts": "<TIMESTAMP>",
+        "team": "<TEAM ID>",
+        "thread_ts": "<TIMESTAMP>",
+        "reply_count": 0,
+        "reply_users_count": 0,
+        "latest_reply": "",
+        "reply_users": [
+            "<USER ID>"
+        ],
+        "subscribed": true,
+        "last_read": ""
+    },
+    "thread_reply": {
+        "client_msg_id": "96f5ad82-f802-44c5-a63f-75453f78ab3e",
+        "type": "message",
+        "text": "<MESSAGE TEXT>",
+        "user": "<USER ID>",
+        "ts": "<TIMESTAMP>",
+        "team": "<TEAM ID>",
+        "thread_ts": "<TIMESTAMP>",
+        "parent_user_id": "<USER ID>"
+    },
+    "thread_broadcast": {
+        "type": "message",
+        "subtype": "thread_broadcast",
+        "text": "<MESSAGE TEXT>",
+        "user": "<USER ID>",
+        "ts": "<TIMESTAMP>",
+        "thread_ts": "<TIMESTAMP>",
+        "root": {},
+        "client_msg_id": "5B36401D-42A8-4CF1-A1E7-DFEBEC1C4042"
+    }
+}
