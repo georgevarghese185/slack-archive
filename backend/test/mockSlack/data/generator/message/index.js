@@ -17,11 +17,11 @@ const toSlackTs = time => Math.floor(time / 1000).toString() + '.000000'
 const toMillis = ts => parseInt(ts) * 1000
 
 class TimestampGenerator {
-    constructor(maxTimeDiff, minTimeDiff, startTimestamp, isThread) {
+    constructor(maxTimeDiff, minTimeDiff, startTimestamp) {
         this.maxTimeDiff = maxTimeDiff;
         this.minTimeDiff = minTimeDiff;
         this.ts = startTimestamp;
-        this.isThread = isThread;
+        this._previouslyGenerated = {};
     }
 
     addRandomTime (ts) {
@@ -32,11 +32,34 @@ class TimestampGenerator {
         return toSlackTs(toMillis(ts) - randomNumber(this.minTimeDiff, this.maxTimeDiff))
     }
 
+    increaseTimestampPart (ts) {
+        let [seconds, part] = ts.split('.').map(n => parseInt(n));
+        part += 100;
+        const padding = '0'.repeat(6 - part.toString().length);
+        return seconds.toString() + '.' + padding + part.toString();
+    }
+
     next() {
-        let nextTs = this.isThread ? this.addRandomTime(this.ts) : this.subtractRandomTime(this.ts);
+        let nextTs = this._isThread ? this.addRandomTime(this.ts) : this.subtractRandomTime(this.ts);
+
+        while (this._previouslyGenerated[nextTs]) {
+            // prevent duplicate
+            nextTs = this.increaseTimestampPart(nextTs);
+        }
+
+        this._previouslyGenerated[nextTs] = true;
+
         this.ts = nextTs;
 
         return nextTs;
+    }
+
+    thread(threadTimestamp) {
+        const threadTimestampGenerator = new TimestampGenerator(this.maxTimeDiff, this.minTimeDiff, threadTimestamp);
+        threadTimestampGenerator._isThread = true;
+        threadTimestampGenerator._previouslyGenerated = this._previouslyGenerated;
+
+        return threadTimestampGenerator;
     }
 }
 
@@ -104,10 +127,12 @@ class MessageGenerator {
         return message;
     }
 
-    generateThread(parentTimestamp) {
+    generateThread(timestampGenerator) {
+        const parentTimestamp = timestampGenerator.next();
         const parent = this.generateThreadParent(parentTimestamp, this.members)
-        const replyTsGenerator = new TimestampGenerator(this.maxTimeDiff, this.minTimeDiff, parentTimestamp, true);
         const replies = [parent];
+
+        const replyTsGenerator = timestampGenerator.thread(parentTimestamp);
 
         for (let i = 0; i < parent.reply_count; i++) {
             const makeBroadcast = randomChance(this.broadcastProbability);
@@ -137,7 +162,7 @@ class MessageGenerator {
             let message
 
             if (makeThread) {
-                const thread = this.generateThread(timestampGenerator.next());
+                const thread = this.generateThread(timestampGenerator);
                 const broadcasts = thread.filter(m => m.subtype === 'thread_broadcast');
                 message = thread[0];
                 replies[message.ts] = thread;
