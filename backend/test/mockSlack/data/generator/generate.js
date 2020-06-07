@@ -19,10 +19,13 @@ const writeJsonFile = (file, json) => {
     fs.writeFile(file, JSON.stringify(json, null, 2), () => {})
 }
 
+console.log(`Generating members...`);
 const members = new MemberGenerator({ maxMembers: MAX_MEMBERS, teamId: TEAM_ID }).generateMembers();
 
+console.log(`Generating conversations...`)
 const conversations = new ConversationGenerator({ maxConversations: MAX_CONVERSATIONS, members }).generateConversations();
 
+console.log(`Generating messages...`);
 const messageGenerator = new MessageGenerator({
     members,
     teamId: TEAM_ID,
