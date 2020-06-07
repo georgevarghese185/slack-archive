@@ -82,7 +82,7 @@ const login = async (context, request) => {
             'set-cookie': cookie.serialize(
                 'loginToken',
                 token,
-                { httpOnly: true, secure: !constants.isDevEnvironment }
+                { httpOnly: true, secure: !context.isDevEnvironment() }
             )
         },
         body: {}
