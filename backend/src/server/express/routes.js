@@ -51,7 +51,8 @@ const authMiddleware = (context) => (req, resp, next) => {
 
 const setupRoutes = (app, context) => {
     app.use(cors({
-        origin: process.env.CORS_ALLOW_ORIGIN
+        origin: process.env.CORS_ALLOW_ORIGIN,
+        credentials: true
     }))
 
     app.get('/', (req, resp) => resp.send('up'));

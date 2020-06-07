@@ -1,7 +1,8 @@
 const axios = require('axios')
 
 const axiosInstance = axios.create({
-  baseURL: process.env.VUE_APP_API_BASE_URL
+  baseURL: process.env.VUE_APP_API_BASE_URL,
+  withCredentials: true
 })
 
 export const getAuthUrl = async () => {
