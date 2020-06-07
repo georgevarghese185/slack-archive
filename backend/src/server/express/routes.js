@@ -1,5 +1,6 @@
 const api = require('../../api')
 const constants = require('../../constants');
+const cors = require('cors');
 const Request = require('../../types/Request')
 const { authorizeRequest } = require('../../api/authorize');
 
@@ -49,11 +50,9 @@ const authMiddleware = (context) => (req, resp, next) => {
 }
 
 const setupRoutes = (app, context) => {
-    app.use((req, resp, next) => {
-        resp.set('Access-Control-Allow-Origin', process.env.CORS_ALLOW_ORIGIN)
-        resp.set('Access-Control-Allow-Headers', '*')
-        next();
-    })
+    app.use(cors({
+        origin: process.env.CORS_ALLOW_ORIGIN
+    }))
 
     app.get('/', (req, resp) => resp.send('up'));
 
