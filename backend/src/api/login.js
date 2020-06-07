@@ -146,7 +146,7 @@ const validLogin = async (context, request) => {
         }
     }
 
-    return new Response({ status: 200 });
+    return new Response({ status: 200, body: {} });
 }
 
 
