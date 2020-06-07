@@ -97,7 +97,6 @@ class MessageGenerator {
         message.thread_ts = timestamp;
         message.reply_count = randomNumber(this.maxReplies) + 1;
         message.reply_users_count = replyUsersCount;
-        message.reply_users = randomItems(this.members, replyUsersCount).map(m => m.id);
 
         return message;
     }
@@ -106,7 +105,7 @@ class MessageGenerator {
         const message = JSON.parse(JSON.stringify(messageTemplate.thread_reply));
 
         message.text = this.textGenerator.generateSentence();
-        message.user = randomItem(parent.reply_users);
+        message.user = randomItem(this.members).id;
         message.ts = timestamp;
         message.team = this.teamId;
         message.thread_ts = parent.ts;
@@ -119,7 +118,7 @@ class MessageGenerator {
         const message = JSON.parse(JSON.stringify(messageTemplate.thread_broadcast));
 
         message.text = this.textGenerator.generateSentence();
-        message.user = randomItem(parent.reply_users);
+        message.user = randomItem(this.members).id;
         message.ts = timestamp;
         message.thread_ts = parent.ts;
         message.root = parent;
@@ -146,6 +145,11 @@ class MessageGenerator {
 
             replies.push(reply);
         }
+
+        parent.reply_users = replies
+            .slice(1) // skip parent itself
+            .map(m => m.user)
+            .filter((m, i, users) => users.indexOf(m) === i); // no duplicates
 
         return replies;
     }
