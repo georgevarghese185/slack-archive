@@ -29,8 +29,7 @@ describe('Backup', async () => {
         expect(backupId).not.to.be.null;
 
         let backup;
-        let tries = 0;
-        while(tries++ < 20) {
+        while(true) {
             const response = await axiosInstance.get(`/v1/backup/${backupId}`);
             backup = response.data;
 
