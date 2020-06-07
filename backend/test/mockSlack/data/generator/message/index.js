@@ -74,6 +74,7 @@ class MessageGenerator {
         this.minTimeDiff = options.minTimeDiff;
         this.threadProbability = options.threadProbability;
         this.broadcastProbability = options.broadcastProbability;
+        this.generated = { total: 0, posts: 0, threads: 0, replies: 0 }
     }
 
     generateMessage (timestamp) {
@@ -82,6 +83,9 @@ class MessageGenerator {
         message.user = randomItem(this.members).id;
         message.ts = timestamp;
         message.team = this.teamId;
+
+        this.generated.total++;
+        this.generated.posts++;
 
         return message;
     }
@@ -98,6 +102,9 @@ class MessageGenerator {
         message.reply_count = randomNumber(this.maxReplies) + 1;
         message.reply_users_count = replyUsersCount;
 
+        this.generated.total++;
+        this.generated.posts++;
+
         return message;
     }
 
@@ -111,6 +118,9 @@ class MessageGenerator {
         message.thread_ts = parent.ts;
         message.parent_user_id = parent.user;
 
+        this.generated.total++;
+        this.generated.replies++;
+
         return message;
     }
 
@@ -122,6 +132,9 @@ class MessageGenerator {
         message.ts = timestamp;
         message.thread_ts = parent.ts;
         message.root = parent;
+
+        this.generated.total++;
+        this.generated.posts++;
 
         return message;
     }
@@ -145,6 +158,8 @@ class MessageGenerator {
 
             replies.push(reply);
         }
+
+        this.generated.threads++;
 
         parent.reply_users = replies
             .slice(1) // skip parent itself

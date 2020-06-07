@@ -7,6 +7,7 @@ class ConversationGenerator {
     constructor (options) {
         this.maxConversations = options.maxConversations;
         this.members = options.members;
+        this.generated = 0;
     }
 
     generateConversation (info) {
@@ -27,6 +28,8 @@ class ConversationGenerator {
         conversation.purpose.value = info.purpose;
         conversation.purpose.creator = randomItem(this.members).id;
         conversation.num_members = randomNumber(this.members.length);
+
+        this.generated++;
 
         return conversation;
     }

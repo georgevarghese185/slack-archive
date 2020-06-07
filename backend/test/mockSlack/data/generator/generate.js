@@ -19,11 +19,15 @@ const writeJsonFile = (file, json) => {
     fs.writeFile(file, JSON.stringify(json, null, 2), () => {})
 }
 
-console.log(`Generating members...`);
-const members = new MemberGenerator({ maxMembers: MAX_MEMBERS, teamId: TEAM_ID }).generateMembers();
+console.log(`Generating members`);
+const memberGenerator = new MemberGenerator({ maxMembers: MAX_MEMBERS, teamId: TEAM_ID })
+const members = memberGenerator.generateMembers();
+console.log(`Generated ${memberGenerator.generated} members`);
 
 console.log(`Generating conversations...`)
-const conversations = new ConversationGenerator({ maxConversations: MAX_CONVERSATIONS, members }).generateConversations();
+const conversationGenerator = new ConversationGenerator({ maxConversations: MAX_CONVERSATIONS, members });
+const conversations = conversationGenerator.generateConversations();
+console.log(`Generated ${conversationGenerator.generated} conversations`);
 
 console.log(`Generating messages...`);
 const messageGenerator = new MessageGenerator({
@@ -45,7 +49,10 @@ const { messages, replies } = conversations.reduce(
         return { messages, replies }
     },
     { messages: {}, replies: {} }
-)
+);
+
+const count = messageGenerator.generated;
+console.log(`Generated ${count.total} messages (${count.posts} posts, ${count.threads} threads, ${count.replies} replies)`)
 
 writeJsonFile(path.resolve(__dirname, '../conversations.json'), { conversations })
 writeJsonFile(path.resolve(__dirname, '../members.json'), { members })

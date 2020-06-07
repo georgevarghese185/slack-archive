@@ -8,6 +8,7 @@ class MemberGenerator {
     constructor (options, textGenerator) {
         this.teamId = options.teamId;
         this.maxMembers = options.maxMembers;
+        this.generated = 0;
     }
 
     generateMember (name, image) {
@@ -46,6 +47,8 @@ class MemberGenerator {
         = member.profile.image_512
         = member.profile.image_1024
         = image;
+
+        this.generated++;
 
         return member;
     }
