@@ -23,7 +23,7 @@ const getMessages = async (axiosInstance, params) => {
             break;
         }
 
-        expect(messages).to.be.sortedBy('ts')
+        expect(data.messages).to.be.sortedBy('ts')
 
         messages = messages.concat(data.messages);
         lastTs = data.messages[0].ts;
@@ -58,7 +58,7 @@ describe('Messages', () => {
             let messages = await getMessages(axiosInstance, { conversationId, postsOnly: true });
             expect(messages).to.deep.equalInAnyOrder(mockMessages[conversationId]);
         }
-    }).timeout(20000);
+    });
 
     it('all replies should be backed up', async () => {
         for (const conversationId in mockReplies) {
@@ -67,7 +67,7 @@ describe('Messages', () => {
                 expect(replies).to.deep.equalInAnyOrder(mockReplies[conversationId][threadTs]);
             }
         }
-    }).timeout(20000);
+    });
 
     it("get messages with 'from'", async () => {
         const conversationId = Object.keys(mockMessages)[0];

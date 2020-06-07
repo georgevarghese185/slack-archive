@@ -44,7 +44,7 @@ describe('Backup', async () => {
         }
 
         expect(backup.status).to.equal('COMPLETED');
-    }).timeout(20000);
+    });
 
     it('backup APIs should fail without login', async () => {
         try {

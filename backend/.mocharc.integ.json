@@ -1,6 +1,7 @@
 {
     "bail": true,
     "require": ["dotenv/config"],
+    "timeout": 20000,
     "spec": [
         "test/integration/login/login.spec.js",
         "test/integration/backup/backup.spec.js",
