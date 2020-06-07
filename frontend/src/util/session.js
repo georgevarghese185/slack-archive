@@ -1,4 +1,4 @@
-import axios from 'axios'
+import * as api from '../api'
 import qs from 'query-string'
 import { v4 as uuid } from 'uuid'
 
@@ -7,7 +7,7 @@ export const isLoggedIn = () => {
 }
 
 export const startLogin = async () => {
-  const { data: { url, parameters } } = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/v1/login/auth-url`)
+  const { url, parameters } = await api.getAuthUrl()
 
   const loginId = uuid()
   localStorage.setItem('loginId', loginId)
@@ -27,19 +27,15 @@ export const completeLogin = async (code, state) => {
 
   localStorage.clear('loginId')
 
-  const response = await axios.post(`${process.env.VUE_APP_API_BASE_URL}/v1/login`, { verificationCode: code })
+  await api.login({ verificationCode: code })
 
-  if (response.status === 200) {
-    localStorage.setItem('loggedIn', 'true')
-    return true
-  } else {
-    return false
-  }
+  localStorage.setItem('loggedIn', 'true')
+  return true
 }
 
 export const logout = async () => {
   try {
-    await axios.delete(`${process.env.VUE_APP_API_BASE_URL}/v1/login`)
+    await api.logout()
   } catch (e) {
     console.error(e)
   }

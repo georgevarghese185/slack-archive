@@ -1,4 +1,4 @@
-import axios from 'axios'
+import * as api from '../../api'
 import Messages from '../../../../backend/src/models/Messages'
 
 export default class MessagesRemote extends Messages {
@@ -8,8 +8,6 @@ export default class MessagesRemote extends Messages {
   }
 
   async get (from, to, conversationId, postsOnly, threadTs, limit) {
-    const axiosInstance = axios.create({ baseURL: this.baseUrl })
-
     const params = {}
 
     if (from) {
@@ -36,7 +34,7 @@ export default class MessagesRemote extends Messages {
       params.limit = limit
     }
 
-    const response = await axiosInstance.get('/v1/messages', { params })
+    const response = await api.getMessages(params)
 
     return response.data.messages
   }
