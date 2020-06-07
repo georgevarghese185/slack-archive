@@ -12,7 +12,7 @@ const MAX_MEMBERS = 10
 const MAX_CONVERSATIONS = 5
 const MAX_MESSAGES = 500
 const MAX_REPLIES = 120
-const THREAD_PROBABILITY = 0.1
+const THREAD_PROBABILITY = 0.01
 const THREAD_BROADCAST_PROBABILITY = 0.005
 
 const writeJsonFile = (file, json) => {
