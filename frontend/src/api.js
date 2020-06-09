@@ -20,11 +20,11 @@ export const logout = async () => {
 }
 
 export const getMember = async ({ memberId }) => {
-  const { data } = await axiosInstance.get(`/v1/member/${memberId}`)
+  const { data } = await axiosInstance.get(`/v1/members/${memberId}`)
   return data
 }
 
 export const getMessages = async (params) => {
   const { data } = await axiosInstance.get('/v1/messages', { params })
-  return data
+  return data.messages
 }

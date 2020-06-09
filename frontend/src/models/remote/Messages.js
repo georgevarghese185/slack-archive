@@ -34,8 +34,6 @@ export default class MessagesRemote extends Messages {
       params.limit = limit
     }
 
-    const response = await api.getMessages(params)
-
-    return response.data.messages
+    return api.getMessages(params)
   }
 }
