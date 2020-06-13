@@ -29,11 +29,16 @@ export default {
   },
   async mounted () {
     await this.$store.dispatch('loadConversations')
-    this.selectConversation(this.conversations[0])
+
+    const id = this.$route.params.conversationId
+    const conversation = id ? this.getConversation(id) : this.conversations[0]
+    this.selectConversation(conversation)
   },
   methods: {
     selectConversation (conversation) {
       this.selected = conversation
+
+      this.$router.push({ name: 'Archive', params: { conversationId: conversation.id } })
 
       this.$store.dispatch('loadMessages', {
         conversationId: conversation.id,
@@ -45,6 +50,9 @@ export default {
         conversation: true,
         'conversation-selected': this.selected === conversation
       }
+    },
+    getConversation (id) {
+      return this.conversations.find(c => c.id === id)
     }
   },
   components: {
