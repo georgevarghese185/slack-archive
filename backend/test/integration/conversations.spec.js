@@ -18,7 +18,8 @@ describe('Conversations', () => {
     });
 
     it('all conversations should be backed up', async () => {
-        const expectedConversations = require('../mockSlack/data/conversations.json').conversations;
+        const expectedConversations = require('../mockSlack/data/conversations.json').conversations
+            .map(({ id, name }) => ({ id, name }));
 
         const { data: { conversations } } = await axiosInstance.get('/v1/conversations');
 

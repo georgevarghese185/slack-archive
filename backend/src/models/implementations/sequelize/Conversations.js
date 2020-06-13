@@ -31,8 +31,7 @@ module.exports = class ConversationsSequelize extends Conversations {
     }
 
     async listAll() {
-        const conversations = await this.conversations.findAll();
-        return conversations.map(c => JSON.parse(c.json));
+        return await this.conversations.findAll({ attributes: ['id', 'name'] });
     }
 
     async get(id) {
