@@ -20,12 +20,10 @@
 </template>
 
 <script>
-import slackTime from '../util/slackTime'
+import { getMillis, getDayMillis, getDate } from '../util/slackTime'
 import Loader from './MessageViewerLoader'
 import Message from './MessageViewerMessage'
 import ScrollListener from '../util/ScrollListener'
-
-const { getMillis, getDayMillis, getDate } = slackTime
 
 export default {
   data () {

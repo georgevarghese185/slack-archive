@@ -16,9 +16,7 @@
 </template>
 
 <script>
-import slackTime from '../util/slackTime'
-
-const { getTime, getDateString } = slackTime
+import { getTime, getDateString } from '../util/slackTime'
 
 export default {
   props: ['message', 'shouldShowUserImage', 'shouldShowHeader'],
