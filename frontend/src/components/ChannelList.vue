@@ -38,12 +38,18 @@ export default {
     selectConversation (conversation) {
       this.selected = conversation
 
-      this.$router.push({ name: 'Archive', params: { conversationId: conversation.id } })
+      this.changeRoute(conversation)
 
       this.$store.dispatch('loadMessages', {
         conversationId: conversation.id,
         ts: toSlackTs(Date.now())
       })
+    },
+    changeRoute (conversation) {
+      const { conversationId } = this.$route.params
+      if (conversation.id !== conversationId) {
+        this.$router.push({ name: 'Archive', params: { conversationId: conversation.id } })
+      }
     },
     getConversationClass (conversation) {
       return {
