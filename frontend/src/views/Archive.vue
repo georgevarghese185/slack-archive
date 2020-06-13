@@ -45,8 +45,6 @@ export default {
 
   .message-viewer {
     flex-grow: 1;
-    margin: 14px;
-    border: 2px solid #707070;
-    border-radius: 5px;
+    border-left: 1px solid #dcdcdc;
   }
 </style>
