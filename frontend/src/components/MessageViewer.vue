@@ -100,7 +100,10 @@ export default {
       }
 
       const focusDate = this.$store.state.archive.messages.focusDate
-      const index = this.messages.findIndex(m => m.ts >= focusDate)
+      let index = this.messages.findIndex(m => m.ts >= focusDate)
+      if (index < 0) {
+        index = this.messages.length - 1
+      }
       const messageList = this.$refs.messages
 
       // scroll to the first message from the requested day
