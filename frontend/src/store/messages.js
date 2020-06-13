@@ -15,6 +15,13 @@ export default {
     hasNewer: false // are there more newer messages available to fetch
   }),
   mutations: {
+    clearMessages (state) {
+      state.conversationId = null
+      state.focusDate = null
+      state.list = null
+      state.hasOlder = false
+      state.hasNewer = false
+    },
     updateMessages (state, { conversationId, focusDate, messages, hasOlder, hasNewer }) {
       state.conversationId = conversationId
       state.focusDate = focusDate
@@ -33,6 +40,7 @@ export default {
   },
   actions: {
     async loadMessages (context, { conversationId, ts }) {
+      context.commit('clearMessages')
       try {
         const [olderMessages, newerMessages] = await Promise.all([
           models.remote.get(
