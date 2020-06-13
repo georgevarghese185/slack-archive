@@ -12,7 +12,7 @@
     "devDb:delete": "sh ./scripts/delete-db-dev.sh",
     "mockSlack:start": "nodemon -w test/mockSlack --require dotenv/config test/mockSlack",
     "mockSlack:generate": "node test/mockSlack/data/generator/generate.js",
-    "express:start": "nodemon -w src --require dotenv/config src/server/express"
+    "express:start": "nodemon -w src -w .env --require dotenv/config src/server/express"
   },
   "author": "George Varghese M",
   "license": "UNLICENSE",
