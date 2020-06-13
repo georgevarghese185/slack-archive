@@ -63,6 +63,7 @@ export default {
   .user-image {
     width: 38px;
     height: 38px;
+    object-fit: cover;
   }
 
   .user-name {
