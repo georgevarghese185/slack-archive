@@ -6,8 +6,8 @@
         <span class="conversation-symbol">#</span><span class="conversation-name"> {{conversation.name}} </span>
       </div>
     </div>
-    <div v-if="!conversations">
-      <Spinner/>
+    <div class="loader" v-if="!conversations">
+      <Spinner class="spinner"/>
     </div>
   </div>
 </template>
@@ -56,6 +56,7 @@ export default {
 <style scoped>
   .channel-list-container {
     width: 250px;
+    height: 100%;
   }
 
   .conversation-list {
@@ -90,5 +91,16 @@ export default {
     font-family: sans-serif;
     font-size: 18px;
     margin-left: 10px;
+  }
+
+  .loader {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+  }
+
+  .spinner {
+    width: 26px;
   }
 </style>
