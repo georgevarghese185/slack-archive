@@ -36,6 +36,10 @@ export default {
   },
   methods: {
     selectConversation (conversation) {
+      if (conversation === this.selected) {
+        return
+      }
+
       this.selected = conversation
 
       this.changeRoute(conversation)
