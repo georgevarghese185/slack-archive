@@ -5,7 +5,7 @@
     </div>
     <div class="right-section">
       <div class="date-picker">
-        <DatePicker :day="day"/>
+        <DatePicker/>
       </div>
       <div class="message-viewer">
         <MessageViewer />
@@ -18,22 +18,8 @@
 import ChannelList from '../components/ChannelList'
 import DatePicker from '../components/DatePicker'
 import MessageViewer from '../components/MessageViewer'
-import slackTime from '../util/slackTime'
-
-const { toSlackTs } = slackTime
 
 export default {
-  data () {
-    const today = new Date()
-    today.setHours(0, 0, 0, 0)
-
-    return {
-      day: toSlackTs(1580728712000) // TODO remove hardcoded date
-    }
-  },
-  mounted () {
-    this.$store.dispatch('loadMessages', { conversationId: 'C1', ts: this.day }) // TODO remove hardcoded conversation ID
-  },
   components: {
     ChannelList,
     DatePicker,

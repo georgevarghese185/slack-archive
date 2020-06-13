@@ -1,3 +1,94 @@
 <template>
-  <p> Channel list </p>
+  <div class="channel-list-container">
+    <div class="conversation-list" v-if="conversations">
+      <div :class="getConversationClass(conversation)" v-for="conversation of conversations" :key="conversation.id"
+      @click="() => selectConversation(conversation)">
+        <span class="conversation-symbol">#</span><span class="conversation-name"> {{conversation.name}} </span>
+      </div>
+    </div>
+    <div v-if="!conversations">
+      <Spinner/>
+    </div>
+  </div>
 </template>
+
+<script>
+import Spinner from '../components/Spinner'
+import { toSlackTs } from '../util/slackTime'
+
+export default {
+  data () {
+    return {
+      selected: null
+    }
+  },
+  computed: {
+    conversations () {
+      return this.$store.state.archive.conversations.list
+    }
+  },
+  async mounted () {
+    await this.$store.dispatch('loadConversations')
+    this.selectConversation(this.conversations[0])
+  },
+  methods: {
+    selectConversation (conversation) {
+      this.selected = conversation
+
+      this.$store.dispatch('loadMessages', {
+        conversationId: conversation.id,
+        ts: toSlackTs(Date.now())
+      })
+    },
+    getConversationClass (conversation) {
+      return {
+        conversation: true,
+        'conversation-selected': this.selected === conversation
+      }
+    }
+  },
+  components: {
+    Spinner
+  }
+}
+</script>
+
+<style scoped>
+  .channel-list-container {
+    width: 250px;
+  }
+
+  .conversation-list {
+    margin-top: 48px;
+  }
+
+  .conversation {
+    padding: 5px 0 5px 18px;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    transition: background-color 0.1s;
+    user-select: none;
+    cursor: pointer;
+  }
+
+  .conversation:hover {
+    background-color: #80808052;
+  }
+
+  .conversation-selected {
+    background-color: #808080a6;
+  }
+
+  .conversation-symbol {
+    font-family: monospace;
+    font-size: 18px;
+    margin-left: 0px;
+  }
+
+  .conversation-name {
+    font-family: sans-serif;
+    font-size: 18px;
+    margin-left: 10px;
+  }
+</style>
