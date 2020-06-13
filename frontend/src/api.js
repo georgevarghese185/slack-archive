@@ -19,6 +19,11 @@ export const logout = async () => {
   await axiosInstance.delete('/v1/login')
 }
 
+export const getConversations = async () => {
+  const { data: { conversations } } = await axiosInstance.get('/v1/conversations')
+  return conversations
+}
+
 export const getMember = async ({ memberId }) => {
   const { data } = await axiosInstance.get(`/v1/members/${memberId}`)
   return data
