@@ -49,6 +49,12 @@ const authMiddleware = (context) => (req, resp, next) => {
     next();
 }
 
+const delayMiddleware = (app, delay) => {
+    app.use((req, resp, next) => {
+        setTimeout(next, delay)
+    })
+}
+
 const setupRoutes = (app, context) => {
     app.use(cors({
         origin: process.env.CORS_ALLOW_ORIGIN,
@@ -56,6 +62,10 @@ const setupRoutes = (app, context) => {
     }))
 
     app.get('/', (req, resp) => resp.send('up'));
+
+    if (process.env.TEST_API_DELAY) {
+        delayMiddleware(app, process.env.TEST_API_DELAY)
+    }
 
     app.get('/v1/login/auth-url', (req, resp) => {
         api['GET:/v1/login/auth-url'](context)
