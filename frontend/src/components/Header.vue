@@ -15,15 +15,15 @@ import { isLoggedIn, logout } from '../util/session'
 export default {
   data () {
     return {
-      loggedIn: isLoggedIn(),
-      isArchivePage: this.$router.currentRoute.path.match('/archive') != null,
-      isBackupsPage: this.$router.currentRoute.path.match('/backup') != null
+      loggedIn: isLoggedIn()
     }
   },
-  watch: {
-    $route (to) {
-      this.isArchivePage = to.path.match('/archive') != null
-      this.isBackupsPage = to.path.match('/backup') != null
+  computed: {
+    isArchivePage () {
+      return this.$route.path.name === 'Archive'
+    },
+    isBackupsPage () {
+      return this.$route.path.name === 'Backups'
     }
   },
   methods: {
