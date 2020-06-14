@@ -1,42 +1,14 @@
 <template>
   <div class="message-viewer-container">
-    <div class="message-list" ref="messages">
-      <Loader v-if="messages == null"> Loading messages </Loader>
-      <div v-if="messages != null">
-        <div v-if="messages.length == 0" class="no-messages"> No messages </div>
-        <Loader v-if="hasOlder" ref="olderMessagesLoader">
-          Looking for earlier messages
-        </Loader>
-        <div class="message-item" v-for="(message, i) in messages" :key="message.ts">
-          <div v-if="shouldShowDate(i)" class="day-separator"> {{getDate(message)}} </div>
-          <Message :message="message" :shouldShowUserImage="!isContinuedMessage(i)" :shouldShowHeader="!isContinuedMessage(i)" />
-        </div>
-        <Loader v-if="hasNewer" ref="newerMessagesLoader">
-          Looking for newer messages
-        </Loader>
-      </div>
-    </div>
+    <MessageViewerList class="message-list" :messages="messages" :hasNewer="hasNewer" :hasOlder="hasOlder"
+    :focusDate="focusDate"/>
   </div>
 </template>
 
 <script>
-import { getMillis, getDayMillis, getDate } from '../util/slackTime'
-import Loader from './MessageViewerLoader'
-import Message from './MessageViewerMessage'
-import ScrollListener from '../util/ScrollListener'
+import MessageViewerList from './MessageViewerList'
 
 export default {
-  async mounted () {
-    this.$store.subscribe(this.onStoreUpdate.bind(this))
-
-    // This work needs to be done after the messages are rendered so do it on the next Vue tick
-    this.$nextTick(() => {
-      if (this.messages) {
-        this.scrollToFocusDate()
-        this.setupScrollListener()
-      }
-    })
-  },
   computed: {
     messages () {
       return this.$store.state.archive.messages.list
@@ -46,82 +18,12 @@ export default {
     },
     hasNewer () {
       return this.$store.state.archive.messages.hasNewer
+    },
+    focusDate () {
+      return this.$store.state.archive.messages.focusDate
     }
   },
   methods: {
-    shouldShowDate (messageIndex) {
-      if (messageIndex === 0) {
-        return true
-      }
-
-      const message = this.messages[messageIndex]
-      const prevMessage = this.messages[messageIndex - 1]
-
-      return !this.isContinuedMessage(messageIndex) && getDayMillis(message.ts) !== getDayMillis(prevMessage.ts)
-    },
-    getDate (message) {
-      return getDate(message.ts)
-    },
-    isContinuedMessage (messageIndex) {
-      if (messageIndex === 0) {
-        return false
-      }
-
-      const message = this.messages[messageIndex]
-      const prevMessage = this.messages[messageIndex - 1]
-
-      return prevMessage.user === message.user &&
-        getDayMillis(message.ts) === getDayMillis(prevMessage.ts) &&
-        getMillis(message.ts) - getMillis(prevMessage.ts) <= 15 * 60 * 1000
-    },
-    onStoreUpdate (mutation, state) {
-      // Listen for message list updates
-      if (mutation.type === 'updateMessages') {
-        this.$nextTick(() => {
-          this.scrollToFocusDate()
-          if (!this.scrollListener) this.setupScrollListener()
-        })
-      } else if (mutation.type === 'prependMessages') {
-        const messageList = this.$refs.messages
-        const oldScrollHeight = messageList.scrollHeight
-        const oldScrollTop = messageList.scrollTop
-
-        this.$nextTick(() => {
-          // New scroll position after the message list changes could be off. This will fix it
-          messageList.scrollTop = messageList.scrollHeight - oldScrollHeight + oldScrollTop
-        })
-      }
-    },
-    scrollToFocusDate () { // scroll to the first message from day in focus
-      if (!this.messages) {
-        return
-      }
-
-      const focusDate = this.$store.state.archive.messages.focusDate
-      let index = this.messages.findIndex(m => m.ts >= focusDate)
-      if (index < 0) {
-        index = this.messages.length - 1
-      }
-      const messageList = this.$refs.messages
-
-      // scroll to the first message from the requested day
-      const e = messageList.querySelectorAll('.message-item')[index]
-      e.scrollIntoView()
-    },
-    setupScrollListener () {
-      // load more messages if user scrolls to the top/bottom
-      this.scrollListener = new ScrollListener(this.$refs.messages)
-      const olderMessagesLoader = (this.$refs.olderMessagesLoader || {}).$el
-      const newerMessagesLoader = (this.$refs.newerMessagesLoader || {}).$el
-
-      if (olderMessagesLoader) {
-        this.scrollListener.whenInView(olderMessagesLoader, () => this.loadOlderMessages())
-      }
-
-      if (newerMessagesLoader) {
-        this.scrollListener.whenInView(newerMessagesLoader, () => this.loadNewerMessages())
-      }
-    },
     async loadOlderMessages () {
       this.$store.dispatch('loadOlderMessages')
     },
@@ -130,8 +32,7 @@ export default {
     }
   },
   components: {
-    Loader,
-    Message
+    MessageViewerList
   }
 }
 
@@ -154,19 +55,5 @@ export default {
     max-height: 100%;
     width: 100%;
     bottom: 0;
-    overflow: auto;
-  }
-
-  .no-messages {
-    text-align: center;
-    color: #818181;
-    margin-bottom: 18px;
-  }
-
-  .day-separator {
-    font-size: 14px;
-    color: #818181;
-    padding: 8px 10px 8px 10px;
-    text-align: center;
   }
 </style>
