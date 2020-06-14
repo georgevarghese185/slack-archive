@@ -3,14 +3,14 @@
     <Loader v-if="messages == null"> Loading messages </Loader>
     <div v-if="messages != null">
       <div v-if="messages.length == 0" class="no-messages"> No messages </div>
-      <Loader v-if="hasOlder" ref="olderMessagesLoader">
+      <Loader v-if="hasOlder" :scrollListener="scrollListener" @inView="loadOlder">
         Looking for earlier messages
       </Loader>
       <div class="message-item" v-for="(message, i) in messages" :key="message.ts">
         <div v-if="shouldShowDate(i)" class="day-separator"> {{getDate(message)}} </div>
         <Message :message="message" :shouldShowUserImage="!isContinuedMessage(i)" :shouldShowHeader="!isContinuedMessage(i)" />
       </div>
-      <Loader v-if="hasNewer" ref="newerMessagesLoader">
+      <Loader v-if="hasNewer" :scrollListener="scrollListener" @inView="loadNewer">
         Looking for newer messages
       </Loader>
     </div>
@@ -20,6 +20,7 @@
 <script>
 import Loader from './MessageViewerLoader'
 import Message from './MessageViewerMessage'
+import ScrollListener from '../util/ScrollListener'
 import { getMillis, getDayMillis, getDate } from '../util/slackTime'
 
 const getChangeType = (oldMessages, newMessages) => {
@@ -42,12 +43,19 @@ const getChangeType = (oldMessages, newMessages) => {
 
 export default {
   props: ['messages', 'hasNewer', 'hasOlder', 'focusDate'],
+  data () {
+    return {
+      scrollListener: null
+    }
+  },
   async mounted () {
     // This work needs to be done after the messages are rendered so do it on the next Vue tick
     this.$nextTick(() => {
       if (this.messages) {
         this.scrollToFocusDate()
       }
+
+      this.scrollListener = new ScrollListener(this.$refs.messages)
     })
   },
   watch: {
@@ -110,6 +118,12 @@ export default {
       // scroll to the first message from the requested day
       const e = messageList.querySelectorAll('.message-item')[index]
       e.scrollIntoView()
+    },
+    loadOlder () {
+      this.$emit('loadOlderMessages')
+    },
+    loadNewer () {
+      this.$emit('loadNewerMessages')
     }
   },
   components: {

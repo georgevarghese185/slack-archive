@@ -42,6 +42,7 @@ class ScrollListener {
    * scrolling container
    * @param {function} callback A callback function that should be called when the
    * child/descendent element is scrolled into view
+   * @return {function} A function to stop listening for scroll-into-view events
    */
   whenInView (element, callback) {
     if (window.IntersectionObserver) {
@@ -55,6 +56,8 @@ class ScrollListener {
       }, options)
 
       observer.observe(element)
+
+      return () => observer.disconnect()
     } else {
       // IntersectionObserver API is not supported in this browser. Use an onscroll
       // listener
@@ -75,6 +78,8 @@ class ScrollListener {
 
       // In case the element is already in view right now, run the first check now
       setTimeout(check, 0)
+
+      return () => this.container.removeEventListener('scroll', onscroll)
     }
   }
 }

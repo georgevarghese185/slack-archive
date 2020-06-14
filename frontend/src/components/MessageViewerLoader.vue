@@ -1,5 +1,5 @@
 <template>
-  <div class="loader">
+  <div class="loader" ref="loader">
     <Spinner class="spinner"/>
     <p class="loader-text"> <slot></slot> </p>
   </div>
@@ -9,6 +9,20 @@
 import Spinner from './Spinner'
 
 export default {
+  props: ['scrollListener'],
+  mounted () {
+    if (this.scrollListener) {
+      this.stopListening = this.scrollListener.whenInView(this.$refs.loader, this.inView.bind(this))
+    }
+  },
+  beforeDestroy () {
+    this.stopListening && this.stopListening()
+  },
+  methods: {
+    inView () {
+      this.$emit('inView')
+    }
+  },
   components: {
     Spinner
   }

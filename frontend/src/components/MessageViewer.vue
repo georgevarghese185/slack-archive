@@ -1,7 +1,7 @@
 <template>
   <div class="message-viewer-container">
     <MessageViewerList class="message-list" :messages="messages" :hasNewer="hasNewer" :hasOlder="hasOlder"
-    :focusDate="focusDate"/>
+    :focusDate="focusDate" @loadOlderMessages="loadOlderMessages" @loadNewerMessages="loadNewerMessages"/>
   </div>
 </template>
 
