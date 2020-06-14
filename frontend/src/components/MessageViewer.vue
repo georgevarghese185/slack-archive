@@ -26,14 +26,6 @@ import Message from './MessageViewerMessage'
 import ScrollListener from '../util/ScrollListener'
 
 export default {
-  data () {
-    const { list, hasOlder, hasNewer } = this.$store.state.archive.messages
-    return {
-      messages: list,
-      hasOlder,
-      hasNewer
-    }
-  },
   async mounted () {
     this.$store.subscribe(this.onStoreUpdate.bind(this))
 
@@ -44,6 +36,17 @@ export default {
         this.setupScrollListener()
       }
     })
+  },
+  computed: {
+    messages () {
+      return this.$store.state.archive.messages.list
+    },
+    hasOlder () {
+      return this.$store.state.archive.messages.hasOlder
+    },
+    hasNewer () {
+      return this.$store.state.archive.messages.hasNewer
+    }
   },
   methods: {
     shouldShowDate (messageIndex) {
@@ -73,11 +76,6 @@ export default {
     },
     onStoreUpdate (mutation, state) {
       // Listen for message list updates
-      const { list, hasOlder, hasNewer } = state.archive.messages
-      this.messages = list
-      this.hasOlder = hasOlder
-      this.hasNewer = hasNewer
-
       if (mutation.type === 'updateMessages') {
         this.$nextTick(() => {
           this.scrollToFocusDate()
