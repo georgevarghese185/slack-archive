@@ -17,6 +17,13 @@ export default {
       }
 
       return state[memberId].profile.image_48
+    },
+    userName: (state) => (memberId) => {
+      if (!state[memberId]) {
+        return null
+      }
+
+      return state[memberId].profile.display_name
     }
   },
   mutations: {

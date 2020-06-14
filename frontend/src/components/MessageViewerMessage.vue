@@ -5,7 +5,7 @@
     </div>
     <div class="message-contents">
       <div v-if="shouldShowHeader">
-        <span class="user-name"> {{message.user}} </span>
+        <span class="user-name"> {{name}} </span>
         <span class="message-time"> {{getTime(message)}} </span>
       </div>
       <p class="message-body">
@@ -28,6 +28,9 @@ export default {
   computed: {
     profileImage () {
       return this.$store.getters.profilePicture(this.message.user)
+    },
+    name () {
+      return this.$store.getters.userName(this.message.user)
     }
   },
   methods: {
@@ -46,6 +49,7 @@ export default {
     display: flex;
     padding: 8px 10px 8px 10px;
     transition: background 0.1s;
+    margin: 6px 0 6px 0;
   }
 
   .message:hover {
@@ -78,5 +82,19 @@ export default {
 
   .message-body {
     font-size: 14px;
+  }
+
+  .message-replies {
+    display: block;
+    margin: 12px 0 0 12px;
+    font-size: 14px;
+    font-family: sans-serif;
+    text-decoration: none;
+    color: #060f8a;
+    font-weight: bold;
+  }
+
+  .message-replies:hover {
+    text-decoration: underline;
   }
 </style>
