@@ -9,7 +9,7 @@ Vue.use(VueRouter)
 
 const routes = isLoggedIn() ? [
   {
-    path: '/archive/:conversationId?',
+    path: '/archive/:conversationId?/:ts?',
     name: 'Archive',
     component: Archive
   },

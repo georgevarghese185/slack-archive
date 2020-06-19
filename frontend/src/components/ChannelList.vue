@@ -46,7 +46,7 @@ export default {
 
       this.$store.dispatch('loadMessages', {
         conversationId: conversation.id,
-        ts: toSlackTs(Date.now())
+        ts: this.$route.params.ts || toSlackTs(Date.now())
       })
     },
     changeRoute (conversation) {
