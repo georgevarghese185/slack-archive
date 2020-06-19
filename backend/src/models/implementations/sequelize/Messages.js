@@ -19,7 +19,7 @@ const COLUMNS = {
         allowNull: false
     },
     json: {
-        type: DataTypes.JSON,
+        type: DataTypes.TEXT,
         allowNull: false
     }
 }
