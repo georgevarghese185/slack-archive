@@ -11,16 +11,16 @@ import MessageViewerList from './MessageViewerList'
 export default {
   computed: {
     messages () {
-      return this.$store.state.archive.messages.list
+      return this.$store.state.archive.messages.posts.list
     },
     hasOlder () {
-      return this.$store.state.archive.messages.hasOlder
+      return this.$store.state.archive.messages.posts.hasOlder
     },
     hasNewer () {
-      return this.$store.state.archive.messages.hasNewer
+      return this.$store.state.archive.messages.posts.hasNewer
     },
     focusDate () {
-      return this.$store.state.archive.messages.focusDate
+      return this.$store.state.archive.messages.posts.focusDate
     }
   },
   methods: {
