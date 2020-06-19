@@ -28,12 +28,18 @@ export const baseStore = {
       state.hasNewer = hasNewer
     },
     prependMessages (state, { messages, hasOlder }) {
-      state.list = messages.concat(state.list)
+      const newList = messages.concat(state.list)
+      const trimmed = newList.slice(0, MAX_MESSAGES)
+      state.list = trimmed
       state.hasOlder = hasOlder
+      state.hasNewer = trimmed.length < newList.length ? true : state.hasNewer
     },
     appendMessages (state, { messages, hasNewer }) {
-      state.list = state.list.concat(messages)
+      const newList = state.list.concat(messages)
+      const trimmed = newList.slice(-MAX_MESSAGES)
+      state.list = trimmed
       state.hasNewer = hasNewer
+      state.hasOlder = trimmed.length < newList.length ? true : state.hasOlder
     }
   },
   actions: {
