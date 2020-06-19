@@ -1,12 +1,12 @@
 <template>
   <div class="message-list-container" ref="messages">
-    <Loader v-if="messages == null"> Loading messages </Loader>
-    <div v-if="messages != null">
-      <div v-if="messages.length == 0" class="no-messages"> No messages </div>
+    <Loader v-if="messageList == null"> Loading messages </Loader>
+    <div v-if="messageList != null">
+      <div v-if="messageList.length == 0" class="no-messages"> No messages </div>
       <Loader v-if="hasOlder" :scrollListener="scrollListener" @inView="loadOlder">
-        Looking for earlier messages
+        Looking for earlier messageList
       </Loader>
-      <div class="message-item" v-for="(message, i) in messages" :key="message.ts">
+      <div class="message-item" v-for="(message, i) in messageList" :key="message.ts">
         <div v-if="shouldShowDate(i)" class="day-separator"> {{getDate(message)}} </div>
         <Message :message="message" :shouldShowUserImage="!isContinuedMessage(i)" :shouldShowHeader="!isContinuedMessage(i)" />
       </div>
@@ -23,29 +23,49 @@ import Message from './MessageViewerMessage'
 import ScrollListener from '../util/ScrollListener'
 import { getMillis, getDayMillis, getDate } from '../util/slackTime'
 
-const getChangeType = (oldMessages, newMessages) => {
-  if (oldMessages !== newMessages) {
-    return 'new'
+const getMessageDiff = (oldMessages, newMessages) => {
+  oldMessages = oldMessages || []
+  newMessages = newMessages || []
+  const diff = {}
+
+  const first = arr => arr[0]
+  const last = arr => arr[arr.length - 1]
+  const indexOfMessage = (messages, message) => {
+    return (message == null) ? undefined : messages.findIndex(m => m.ts === message.ts)
   }
 
-  if (newMessages.indexOf(oldMessages[0]) > 0) {
-    return 'prepend'
+  const addedToTop = indexOfMessage(newMessages, first(oldMessages))
+  if (addedToTop > 0) {
+    diff.type = 'prepend'
+    diff.addToTop = newMessages.slice(0, addedToTop)
+    diff.removeFromBottom = oldMessages.length - 1 - indexOfMessage(oldMessages, last(newMessages))
+    return diff
   }
 
-  const lastIndex = a => a.length - 1
-
-  if (newMessages.indexOf(lastIndex(oldMessages)) < lastIndex(newMessages)) {
-    return 'append'
+  const indexInNew = indexOfMessage(newMessages, last(oldMessages))
+  const addedToBottom = newMessages.length - 1 - indexInNew
+  if (indexInNew > -1 && addedToBottom > 0) {
+    diff.type = 'append'
+    diff.addToBottom = newMessages.slice(-addedToBottom)
+    diff.removeFromTop = indexOfMessage(oldMessages, first(newMessages))
+    return diff
   }
 
-  return 'other'
+  if (addedToTop === 0 && addedToBottom === 0) {
+    diff.type = 'none'
+    return diff
+  }
+
+  diff.type = 'new'
+  return diff
 }
 
 export default {
   props: ['messages', 'hasNewer', 'hasOlder', 'focusDate'],
   data () {
     return {
-      scrollListener: null
+      scrollListener: null,
+      messageList: this.messages
     }
   },
   async mounted () {
@@ -59,22 +79,32 @@ export default {
     })
   },
   watch: {
-    messages (oldMessages, newMessages) {
-      const changeType = getChangeType(oldMessages, newMessages)
+    async messages (newMessages, oldMessages) {
+      const diff = getMessageDiff(oldMessages, newMessages)
 
-      if (changeType === 'new') {
-        this.$nextTick(() => {
-          this.scrollToFocusDate()
-        })
-      } else if (changeType === 'prepend') {
-        const messageList = this.$refs.messages
-        const oldScrollHeight = messageList.scrollHeight
-        const oldScrollTop = messageList.scrollTop
+      if (diff.type === 'new') {
+        this.messageList = newMessages
+        await this.$nextTick()
+        this.scrollToFocusDate()
+      } else if (diff.type === 'prepend') {
+        this.messageList = diff.addToTop.concat(this.messageList)
+        const oldScrollState = this.getScrollState()
 
-        this.$nextTick(() => {
-          // New scroll position after the message list changes could be off. This will fix it
-          messageList.scrollTop = messageList.scrollHeight - oldScrollHeight + oldScrollTop
-        })
+        await this.$nextTick()
+
+        const newScrollState = this.getScrollState()
+        const addedHeight = newScrollState.height - oldScrollState.height
+        const newScrollTop = oldScrollState.top + addedHeight
+
+        this.setScrollTop(newScrollTop)
+
+        this.messageList = this.messageList.slice(0, this.messageList.length - diff.removeFromBottom)
+      } else if (diff.type === 'append') {
+        this.messageList = this.messageList.concat(diff.addToBottom)
+        const oldScrollTop = this.getScrollState().top
+        await this.$nextTick()
+        this.setScrollTop(oldScrollTop)
+        this.messageList = this.messageList.slice(diff.removeFromTop)
       }
     }
   },
@@ -84,8 +114,8 @@ export default {
         return true
       }
 
-      const message = this.messages[messageIndex]
-      const prevMessage = this.messages[messageIndex - 1]
+      const message = this.messageList[messageIndex]
+      const prevMessage = this.messageList[messageIndex - 1]
 
       return !this.isContinuedMessage(messageIndex) && getDayMillis(message.ts) !== getDayMillis(prevMessage.ts)
     },
@@ -97,21 +127,21 @@ export default {
         return false
       }
 
-      const message = this.messages[messageIndex]
-      const prevMessage = this.messages[messageIndex - 1]
+      const message = this.messageList[messageIndex]
+      const prevMessage = this.messageList[messageIndex - 1]
 
       return prevMessage.user === message.user &&
         getDayMillis(message.ts) === getDayMillis(prevMessage.ts) &&
         getMillis(message.ts) - getMillis(prevMessage.ts) <= 15 * 60 * 1000
     },
     scrollToFocusDate () { // scroll to the first message from day in focus
-      if (!this.messages) {
+      if (!this.messageList) {
         return
       }
 
-      let index = this.messages.findIndex(m => m.ts >= this.focusDate)
+      let index = this.messageList.findIndex(m => m.ts >= this.focusDate)
       if (index < 0) {
-        index = this.messages.length - 1
+        index = this.messageList.length - 1
       }
       const messageList = this.$refs.messages
 
@@ -124,6 +154,19 @@ export default {
     },
     loadNewer () {
       this.$emit('loadNewerMessages')
+    },
+    getScrollState () {
+      const messageList = this.$refs.messages
+      return messageList ? {
+        top: messageList.scrollTop,
+        height: messageList.scrollHeight
+      } : null
+    },
+    setScrollTop (scrollTop) {
+      const messageList = this.$refs.messages
+      if (messageList) {
+        messageList.scrollTop = scrollTop
+      }
     }
   },
   components: {
