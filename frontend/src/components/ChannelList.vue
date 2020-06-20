@@ -73,16 +73,21 @@ export default {
 
 <style scoped>
   .channel-list-container {
-    width: 250px;
+    width: 100%;
     height: 100%;
+    position: relative;
+    overflow: auto;
   }
 
   .conversation-list {
-    margin-top: 48px;
+    position:absolute;
+    width: 100%;
+    height: 100%;
+    padding-top: 28px;
   }
 
   .conversation {
-    padding: 5px 0 5px 18px;
+    padding: 5px 0 5px 28px;
     margin-bottom: 16px;
     display: flex;
     align-items: center;

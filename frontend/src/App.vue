@@ -18,13 +18,6 @@ export default {
 </script>
 
 <style>
-  #app {
-    width: 100%;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-  }
-
   body {
     position: fixed;
     top: 0;
@@ -34,13 +27,20 @@ export default {
     height: 100%;
   }
 
+  #app {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+  }
+
   p {
     margin: 0;
   }
 
   .main-container {
     width: 100%;
-    height: 100%;
+    flex-grow: 1;
     background-color: #e8e8e8
   }
 </style>

@@ -1,15 +1,9 @@
 <template>
   <div class="archive-container">
-    <div class="channel-list">
-      <ChannelList />
-    </div>
+    <ChannelList class="channel-list"/>
     <div class="right-section">
-      <div class="date-picker">
-        <DatePicker/>
-      </div>
-      <div class="message-viewer">
-        <MessageViewer />
-      </div>
+      <DatePicker/>
+      <MessageViewer class="message-viewer"/>
     </div>
   </div>
 </template>
@@ -30,17 +24,22 @@ export default {
 
 <style scoped>
   .archive-container {
-    background: #efefef;
-    display: flex;
     width: 100%;
     height: 100%;
+    display: flex;
+    align-items: stretch;
+    background: #efefef;
+  }
+
+  .channel-list {
+    width: 280px;
   }
 
   .right-section {
     display: flex;
     flex-direction: column;
-    width: 100%;
-    height: 100%;
+    align-items: stretch;
+    flex-grow: 1;
   }
 
   .message-viewer {
