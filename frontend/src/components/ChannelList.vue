@@ -111,7 +111,6 @@ export default {
   }
 
   .conversation-name {
-    font-family: sans-serif;
     font-size: 18px;
     margin-left: 10px;
   }

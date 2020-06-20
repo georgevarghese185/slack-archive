@@ -62,13 +62,11 @@ export default {
 
   .welcome {
     text-align: center;
-    font-family: sans-serif;
     font-size: 42px;
     font-weight: bold;
   }
 
   .instructions {
-    font-family: sans-serif;
     margin-top: 15px;
     font-size: 18px;
   }
@@ -86,7 +84,6 @@ export default {
 
   .sign-in > p {
     color: white;
-    font-family: sans-serif;
     font-size: 28px;
   }
 

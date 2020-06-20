@@ -50,14 +50,12 @@ export default {
 
   .title {
     text-decoration: none;
-    font-family: sans-serif;
     color: white;
     font-size: 26px;
   }
 
   .nav-link {
     cursor: pointer;
-    font-family: sans-serif;
     font-size: 16px;
     color: white;
     text-decoration: none;

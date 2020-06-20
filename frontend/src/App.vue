@@ -38,6 +38,10 @@ export default {
     margin: 0;
   }
 
+  * {
+    font-family: sans-serif;
+  }
+
   .main-container {
     width: 100%;
     flex-grow: 1;

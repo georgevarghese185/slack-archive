@@ -40,7 +40,6 @@ export default {
 
 <style scoped>
   * {
-    font-family: sans-serif;
   }
 
   .message-viewer-container {

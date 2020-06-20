@@ -88,7 +88,6 @@ export default {
     display: block;
     margin: 12px 0 0 12px;
     font-size: 14px;
-    font-family: sans-serif;
     text-decoration: none;
     color: #060f8a;
     font-weight: bold;

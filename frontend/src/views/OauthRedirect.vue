@@ -54,7 +54,6 @@ export default {
     justify-content: center;
     min-width: 475px;
     min-height: 135px;
-    font-family: sans-serif;
     font-size: 16px;
   }
 </style>
