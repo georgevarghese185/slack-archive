@@ -37,7 +37,7 @@ export default {
 
 <style scoped>
   header {
-    height: 72px;
+    height: 58px;
     background-color: #680763;
     display: flex;
     justify-content: space-between;
@@ -51,16 +51,14 @@ export default {
   .title {
     text-decoration: none;
     font-family: sans-serif;
-    font-weight: bold;
     color: white;
-    font-size: 28px;
+    font-size: 26px;
   }
 
   .nav-link {
     cursor: pointer;
     font-family: sans-serif;
-    font-weight: bold;
-    font-size: 18px;
+    font-size: 16px;
     color: white;
     text-decoration: none;
     margin: 0 6px 0 6px;
