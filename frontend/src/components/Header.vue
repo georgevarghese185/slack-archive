@@ -2,8 +2,8 @@
   <header>
     <router-link class="title" to="/"> Slack Archive </router-link>
     <span v-if="loggedIn">
-      <router-link :class="{ 'nav-link': true, 'nav-selected': this.isArchivePage }" to="archive">Archive</router-link>
-      <router-link :class="{ 'nav-link': true, 'nav-selected': this.isBackupsPage }" to="backup">Backup</router-link>
+      <router-link :class="{ 'nav-link': true, 'nav-selected': this.isArchivePage }" :to="{ name: 'Archive' }">Archive</router-link>
+      <router-link :class="{ 'nav-link': true, 'nav-selected': this.isBackupsPage }" :to="{ name: 'Backup' }">Backup</router-link>
       <span class="nav-link" @click="signOut">Sign Out</span>
     </span>
   </header>
@@ -20,10 +20,10 @@ export default {
   },
   computed: {
     isArchivePage () {
-      return this.$route.path.name === 'Archive'
+      return this.$route.name === 'Archive'
     },
     isBackupsPage () {
-      return this.$route.path.name === 'Backups'
+      return this.$route.name === 'Backups'
     }
   },
   methods: {
