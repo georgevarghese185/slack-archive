@@ -2,11 +2,14 @@
   <div class="message-viewer-container">
     <MessageList class="message-list" :messages="messages" :hasNewer="hasNewer" :hasOlder="hasOlder"
     :focusDate="focusDate" @loadOlderMessages="loadOlderMessages" @loadNewerMessages="loadNewerMessages"/>
+    <div v-if="thread" class="thread-pane-background" @click="closeThread"/>
+    <Thread v-if="thread" class="thread-pane" />
   </div>
 </template>
 
 <script>
 import MessageList from './MessageViewerList'
+import Thread from './MessageViewerThread'
 import { toSlackTs } from '../util/slackTime'
 
 export default {
@@ -56,10 +59,14 @@ export default {
     },
     loadNewerMessages () {
       this.$store.dispatch('posts/loadNewerMessages')
+    },
+    closeThread () {
+      this.$router.push({ query: { thread: undefined } })
     }
   },
   components: {
-    MessageList
+    MessageList,
+    Thread
   }
 }
 
@@ -78,5 +85,23 @@ export default {
     max-height: 100%;
     width: 100%;
     bottom: 0;
+  }
+
+  .thread-pane {
+    position: absolute;
+    top: 0;
+    right: 0;
+    z-index: 2;
+    width: 712px;
+    height: 100%;
+    box-shadow: -2px 0px 6px 2px #0000001a;
+  }
+
+  .thread-pane-background {
+    z-index: 1;
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    background-color: #8181816e;
   }
 </style>

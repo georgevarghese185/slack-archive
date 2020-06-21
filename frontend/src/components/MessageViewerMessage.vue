@@ -11,6 +11,9 @@
       <p class="message-body">
         {{message.text}}
       </p>
+      <router-link v-if="replyCount" class="message-replies" :to="{ query: { thread: message.ts } }">
+        {{replyCount}} repl{{replyCount > 1 ? 'ies': 'y'}}
+      </router-link>
     </div>
   </div>
 </template>
@@ -31,6 +34,9 @@ export default {
     },
     name () {
       return this.$store.getters.userName(this.message.user)
+    },
+    replyCount () {
+      return this.message.reply_count
     }
   },
   methods: {

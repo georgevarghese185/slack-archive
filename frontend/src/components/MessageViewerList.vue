@@ -143,7 +143,12 @@ export default {
       if (index < 0) {
         index = this.messageList.length - 1
       }
+
       const messageList = this.$refs.messages
+
+      if (!messageList) {
+        return
+      }
 
       // scroll to the first message from the requested day
       const e = messageList.querySelectorAll('.message-item')[index]
