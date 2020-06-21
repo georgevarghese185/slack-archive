@@ -3,7 +3,7 @@
     <Message v-if="parent" :message="parent" showUserImage="true" showHeader="true"/>
     <div class="separator"/>
     <MessageList class="replies" v-if="replies" :messages="replies" :hasOlder="hasOlder" :hasNewer="hasNewer"
-    :focusDate="focusDate" @loadNewer="loadNewer" @loadOlder="loadOlder" />
+    :focusDate="focusDate" @loadOlderMessages="loadOlder" @loadNewerMessages="loadNewer" />
   </div>
 </template>
 
@@ -60,11 +60,11 @@ export default {
         threadTs: this.threadTs
       })
     },
-    loadNewer () {
-      // TODO
-    },
     loadOlder () {
-      // TODO
+      this.$store.dispatch('thread/loadOlderMessages')
+    },
+    loadNewer () {
+      this.$store.dispatch('thread/loadNewerMessages')
     }
   },
   components: {
