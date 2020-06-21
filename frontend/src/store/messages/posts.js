@@ -44,13 +44,13 @@ export default {
       }
     },
     async loadOlderMessages (context) {
-      baseStore.actions.loadOlderMessages(context, {
+      return baseStore.actions.loadOlderMessages(context, {
         postsOnly: true,
         threadTs: null
       })
     },
     async loadNewerMessages (context) {
-      baseStore.actions.loadNewerMessages(context, {
+      return baseStore.actions.loadNewerMessages(context, {
         postsOnly: true,
         threadTs: null
       })
