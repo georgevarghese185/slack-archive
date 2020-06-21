@@ -4,19 +4,16 @@ export default {
   namespaced: true,
   state: () => ({
     conversationId: null,
-    focusDate: null,
     ...baseStore.state()
   }),
   mutations: {
     ...baseStore.mutations,
     clearMessages (state) {
       state.conversationId = null
-      state.focusDate = null
       baseStore.mutations.clearMessages(state)
     },
-    updateMessages (state, { conversationId, focusDate, ...params }) {
+    updateMessages (state, { conversationId, ...params }) {
       state.conversationId = conversationId
-      state.focusDate = focusDate
       baseStore.mutations.updateMessages(state, params)
     }
   },
@@ -46,7 +43,6 @@ export default {
 
         context.commit('updateMessages', {
           conversationId,
-          focusDate: ts,
           messages: olderMessages.concat(newerMessages),
           hasOlder: olderMessages.length >= MESSAGE_API_LIMIT,
           hasNewer: newerMessages.length >= MESSAGE_API_LIMIT

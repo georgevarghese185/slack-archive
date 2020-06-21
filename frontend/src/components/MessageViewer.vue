@@ -10,6 +10,11 @@ import MessageList from './MessageViewerList'
 import { toSlackTs } from '../util/slackTime'
 
 export default {
+  data () {
+    return {
+      focusDate: null
+    }
+  },
   mounted () {
     this.$watch('conversationId', (conversationId, prevId) => {
       if (conversationId && conversationId !== prevId) {
@@ -20,6 +25,9 @@ export default {
   computed: {
     conversationId () {
       return this.$route.params.conversationId
+    },
+    thread () {
+      return this.$route.query.thread
     },
     store () {
       return this.$store.state.archive.messages
@@ -32,16 +40,15 @@ export default {
     },
     hasNewer () {
       return this.store.posts.hasNewer
-    },
-    focusDate () {
-      return this.store.posts.focusDate
     }
   },
   methods: {
     loadMessages () {
+      this.focusDate = this.$route.params.ts || toSlackTs(Date.now())
+
       this.$store.dispatch('posts/loadMessages', {
         conversationId: this.conversationId,
-        ts: this.$route.params.ts || toSlackTs(Date.now())
+        ts: this.focusDate
       })
     },
     loadOlderMessages () {
