@@ -91,7 +91,7 @@ export default {
   }
 
   .message-replies {
-    display: block;
+    display: inline;
     margin: 12px 0 0 12px;
     font-size: 14px;
     text-decoration: none;
