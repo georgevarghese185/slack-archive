@@ -8,7 +8,7 @@
       </Loader>
       <div class="message-item" v-for="(message, i) in messageList" :key="message.ts">
         <div v-if="shouldShowDate(i)" class="day-separator"> {{getDate(message)}} </div>
-        <Message :message="message" :shouldShowUserImage="!isContinuedMessage(i)" :shouldShowHeader="!isContinuedMessage(i)" />
+        <Message :message="message" :showUserImage="!isContinuedMessage(i)" :showHeader="!isContinuedMessage(i)" />
       </div>
       <Loader v-if="hasNewer" :scrollListener="scrollListener" @inView="loadNewer">
         Looking for newer messages

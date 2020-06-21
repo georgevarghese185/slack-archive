@@ -1,10 +1,10 @@
 <template>
   <div class="message" :title="getDateString(message)">
     <div class="user-image-container">
-      <img v-if="shouldShowUserImage" class="user-image" :src="profileImage"/>
+      <img v-if="showUserImage" class="user-image" :src="profileImage"/>
     </div>
     <div class="message-contents">
-      <div v-if="shouldShowHeader">
+      <div v-if="showHeader">
         <span class="user-name"> {{name}} </span>
         <span class="message-time"> {{getTime(message)}} </span>
       </div>
@@ -19,7 +19,7 @@
 import { getTime, getDateString } from '../util/slackTime'
 
 export default {
-  props: ['message', 'shouldShowUserImage', 'shouldShowHeader'],
+  props: ['message', 'showUserImage', 'showHeader'],
   mounted () {
     if (!this.profileImage) {
       this.$store.dispatch('loadMember', this.message.user)
