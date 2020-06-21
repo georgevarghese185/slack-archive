@@ -72,8 +72,6 @@ export default {
         postsOnly: true,
         threadTs: null
       })
-    },
-    async loadThread (context, { ts }) {
     }
   }
 }
