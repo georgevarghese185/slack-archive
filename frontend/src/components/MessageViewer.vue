@@ -7,9 +7,20 @@
 
 <script>
 import MessageList from './MessageViewerList'
+import { toSlackTs } from '../util/slackTime'
 
 export default {
+  mounted () {
+    this.$watch('conversationId', (conversationId, prevId) => {
+      if (conversationId && conversationId !== prevId) {
+        this.loadMessages()
+      }
+    }, { immediate: true })
+  },
   computed: {
+    conversationId () {
+      return this.$route.params.conversationId
+    },
     messages () {
       return this.$store.state.archive.messages.posts.list
     },
@@ -24,6 +35,12 @@ export default {
     }
   },
   methods: {
+    loadMessages () {
+      this.$store.dispatch('loadMessages', {
+        conversationId: this.conversationId,
+        ts: this.$route.params.ts || toSlackTs(Date.now())
+      })
+    },
     async loadOlderMessages () {
       this.$store.dispatch('loadOlderMessages')
     },

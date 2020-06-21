@@ -2,7 +2,7 @@
   <div class="channel-list-container">
     <div class="conversation-list" v-if="conversations">
       <div :class="getConversationClass(conversation)" v-for="conversation of conversations" :key="conversation.id"
-      @click="() => selectConversation(conversation)">
+      @click="() => changeRoute(conversation.id)">
         <span class="conversation-symbol">#</span><span class="conversation-name"> {{conversation.name}} </span>
       </div>
     </div>
@@ -14,55 +14,35 @@
 
 <script>
 import Spinner from '../components/Spinner'
-import { toSlackTs } from '../util/slackTime'
 
 export default {
-  data () {
-    return {
-      selected: null
-    }
-  },
   computed: {
     conversations () {
       return this.$store.state.archive.conversations.list
+    },
+    conversationId () {
+      return this.$route.params.conversationId
     }
   },
   async mounted () {
-    await this.$store.dispatch('loadConversations')
+    if (!this.conversations) {
+      await this.$store.dispatch('loadConversations')
+    }
 
-    const id = this.$route.params.conversationId
-    const conversation = id ? this.getConversation(id) : this.conversations[0]
-    this.selectConversation(conversation)
+    const id = this.conversationId || this.conversations[0].id
+    this.changeRoute(id)
   },
   methods: {
-    selectConversation (conversation) {
-      if (conversation === this.selected) {
-        return
-      }
-
-      this.selected = conversation
-
-      this.changeRoute(conversation)
-
-      this.$store.dispatch('loadMessages', {
-        conversationId: conversation.id,
-        ts: this.$route.params.ts || toSlackTs(Date.now())
-      })
-    },
-    changeRoute (conversation) {
-      const { conversationId } = this.$route.params
-      if (conversation.id !== conversationId) {
-        this.$router.push({ name: 'Archive', params: { conversationId: conversation.id } })
+    changeRoute (conversationId) {
+      if (conversationId !== this.conversationId) {
+        this.$router.push({ name: 'Archive', params: { conversationId } })
       }
     },
     getConversationClass (conversation) {
       return {
         conversation: true,
-        'conversation-selected': this.selected === conversation
+        'conversation-selected': this.conversationId === conversation.id
       }
-    },
-    getConversation (id) {
-      return this.conversations.find(c => c.id === id)
     }
   },
   components: {
