@@ -39,16 +39,16 @@ export default {
   },
   methods: {
     loadMessages () {
-      this.$store.dispatch('loadMessages', {
+      this.$store.dispatch('posts/loadMessages', {
         conversationId: this.conversationId,
         ts: this.$route.params.ts || toSlackTs(Date.now())
       })
     },
-    async loadOlderMessages () {
-      this.$store.dispatch('loadOlderMessages')
+    loadOlderMessages () {
+      this.$store.dispatch('posts/loadOlderMessages')
     },
-    async loadNewerMessages () {
-      this.$store.dispatch('loadNewerMessages')
+    loadNewerMessages () {
+      this.$store.dispatch('posts/loadNewerMessages')
     }
   },
   components: {

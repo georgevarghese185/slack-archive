@@ -1,6 +1,7 @@
 import { baseStore, models, MESSAGE_API_LIMIT } from './base'
 
 export default {
+  namespaced: true,
   state: () => ({
     conversationId: null,
     focusDate: null,
