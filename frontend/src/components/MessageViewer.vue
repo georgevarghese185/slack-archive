@@ -1,12 +1,12 @@
 <template>
   <div class="message-viewer-container">
-    <MessageViewerList class="message-list" :messages="messages" :hasNewer="hasNewer" :hasOlder="hasOlder"
+    <MessageList class="message-list" :messages="messages" :hasNewer="hasNewer" :hasOlder="hasOlder"
     :focusDate="focusDate" @loadOlderMessages="loadOlderMessages" @loadNewerMessages="loadNewerMessages"/>
   </div>
 </template>
 
 <script>
-import MessageViewerList from './MessageViewerList'
+import MessageList from './MessageViewerList'
 
 export default {
   computed: {
@@ -32,7 +32,7 @@ export default {
     }
   },
   components: {
-    MessageViewerList
+    MessageList
   }
 }
 
