@@ -145,8 +145,9 @@ class MessageGenerator {
         const replies = [parent];
 
         const replyTsGenerator = timestampGenerator.thread(parentTimestamp);
+        const nextTs = () => replyTsGenerator.next()
 
-        for (let i = 0; i < parent.reply_count; i++) {
+        for (let i = 0, ts = nextTs(); (i < parent.reply_count) && (ts <= toSlackTs(Date.now())); i++, ts = nextTs()) {
             const makeBroadcast = randomChance(this.broadcastProbability);
             let reply
 
@@ -158,6 +159,11 @@ class MessageGenerator {
 
             replies.push(reply);
         }
+
+        // fewer than expected replies could have been generated if the generated timestamps
+        // were starting to cross the current time. Update parent.reply_count with
+        // the smaller number if that happened
+        parent.reply_count = Math.min(parent.reply_count, replies.length - 1)
 
         this.generated.threads++;
 
