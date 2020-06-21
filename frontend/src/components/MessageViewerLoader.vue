@@ -11,16 +11,21 @@ import Spinner from './Spinner'
 export default {
   props: ['scrollListener'],
   mounted () {
-    if (this.scrollListener) {
-      this.stopListening = this.scrollListener.whenInView(this.$refs.loader, this.inView.bind(this))
-    }
+    this.$watch('scrollListener', (scrollListener, oldScrollListner) => {
+      if (scrollListener) {
+        this.stopListening = scrollListener.whenInView(this.$refs.loader, this.inView)
+      }
+    }, { immediate: true })
   },
   beforeDestroy () {
-    this.stopListening && this.stopListening()
+    this.stopListener()
   },
   methods: {
     inView () {
       this.$emit('inView')
+    },
+    stopListener () {
+      this.stopListening && this.stopListening()
     }
   },
   components: {
