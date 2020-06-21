@@ -66,9 +66,6 @@ export default {
 </script>
 
 <style scoped>
-  * {
-  }
-
   .message-viewer-container {
     position: relative;
     background: white;
