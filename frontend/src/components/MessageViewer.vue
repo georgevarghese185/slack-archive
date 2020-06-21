@@ -21,17 +21,20 @@ export default {
     conversationId () {
       return this.$route.params.conversationId
     },
+    store () {
+      return this.$store.state.archive.messages
+    },
     messages () {
-      return this.$store.state.archive.messages.posts.list
+      return this.store.posts.list
     },
     hasOlder () {
-      return this.$store.state.archive.messages.posts.hasOlder
+      return this.store.posts.hasOlder
     },
     hasNewer () {
-      return this.$store.state.archive.messages.posts.hasNewer
+      return this.store.posts.hasNewer
     },
     focusDate () {
-      return this.$store.state.archive.messages.posts.focusDate
+      return this.store.posts.focusDate
     }
   },
   methods: {
