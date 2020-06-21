@@ -3,19 +3,10 @@ import { baseStore, models, MESSAGE_API_LIMIT } from './base'
 export default {
   namespaced: true,
   state: () => ({
-    conversationId: null,
     ...baseStore.state()
   }),
   mutations: {
-    ...baseStore.mutations,
-    clearMessages (state) {
-      state.conversationId = null
-      baseStore.mutations.clearMessages(state)
-    },
-    updateMessages (state, { conversationId, ...params }) {
-      state.conversationId = conversationId
-      baseStore.mutations.updateMessages(state, params)
-    }
+    ...baseStore.mutations
   },
   actions: {
     async loadMessages (context, { conversationId, ts }) {
@@ -53,19 +44,13 @@ export default {
       }
     },
     async loadOlderMessages (context) {
-      const conversationId = context.state.conversationId
-
       baseStore.actions.loadOlderMessages(context, {
-        conversationId,
         postsOnly: true,
         threadTs: null
       })
     },
     async loadNewerMessages (context) {
-      const conversationId = context.state.conversationId
-
       baseStore.actions.loadNewerMessages(context, {
-        conversationId,
         postsOnly: true,
         threadTs: null
       })

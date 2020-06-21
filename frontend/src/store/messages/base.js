@@ -12,17 +12,20 @@ export const MAX_MESSAGES = 200
 
 export const baseStore = {
   state: () => ({
+    conversationId: null,
     list: null,
     hasOlder: false,
     hasNewer: false
   }),
   mutations: {
     clearMessages (state) {
+      state.conversationId = null
       state.list = null
       state.hasOlder = false
       state.hasNewer = false
     },
-    updateMessages (state, { messages, hasOlder, hasNewer }) {
+    updateMessages (state, { conversationId, messages, hasOlder, hasNewer }) {
+      state.conversationId = conversationId
       state.list = messages
       state.hasOlder = hasOlder
       state.hasNewer = hasNewer
@@ -43,9 +46,10 @@ export const baseStore = {
     }
   },
   actions: {
-    async loadOlderMessages (context, { conversationId, postsOnly, threadTs }) {
+    async loadOlderMessages (context, { postsOnly, threadTs }) {
       try {
         const ts = context.state.list[0].ts
+        const conversationId = context.state.conversationId
 
         const messages = await models.remote.get(
           null,
@@ -65,9 +69,10 @@ export const baseStore = {
         // TODO handle error
       }
     },
-    async loadNewerMessages (context, { conversationId, postsOnly, threadTs }) {
+    async loadNewerMessages (context, { postsOnly, threadTs }) {
       try {
         const list = context.state.list
+        const conversationId = context.state.conversationId
         const ts = list[list.length - 1].ts
 
         const messages = await models.remote.get(
