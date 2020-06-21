@@ -2,8 +2,12 @@
   <div class="message-viewer-container">
     <MessageList class="message-list" :messages="messages" :hasNewer="hasNewer" :hasOlder="hasOlder"
     :focusDate="focusDate" @loadOlderMessages="loadOlderMessages" @loadNewerMessages="loadNewerMessages"/>
-    <div v-if="thread" class="thread-pane-background" @click="closeThread"/>
-    <Thread v-if="thread" class="thread-pane" />
+    <transition name="fade">
+      <div v-if="thread" class="thread-pane-background" @click="closeThread"/>
+    </transition>
+    <transition name="slide-left">
+      <Thread v-if="thread" class="thread-pane" />
+    </transition>
   </div>
 </template>
 
@@ -103,5 +107,21 @@ export default {
     height: 100%;
     position: absolute;
     background-color: #8181816e;
+  }
+
+  .fade-enter-active, .fade-leave-active {
+    transition: opacity 0.5s;
+  }
+
+  .fade-enter, .fade-leave-to {
+    opacity: 0;
+  }
+
+  .slide-left-enter-active, .slide-left-leave-active {
+    transition: transform 0.3s ease-out;
+  }
+
+  .slide-left-enter, .slide-left-leave-to {
+    transform: translateX(712px);
   }
 </style>
