@@ -2,11 +2,6 @@ import * as api from '../../api'
 import Messages from '../../../../backend/src/models/Messages'
 
 export default class MessagesRemote extends Messages {
-  constructor ({ baseUrl }) {
-    super()
-    this.baseUrl = baseUrl
-  }
-
   async get (from, to, conversationId, postsOnly, threadTs, limit) {
     const params = {}
 

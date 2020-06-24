@@ -4,7 +4,7 @@
 import MessagesRemote from '../../models/remote/Messages'
 
 export const models = {
-  remote: new MessagesRemote({ baseUrl: process.env.VUE_APP_API_BASE_URL })
+  remote: new MessagesRemote()
 }
 
 export const MESSAGE_API_LIMIT = 50
