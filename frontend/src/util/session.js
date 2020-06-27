@@ -34,11 +34,11 @@ export const completeLogin = async (code, state) => {
 }
 
 export const logout = async () => {
+  localStorage.clear('loggedIn')
+
   try {
     await api.logout()
   } catch (e) {
     console.error(e)
   }
-
-  localStorage.clear('loggedIn')
 }
