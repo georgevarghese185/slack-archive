@@ -1,5 +1,5 @@
 import * as api from '../../api'
-import Messages from '../../../../backend/src/models/Messages'
+import Messages from '../../../../common/models/Messages'
 
 export default class MessagesRemote extends Messages {
   async get (from, to, conversationId, postsOnly, threadTs, limit) {

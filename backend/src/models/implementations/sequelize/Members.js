@@ -1,4 +1,4 @@
-const Members = require('../../Members');
+const Members = require('../../../../../common/models/Members');
 const { DataTypes } = require('sequelize');
 
 const COLUMNS = {

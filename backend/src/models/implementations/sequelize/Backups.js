@@ -1,4 +1,4 @@
-const Backups = require('../../Backups');
+const Backups = require('../../../../../common/models/Backups');
 const { DataTypes } = require('sequelize');
 
 module.exports = class BackupsSequelize extends Backups {

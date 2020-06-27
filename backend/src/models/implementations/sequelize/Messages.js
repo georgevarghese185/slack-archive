@@ -1,4 +1,4 @@
-const Messages = require('../../Messages');
+const Messages = require('../../../../../common/models/Messages');
 const { DataTypes, Op } = require('sequelize');
 
 const COLUMNS = {
