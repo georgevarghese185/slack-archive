@@ -19,6 +19,12 @@ const backupConversations = async (context, backupId, token) => {
         if(nextCursor) {
             config.params = { cursor: nextCursor };
         }
+
+        if (process.env.EXP_PRIVATE_SCOPE === 'true') {
+            // for experimental use. Not officially supported yet
+            config.params = { ...config.params, types: 'public_channel,private_channel,mpim,im' }
+        }
+
         let response;
 
         try {
