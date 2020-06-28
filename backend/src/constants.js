@@ -1,7 +1,8 @@
 module.exports = {
     slack: {
         scope: {
-            publicMessages: "channels:history,channels:read,users:read"
+            publicMessages: "channels:history,channels:read,users:read",
+            privateMessages: "channels:history,channels:read,groups:history,groups:read,im:history,im:read,mpim:history,mpim:read,users:read"
         }
     },
     errorCodes: {

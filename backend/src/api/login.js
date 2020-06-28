@@ -7,11 +7,15 @@ const Response = require('../types/Response');
 const { fromAxiosError, fromSlackError, badRequest, unauthorized, internalError } = require('../util/response');
 
 const getAuthUrl = async (context) => {
+    const scope = process.env.EXP_PRIVATE_SCOPE === 'true'
+        ? constants.slack.scope.privateMessages // for experimental use. Not officially supported yet
+        : constants.slack.scope.publicMessages;
+
     const body = {
         url: context.getSlackBaseUrl() + '/oauth/authorize',
         parameters: {
             client_id: context.getSlackClientId(),
-            scope: constants.slack.scope.publicMessages,
+            scope,
             redirect_uri: context.getOauthRedirectUri(),
             team: context.getSlackTeamId()
         }
