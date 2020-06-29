@@ -4,7 +4,7 @@ const Conversations = require('../../../../../common/models/Conversations');
 const COLUMNS = {
     id: {
         type: DataTypes.TEXT,
-            primaryKey: true
+        primaryKey: true
     },
     name: {
         type: DataTypes.TEXT,
@@ -12,7 +12,7 @@ const COLUMNS = {
     },
     json: {
         type: DataTypes.TEXT,
-            allowNull: false
+        allowNull: false
     }
 }
 
