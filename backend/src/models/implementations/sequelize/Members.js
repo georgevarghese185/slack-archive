@@ -8,7 +8,7 @@ const COLUMNS = {
     },
     name: {
         type: DataTypes.TEXT,
-        allowNull: false
+        allowNull: true
     },
     json: {
         type: DataTypes.TEXT,
