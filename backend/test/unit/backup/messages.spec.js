@@ -418,7 +418,7 @@ describe('Messages Backup', () => {
         expect(addedMessages).to.deep.equal(messageList.concat(replies).map(toMessageObject));
         expect(historyReqDelayEnd - historyReqDelayStart).to.be.gte(1000);
         expect(repliesReqDelayEnd - repliesReqDelayStart).to.be.gte(1000);
-    }).timeout(3000);
+    });
 
     it('slack error', async () => {
         const token = { accessToken: 'ABC' };

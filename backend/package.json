@@ -4,7 +4,7 @@
   "description": "A webapp to backup content in a Slack Workspace",
   "scripts": {
     "start:dev": "ENV=dev npm-run-all -l devDb:start --parallel mockSlack:start express:start",
-    "test:unit": "mocha test/unit/**/*.spec.js",
+    "test:unit": "mocha --config .mocharc.unit.json",
     "test:integration": "mocha --config .mocharc.integ.json",
     "devDb:start": "sh ./scripts/start-db-dev.sh",
     "devDb:stop": "sh ./scripts/stop-db-dev.sh",
