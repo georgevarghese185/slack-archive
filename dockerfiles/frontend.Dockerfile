@@ -10,8 +10,7 @@ COPY frontend /root/app/frontend
 
 ARG apiUrl
 ENV VUE_APP_API_BASE_URL=${apiUrl}
-RUN npm run build
 
 EXPOSE 80
 
-CMD node_modules/.bin/http-server -p 80 dist/ --proxy http://localhost?
+CMD npm run build && node_modules/.bin/http-server -p 80 dist/ --proxy http://localhost?
