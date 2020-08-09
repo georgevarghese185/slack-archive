@@ -28,17 +28,17 @@
     "axios": "^0.19.2",
     "body-parser": "^1.19.0",
     "chai-sorted": "^0.2.0",
-    "cookie": "^0.4.0",
+    "cookie": "^0.4.1",
     "cors": "^2.8.5",
     "crypto-js": "^4.0.0",
-    "deep-equal-in-any-order": "^1.0.27",
+    "deep-equal-in-any-order": "^1.0.28",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
     "jsonwebtoken": "^8.5.1",
-    "pg": "^8.2.1",
+    "pg": "^8.3.0",
     "pg-hstore": "^2.3.3",
-    "query-string": "^6.10.1",
-    "sequelize": "^5.21.10",
-    "uuid": "^7.0.1"
+    "query-string": "^6.13.1",
+    "sequelize": "^5.22.3",
+    "uuid": "^7.0.3"
   }
 }
