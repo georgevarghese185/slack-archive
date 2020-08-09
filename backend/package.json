@@ -5,6 +5,7 @@
   "scripts": {
     "start:dev": "ENV=dev npm-run-all --parallel mockSlack:start express:dev",
     "start:prod": "ENV=prod npm run express:prod",
+    "test": "npm run test:unit && npm run test:integration",
     "test:unit": "mocha --config .mocharc.unit.json",
     "test:integration": "mocha --config .mocharc.integ.json",
     "clearDb": "node --require dotenv/config scripts/clearDb.js",
