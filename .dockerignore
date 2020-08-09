@@ -1,0 +1,9 @@
+backend/.env*
+backend/node_modules
+backend/test/mockSlack/data/*.json
+
+frontend/.env*
+frontend/node_modules
+frontend/dist
+
+combined-proxy/node_modules

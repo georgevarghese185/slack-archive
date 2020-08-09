@@ -1,0 +1,48 @@
+version: "3.8"
+services:
+  db:
+    image: postgres:12.3
+    environment:
+      POSTGRES_USER: dev
+      POSTGRES_PASSWORD: dev
+      POSTGRES_DB: slack_archive
+  backend:
+    build:
+      context: .
+      dockerfile: dockerfiles/backend.Dockerfile
+    volumes:
+      - ./backend:/root/app/backend/
+      - backend_node_modules:/root/app/backend/node_modules
+    depends_on:
+      - db
+    environment:
+      ENV: dev
+      PORT: 80
+      MOCK_SLACK_PORT: ${MOCK_SLACK_PORT}
+      DB_URL: postgres://dev:dev@db:5432/slack_archive
+      CORS_ALLOW_ORIGIN: ${FRONTEND_URL}
+      SLACK_BASE_URL: http://localhost:${MOCK_SLACK_PORT}
+      OAUTH_REDIRECT_URI: ${FRONTEND_URL}/oauth/redirect
+      SLACK_TEAM_ID: 12345
+      SLACK_CLIENT_ID: 67890
+      SLACK_CLIENT_SECRET: XYZ
+      TOKEN_SECRET: secret
+    ports:
+      - "${BACKEND_PORT}:80"
+      - "${MOCK_SLACK_PORT}:${MOCK_SLACK_PORT}"
+    command: sh -c 'npm i && npm run mockSlack:generate && npm run start:dev'
+  frontend:
+    build:
+      context: ./
+      dockerfile: dockerfiles/frontend.Dockerfile
+      args:
+        apiUrl: ${BACKEND_URL}
+    volumes:
+      - ./frontend:/root/app/frontend
+      - frontend_node_modules:/root/app/frontend/node_modules
+    ports:
+      - "${FRONTEND_PORT}:80"
+    command: sh -c 'PORT=80 npm run serve'
+volumes:
+  backend_node_modules:
+  frontend_node_modules:
