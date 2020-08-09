@@ -20,6 +20,8 @@ const setupSequelize = async (context) => {
         members,
         messages
     });
+
+    return sequelize;
 }
 
 module.exports = {
