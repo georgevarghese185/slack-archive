@@ -8,10 +8,11 @@
         <span class="user-name"> {{name}} </span>
         <span class="message-time"> {{getTime(message)}} </span>
       </div>
+      <p v-if="isBroadcast" class="thread-header">From thread: {{parentMessage}}</p>
       <p class="message-body">
         {{message.text}}
       </p>
-      <router-link v-if="replyCount" class="message-replies" :to="{ query: { thread: message.ts } }">
+      <router-link v-if="replyCount" class="message-replies" :to="repliesLink">
         {{replyCount}} repl{{replyCount > 1 ? 'ies': 'y'}}
       </router-link>
     </div>
@@ -36,7 +37,21 @@ export default {
       return this.$store.getters.userName(this.message.user)
     },
     replyCount () {
-      return this.message.reply_count
+      return (this.message.root || this.message).reply_count
+    },
+    isBroadcast () {
+      return this.message.subtype === 'thread_broadcast'
+    },
+    parentMessage () {
+      return this.message.root.text
+    },
+    repliesLink () {
+      return {
+        query: {
+          thread: this.isBroadcast ? this.message.root.ts : this.message.ts,
+          reply: this.isBroadcast ? this.message.ts : undefined
+        }
+      }
     }
   },
   methods: {
@@ -101,5 +116,15 @@ export default {
 
   .message-replies:hover {
     text-decoration: underline;
+  }
+
+  .thread-header {
+    color: #7d7d7d;
+    font-size: 14px;
+    margin-bottom: 6px;
+    text-overflow: ellipsis;
+    width: 70%;
+    white-space: nowrap;
+    overflow: hidden;
   }
 </style>

@@ -37,7 +37,13 @@ export default {
       return this.store.list ? { ...this.store.list[0], reply_count: undefined } : null
     },
     replies () {
-      return this.store.list ? this.store.list.slice(1) : null
+      return this.store.list
+        ? this.store.list.slice(1).map(message => ({
+          ...message,
+          subtype: undefined,
+          root: undefined
+        }))
+        : null
     },
     focusDate () {
       return this.parent ? this.parent.ts : null
