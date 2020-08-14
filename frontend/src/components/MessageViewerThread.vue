@@ -1,5 +1,6 @@
 <template>
   <div class="thread-container" @click.stop="() => {}">
+    <MessageLoader v-if="!replies"> Loading thread... </MessageLoader>
     <Message v-if="parent" :message="parent" showUserImage="true" showHeader="true"/>
     <div class="separator"/>
     <MessageList class="replies" v-if="replies" :messages="replies" :hasOlder="hasOlder" :hasNewer="hasNewer"
@@ -11,6 +12,7 @@
 <script>
 import MessageList from './MessageViewerList'
 import Message from './MessageViewerMessage'
+import MessageLoader from './MessageViewerLoader'
 
 export default {
   mounted () {
@@ -80,7 +82,8 @@ export default {
   },
   components: {
     Message,
-    MessageList
+    MessageList,
+    MessageLoader
   }
 }
 </script>
