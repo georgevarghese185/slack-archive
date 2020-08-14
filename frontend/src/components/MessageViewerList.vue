@@ -4,7 +4,7 @@
     <div v-if="messageList != null">
       <div v-if="messageList.length == 0" class="no-messages"> No messages </div>
       <Loader v-if="hasOlder" :scrollListener="scrollListener" @inView="loadOlder">
-        Looking for earlier messageList
+        Looking for earlier messages
       </Loader>
       <div class="message-item" v-for="(message, i) in messageList" :key="message.ts">
         <div v-if="shouldShowDate(i)" class="day-separator"> {{getDate(message)}} </div>
