@@ -1,5 +1,5 @@
 <template>
-  <div class="message" :title="getDateString(message)">
+  <div :class="classes" :title="getDateString(message)">
     <div class="user-image-container">
       <img v-if="showUserImage" class="user-image" :src="profileImage"/>
     </div>
@@ -24,9 +24,21 @@ import { getTime, getDateString } from '../util/slackTime'
 
 export default {
   props: ['message', 'showUserImage', 'showHeader'],
+  data () {
+    return {
+      isFocused: false
+    }
+  },
   mounted () {
     if (!this.profileImage) {
       this.$store.dispatch('loadMember', this.message.user)
+    }
+
+    if (this.$route.query.reply === this.message.ts) {
+      this.isFocused = true
+      setTimeout(() => {
+        this.isFocused = false
+      }, 3000)
     }
   },
   computed: {
@@ -52,6 +64,12 @@ export default {
           reply: this.isBroadcast ? this.message.ts : undefined
         }
       }
+    },
+    classes () {
+      return {
+        message: true,
+        'message-highlight': this.isFocused
+      }
     }
   },
   methods: {
@@ -73,7 +91,7 @@ export default {
     margin: 6px 0 6px 0;
   }
 
-  .message:hover {
+  .message:hover, .message-highlight {
     background: #aaaaaa52
   }
 

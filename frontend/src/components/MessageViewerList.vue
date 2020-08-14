@@ -61,7 +61,7 @@ const getMessageDiff = (oldMessages, newMessages) => {
 }
 
 export default {
-  props: ['messages', 'hasNewer', 'hasOlder', 'focusDate'],
+  props: ['messages', 'hasNewer', 'hasOlder', 'focusDate', 'focusMessage'],
   data () {
     return {
       scrollListener: null,
@@ -72,7 +72,7 @@ export default {
     // This work needs to be done after the messages are rendered so do it on the next Vue tick
     this.$nextTick(() => {
       if (this.messages) {
-        this.scrollToFocusDate()
+        this.scrollToFocus()
       }
 
       this.scrollListener = new ScrollListener(this.$refs.messages)
@@ -85,7 +85,7 @@ export default {
       if (diff.type === 'new') {
         this.messageList = newMessages
         await this.$nextTick()
-        this.scrollToFocusDate()
+        this.scrollToFocus()
       } else if (diff.type === 'prepend') {
         this.messageList = diff.addToTop.concat(this.messageList)
         const oldScrollState = this.getScrollState()
@@ -134,12 +134,19 @@ export default {
         getDayMillis(message.ts) === getDayMillis(prevMessage.ts) &&
         getMillis(message.ts) - getMillis(prevMessage.ts) <= 15 * 60 * 1000
     },
-    scrollToFocusDate () { // scroll to the first message from day in focus
+    scrollToFocus () {
       if (!this.messageList) {
         return
       }
 
-      let index = this.messageList.findIndex(m => m.ts >= this.focusDate)
+      let index
+
+      if (this.focusMessage) {
+        index = this.messageList.findIndex(m => m.ts === this.focusMessage)
+      } else if (this.focusDate) {
+        index = this.messageList.findIndex(m => m.ts >= this.focusDate)
+      }
+
       if (index < 0) {
         index = this.messageList.length - 1
       }

@@ -3,7 +3,8 @@
     <Message v-if="parent" :message="parent" showUserImage="true" showHeader="true"/>
     <div class="separator"/>
     <MessageList class="replies" v-if="replies" :messages="replies" :hasOlder="hasOlder" :hasNewer="hasNewer"
-    :focusDate="focusDate" @loadOlderMessages="loadOlder" @loadNewerMessages="loadNewer" />
+    :focusDate="focusDate" :focusMessage="focusMessage" @loadOlderMessages="loadOlder"
+    @loadNewerMessages="loadNewer" />
   </div>
 </template>
 
@@ -46,7 +47,10 @@ export default {
         : null
     },
     focusDate () {
-      return this.parent ? this.parent.ts : null
+      return this.parent.ts
+    },
+    focusMessage () {
+      return this.$route.query.reply
     },
     hasOlder () {
       return this.store.hasOlder
@@ -63,7 +67,8 @@ export default {
 
       this.$store.dispatch('thread/loadMessages', {
         conversationId: this.conversationId,
-        threadTs: this.threadTs
+        threadTs: this.threadTs,
+        ts: this.focusMessage
       })
     },
     loadOlder () {
