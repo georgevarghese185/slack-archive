@@ -46,6 +46,40 @@ export const baseStore = {
     }
   },
   actions: {
+    async loadMessages (context, { conversationId, ts, threadTs }) {
+      context.commit('clearMessages')
+
+      try {
+        const [olderMessages, newerMessages] = await Promise.all([
+          models.remote.get(
+            null,
+            { inclusive: false, value: ts || threadTs },
+            conversationId,
+            !threadTs,
+            threadTs,
+            MESSAGE_API_LIMIT
+          ),
+          models.remote.get(
+            { inclusive: true, value: ts || threadTs },
+            null,
+            conversationId,
+            !threadTs,
+            threadTs,
+            MESSAGE_API_LIMIT
+          )
+        ])
+
+        context.commit('updateMessages', {
+          conversationId,
+          messages: olderMessages.concat(newerMessages),
+          hasOlder: olderMessages.length >= MESSAGE_API_LIMIT,
+          hasNewer: newerMessages.length >= MESSAGE_API_LIMIT
+        })
+      } catch (e) {
+        console.error(e)
+        // TODO handle error
+      }
+    },
     async loadOlderMessages (context, { postsOnly, threadTs }) {
       try {
         const ts = context.state.list[0].ts

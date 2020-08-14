@@ -14,31 +14,7 @@ export default {
     }
   },
   actions: {
-    async loadMessages (context, { conversationId, threadTs }) {
-      context.commit('clearMessages')
-
-      try {
-        const thread = await models.remote.get(
-          { inclusive: true, value: threadTs },
-          null,
-          conversationId,
-          false,
-          threadTs,
-          MESSAGE_API_LIMIT
-        )
-
-        context.commit('updateMessages', {
-          conversationId,
-          threadTs,
-          messages: thread,
-          hasOlder: false,
-          hasNewer: thread.length >= MESSAGE_API_LIMIT
-        })
-      } catch (e) {
-        // TODO handle error
-        console.error(e)
-      }
-    },
+    loadMessages: baseStore.actions.loadMessages,
     async loadOlderMessages (context) {
       return baseStore.actions.loadOlderMessages(context, {
         postsOnly: false,
