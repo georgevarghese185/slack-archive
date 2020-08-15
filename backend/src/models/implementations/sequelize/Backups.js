@@ -125,6 +125,18 @@ module.exports = class BackupsSequelize extends Backups {
             .save();
     }
 
+    async cancel(id) {
+        await this.backups.update(
+            { should_cancel: true },
+            { where: { id } }
+        );
+    }
+
+    async shouldCancel(id) {
+        const backup = await this.get(id);
+        return backup.shouldCancel
+    }
+
     async setError(id, message) {
         await this.backups.update(
             { error: message },

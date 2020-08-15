@@ -1,10 +1,15 @@
 const AppContext = require('../../../src/AppContext')
 const Backups = require('../../../../common/models/Backups');
+const chai = require('chai');
+const chaiAsPromised = require('chai-as-promised');
 const Conversations = require('../../../../common/models/Conversations');
 const Messages = require('../../../../common/models/Messages');
 const moxios = require('moxios');
-const { expect } = require('chai');
+const expect = chai.expect;
+const { BackupCanceledError } = require('../../../src/types/errors');
 const { backupMessages } = require('../../../src/backup/messages');
+
+chai.use(chaiAsPromised);
 
 describe('Messages Backup', () => {
     beforeEach(() => {
@@ -21,6 +26,11 @@ describe('Messages Backup', () => {
         }
     }
 
+    class BackupsMockBase extends Backups {
+        async shouldCancel() {
+            return false;
+        }
+    }
 
     const messageList = [
         {
@@ -88,7 +98,7 @@ describe('Messages Backup', () => {
             }
         });
 
-        class BackupsMock extends Backups {
+        class BackupsMock extends BackupsMockBase {
             async setStatus(id, status) {
                 expect(id).to.equal(backupId);
                 expect(status).to.equal('BACKING_UP');
@@ -185,7 +195,7 @@ describe('Messages Backup', () => {
         let addedMessages = [];
 
 
-        class BackupsMock extends Backups {
+        class BackupsMock extends BackupsMockBase {
             async setStatus(id, status) {
             }
             async setMessagesBackedUp(id, numOfMessages) {
@@ -292,7 +302,7 @@ describe('Messages Backup', () => {
         const token = { accessToken }
         let addedMessages = [];
 
-        class BackupsMock extends Backups {
+        class BackupsMock extends BackupsMockBase {
             async setStatus(id, status) {
             }
             async setMessagesBackedUp(id, numOfMessages) {
@@ -420,10 +430,159 @@ describe('Messages Backup', () => {
         expect(repliesReqDelayEnd - repliesReqDelayStart).to.be.gte(1000);
     });
 
+    it('canceled backup: canceled during history API', async () => {
+        const backupId = '1234';
+        let status;
+        let canceled = false;
+
+        class BackupsMock extends Backups {
+            async setStatus(id, newStatus) {
+                status = newStatus;
+            }
+
+            async shouldCancel(id) {
+                expect(id).to.eq(backupId);
+                return canceled;
+            }
+
+            async setMessagesBackedUp() {}
+            async setCurrentConversation(id, conversationId) {}
+            async conversationBackupDone(id, conversationId) {}
+        }
+
+        class ConversationsMock extends Conversations {
+            async listAll() {
+                return [
+                    { id: "C1" }
+                ]
+            }
+        }
+
+        class MessagesMock extends Messages {
+            async add(conversationId, messages) {
+                messages = messages.concat(messages);
+            }
+        }
+
+        let historyRequestNo = 0;
+
+        moxios.stubs.track({
+            url: /\/api\/conversations\.history.*/,
+            get response() {
+                historyRequestNo++;
+
+                if (historyRequestNo == 1) {
+                    canceled = true;
+                    return {
+                        status: 200,
+                        response: {
+                            ok: true,
+                            messages: messageList.slice(0, 2),
+                            response_metadata: {
+                                next_cursor: "abc"
+                            }
+                        }
+                    }
+                } else {
+                    throw new Error('Should have canceled by now');
+                }
+            }
+        });
+
+        const context = new MockContext()
+            .setModels({
+                backups: new BackupsMock(),
+                conversations: new ConversationsMock(),
+                messages: new MessagesMock(),
+            });
+
+        await expect(backupMessages(context, backupId, '1234')).to.be.rejectedWith(BackupCanceledError);
+    });
+
+    it('canceled backup: canceled during replies API', async () => {
+        const backupId = '1234';
+        let status;
+        let canceled = false;
+
+        class BackupsMock extends Backups {
+            async setStatus(id, newStatus) {
+                status = newStatus;
+            }
+
+            async shouldCancel(id) {
+                expect(id).to.eq(backupId);
+                return canceled;
+            }
+
+            async setMessagesBackedUp() { }
+            async setCurrentConversation(id, conversationId) { }
+            async conversationBackupDone(id, conversationId) { }
+        }
+
+        class ConversationsMock extends Conversations {
+            async listAll() {
+                return [
+                    { id: "C1" }
+                ]
+            }
+        }
+
+        class MessagesMock extends Messages {
+            async add(conversationId, messages) {
+                messages = messages.concat(messages);
+            }
+        }
+
+        moxios.stubRequest(/\/api\/conversations\.history.*/, {
+            status: 200,
+            response: {
+                ok: true,
+                messages: messageList,
+                response_metadata: {
+                    next_cursor: ""
+                }
+            }
+        });
+
+        let repliesRequestNo = 0;
+
+        moxios.stubs.track({
+            url: /\/api\/conversations\.replies.*/,
+            get response() {
+                repliesRequestNo++;
+
+                if (repliesRequestNo == 1) {
+                    canceled = true;
+                    return {
+                        status: 200,
+                        response: {
+                            ok: true,
+                            messages: replies.slice(0, 2),
+                            response_metadata: {
+                                next_cursor: "abc"
+                            }
+                        }
+                    }
+                } else {
+                    throw new Error('should have canceled by now');
+                }
+            }
+        });
+
+        const context = new MockContext()
+            .setModels({
+                backups: new BackupsMock(),
+                conversations: new ConversationsMock(),
+                messages: new MessagesMock(),
+            });
+
+        await expect(backupMessages(context, backupId, '1234')).to.be.rejectedWith(BackupCanceledError);
+    });
+
     it('slack error', async () => {
         const token = { accessToken: 'ABC' };
 
-        class BackupsMock extends Backups {
+        class BackupsMock extends BackupsMockBase {
             async setStatus(id, status) {
             }
             async setMessagesBackedUp(id, numOfMessages) {
@@ -502,7 +661,7 @@ describe('Messages Backup', () => {
     it('other API error', async () => {
         const token = { accessToken: 'ABC' };
 
-        class BackupsMock extends Backups {
+        class BackupsMock extends BackupsMockBase {
             async setStatus(id, status) {
             }
             async setMessagesBackedUp(id, numOfMessages) {

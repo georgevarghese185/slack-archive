@@ -1,11 +1,14 @@
 const AppContext = require('../../../src/AppContext')
 const Backups = require('../../../../common/models/Backups');
-const expect = require('chai').expect;
+const chai = require('chai');
+const chaiAsPromised = require('chai-as-promised');
+const expect= chai.expect;
 const Members = require('../../../../common/models/Members');
 const moxios = require('moxios');
+const { BackupCanceledError } = require('../../../src/types/errors');
 const { backupMembers } = require('../../../src/backup/members');
 
-
+chai.use(chaiAsPromised);
 
 describe('Members Backup', () => {
     beforeEach(() => {
@@ -19,6 +22,12 @@ describe('Members Backup', () => {
     class MockContext extends AppContext {
         getSlackBaseUrl() {
             return "https://slack.com"
+        }
+    }
+
+    class BackupsMockBase extends Backups {
+        async shouldCancel() {
+            return false;
         }
     }
 
@@ -55,7 +64,7 @@ describe('Members Backup', () => {
             }
         }
 
-        class BackupsMock extends Backups {
+        class BackupsMock extends BackupsMockBase {
             async setStatus(id, status) {
                 expect(id).to.equal(backupId);
                 expect(status).to.equal('COLLECTING_INFO');
@@ -98,7 +107,7 @@ describe('Members Backup', () => {
             }
         }
 
-        class BackupsMock extends Backups {
+        class BackupsMock extends BackupsMockBase {
             async setStatus(id, status) {
             }
         }
@@ -157,7 +166,7 @@ describe('Members Backup', () => {
             }
         }
 
-        class BackupsMock extends Backups {
+        class BackupsMock extends BackupsMockBase {
             async setStatus(id, status) {
             }
         }
@@ -216,10 +225,64 @@ describe('Members Backup', () => {
         expect(Date.now() - delayStart).to.be.gte(1000);
     });
 
+    it('canceled backup', async () => {
+        const backupId = '1234';
+        let status;
+        let canceled = false;
+
+        class MembersMock extends Members {
+            async add() {}
+        }
+
+        class BackupsMock extends Backups {
+            async setStatus(id, newStatus) {
+                status = newStatus;
+            }
+
+            async shouldCancel(id) {
+                expect(id).to.eq(backupId);
+                return canceled;
+            }
+        }
+
+        const context = new MockContext()
+            .setModels({
+                backups: new BackupsMock(),
+                members: new MembersMock()
+            });
+
+        let requestNo = 0;
+
+        moxios.stubs.track({
+            url: /\/users\.list.*/,
+            get response() {
+                requestNo++;
+
+                if (requestNo == 1) {
+                    canceled = true;
+                    return {
+                        status: 200,
+                        response: {
+                            ok: true,
+                            members: memberList.slice(0, 2),
+                            response_metadata: {
+                                next_cursor: "abc"
+                            }
+                        }
+                    }
+                } else {
+                    throw new Error('Should have canceled by now');
+                }
+            }
+        });
+
+        await expect(backupMembers(context, backupId, '1234')).to.be.rejectedWith(BackupCanceledError);
+    });
+
     it('slack error', async () => {
         const token = { accessToken: 'ABC' };
 
-        class BackupsMock extends Backups {
+        class BackupsMock extends BackupsMockBase {
             async setStatus(id, status) {
             }
         }
@@ -246,7 +309,7 @@ describe('Members Backup', () => {
     it('other API error', async () => {
         const token = { accessToken: 'ABC' };
 
-        class BackupsMock extends Backups {
+        class BackupsMock extends BackupsMockBase {
             async setStatus(id, status) {
             }
         }

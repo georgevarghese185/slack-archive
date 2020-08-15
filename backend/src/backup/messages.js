@@ -1,5 +1,5 @@
 const axios = require('axios');
-const constants = require('../constants');
+const { handleCancellation } = require('./util');
 const { withRateLimiting } = require('../util/slack');
 
 const backupMessages = async (context, backupId, token) => {
@@ -33,6 +33,8 @@ const backupMessagesIn = async (context, conversationId, backedUp, axiosInstance
     let nextCursor;
 
     do {
+        await handleCancellation(context, backupId);
+
         if (nextCursor) {
             config.params.cursor = nextCursor;
         }
@@ -86,6 +88,8 @@ const backupThread = async (context, conversationId, threadTs, backedUp, axiosIn
     let nextCursor;
 
     do {
+        await handleCancellation(context, backupId);
+
         if (nextCursor) {
             config.params.cursor = nextCursor;
         }

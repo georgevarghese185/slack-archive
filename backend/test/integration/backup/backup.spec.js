@@ -34,7 +34,7 @@ describe('Backup', async () => {
             backup = response.data;
 
             if (backup.status === 'COMPLETED' ||
-                backup.status === 'CANCELLED' ||
+                backup.status === 'CANCELED' ||
                 backup.status === 'FAILED') {
                 break;
             }

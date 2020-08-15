@@ -22,6 +22,12 @@ describe('Backup entry point', () => {
         }
     }
 
+    class BackupsMockBase extends Backups {
+        async shouldCancel() {
+            return false;
+        }
+    }
+
     const conversationList = [
         {
             "id": "C9TAQB16D",
@@ -62,7 +68,7 @@ describe('Backup entry point', () => {
             async add() {}
         }
 
-        class BackupsMock extends Backups {
+        class BackupsMock extends BackupsMockBase {
             setStatus(id, newStatus) {
                 status = newStatus;
             }
@@ -114,7 +120,7 @@ describe('Backup entry point', () => {
     it('handle error during backup', async () => {
         let status;
 
-        class BackupsMock extends Backups {
+        class BackupsMock extends BackupsMockBase {
             async setStatus(id, newStatus) {
                 status = newStatus;
             }
@@ -130,5 +136,25 @@ describe('Backup entry point', () => {
         await startBackup(context, '1234', '1234');
 
         expect(status).to.eq('FAILED');
+    })
+
+    it('canceled backup', async () => {
+        let status;
+
+        class BackupsMock extends Backups {
+            async setStatus(id, newStatus) {
+                status = newStatus;
+            }
+
+            async shouldCancel() {
+                return true;
+            }
+        }
+
+        const context = new MockContext()
+            .setModels({ backups: new BackupsMock() })
+
+        await startBackup(context, '1234', '1234');
+        expect(status).to.eq('CANCELED');
     })
 })

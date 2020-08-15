@@ -1,9 +1,14 @@
 const AppContext = require('../../../src/AppContext');
 const Backups = require('../../../../common/models/Backups');
 const Conversations = require('../../../../common/models/Conversations');
-const expect = require('chai').expect;
+const chai = require('chai');
+const chaiAsPromised = require('chai-as-promised');
+const expect= chai.expect;
 const moxios = require('moxios');
+const { BackupCanceledError } = require('../../../src/types/errors');
 const { backupConversations } = require('../../../src/backup/conversations');
+
+chai.use(chaiAsPromised);
 
 describe('Conversations Backup', () => {
     beforeEach(() => {
@@ -20,6 +25,11 @@ describe('Conversations Backup', () => {
         }
     }
 
+    class BackupsMockBase extends Backups {
+        async shouldCancel() {
+            return false;
+        }
+    }
 
     const conversationList = [
         {
@@ -62,7 +72,7 @@ describe('Conversations Backup', () => {
             }
         }
 
-        class BackupsMock extends Backups {
+        class BackupsMock extends BackupsMockBase {
             async setStatus(id, status) {
                 expect(id).to.equal(backupId);
                 expect(status).to.equal('COLLECTING_INFO');
@@ -104,7 +114,7 @@ describe('Conversations Backup', () => {
         const backupId = '1234';
         let addedConversations = [];
 
-        class BackupsMock extends Backups {
+        class BackupsMock extends BackupsMockBase {
             async setStatus(id, status) {
             }
         }
@@ -163,7 +173,7 @@ describe('Conversations Backup', () => {
         const backupId = '1234';
         let addedConversations = [];
 
-        class BackupsMock extends Backups {
+        class BackupsMock extends BackupsMockBase {
             async setStatus(id, status) {
             }
         }
@@ -228,10 +238,64 @@ describe('Conversations Backup', () => {
         expect(Date.now() - delayStart).to.be.gte(1000);
     });
 
+    it('canceled backup', async () => {
+        const backupId = '1234';
+        let status;
+        let canceled = false;
+
+        class ConversationsMock extends Conversations {
+            async add() {}
+        }
+
+        class BackupsMock extends Backups {
+            async setStatus(id, newStatus) {
+                status = newStatus;
+            }
+
+            async shouldCancel(id) {
+                expect(id).to.eq(backupId);
+                return canceled;
+            }
+        }
+
+        const context = new MockContext()
+            .setModels({
+                backups: new BackupsMock(),
+                conversations: new ConversationsMock()
+            });
+
+        let requestNo = 0;
+
+        moxios.stubs.track({
+            url: /\/conversations\.list.*/,
+            get response() {
+                requestNo++;
+
+                if (requestNo == 1) {
+                    canceled = true;
+                    return {
+                        status: 200,
+                        response: {
+                            ok: true,
+                            channels: conversationList.slice(0, 2),
+                            response_metadata: {
+                                next_cursor: "abc"
+                            }
+                        }
+                    }
+                } else {
+                    throw new Error('Should have canceled by now');
+                }
+            }
+        });
+
+        await expect(backupConversations(context, backupId, '1234')).to.be.rejectedWith(BackupCanceledError);
+    });
+
     it('slack error', async () => {
         const token = { accessToken: 'ABC' };
 
-        class BackupsMock extends Backups {
+        class BackupsMock extends BackupsMockBase {
             async setStatus(id, status) {
             }
         }
@@ -260,7 +324,7 @@ describe('Conversations Backup', () => {
     it('other API error', async () => {
         const token = { accessToken: 'ABC' };
 
-        class BackupsMock extends Backups {
+        class BackupsMock extends BackupsMockBase {
             async setStatus(id, status) {
             }
         }

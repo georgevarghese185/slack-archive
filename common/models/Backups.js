@@ -85,6 +85,19 @@ class Backups {
 
 
     /**
+     * Check if the backup task should be canceled. Should return true if
+     * cancel() was called with the same ID prioror to this
+     *
+     * @abstract
+     * @param {id} id - The backup task ID
+     */
+    async shouldCancel(id) {
+        throw new Error('Not implemented');
+    }
+
+
+
+    /**
      * Update the status of a backup task (backup.status)
      *
      * @abstract
