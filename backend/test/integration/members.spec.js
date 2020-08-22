@@ -1,17 +1,24 @@
 const axios = require('axios');
 const { expect } = require('chai');
 const { login } = require('./login/loginHelper');
+const { startServer } = require('./util/server');
 
 describe('Members', () => {
     let axiosInstance;
+    let stopServer;
 
     before(async () => {
+        stopServer = await startServer();
         const loginCookie = (await login()).loginCookie;
         axiosInstance = axios.create({
             baseURL: `http://localhost:${process.env.PORT}`,
             headers: { Cookie: loginCookie }
         });
     });
+
+    after(async () => {
+        await stopServer();
+    })
 
     it('all members should be backed up', async () => {
         const loginCookie = (await login()).loginCookie;

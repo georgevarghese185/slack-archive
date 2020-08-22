@@ -5,6 +5,7 @@ const chaiSorted = require('chai-sorted');
 const { login } = require('./login/loginHelper');
 const mockMessages = require('../mockSlack/data/messages.json');
 const mockReplies = require('../mockSlack/data/replies.json');
+const { startServer } = require('./util/server');
 
 chai.use(deepEqualInAnyOrder);
 chai.use(chaiSorted);
@@ -43,11 +44,13 @@ const sortMessages = (message1, message2) => {
 }
 
 describe('Messages', () => {
+    let stopServer;
     let axiosInstance;
     const N = 100;      // limit used in testing `from`, `to`, `after`, `before` parameters in GET:/v1/messages
     const LIMIT = 20;   // limit used in testing the `limit` parameter GET:/v1/messages
 
     before(async () => {
+        stopServer = await startServer();
         const smallestConversation = Object.keys(mockMessages)
             .map(id => ({ id, messages: mockMessages[id] }))
             .sort((c1, c2) => c1.messages.length - c2.messages.length)[0]
@@ -65,6 +68,10 @@ describe('Messages', () => {
             headers: { Cookie: loginCookie }
         });
     });
+
+    after(async () => {
+        await stopServer();
+    })
 
     it('all posts should be backed up', async () => {
         for (const conversationId in mockMessages) {

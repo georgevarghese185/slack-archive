@@ -1,11 +1,14 @@
 const axios = require('axios');
 const { expect } = require('chai');
 const { login } = require('../login/loginHelper');
+const { startServer } = require('../util/server');
 
 describe('Backup', async () => {
     let axiosInstance;
+    let stopServer;
 
     before(async () => {
+        stopServer = await startServer()
         const loginCookie = (await login()).loginCookie;
         axiosInstance = axios.create({
             baseURL: `http://localhost:${process.env.PORT}`,
@@ -13,10 +16,14 @@ describe('Backup', async () => {
         });
     });
 
+    after(async () => {
+        await stopServer();
+    })
+
     it('backup stats should be empty', async () => {
         const { data: stats } = await axiosInstance.get('/v1/backup/stats');
 
-        expect(stats).to.deep.equal({
+        expect(stats, 'Database is not empty. Run `npm run clearDb` to clear it').to.deep.equal({
             messages: 0,
             conversations: 0,
             lastBackupAt: null

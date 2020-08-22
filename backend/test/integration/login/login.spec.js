@@ -4,8 +4,19 @@ const constants = require('../../../src/constants')
 const cookie = require('cookie')
 const { expect } = require('chai')
 const { getAuthUrl, login } = require('./loginHelper')
+const { startServer } = require('../util/server');
 
 describe('Login flow', () => {
+    let stopServer;
+
+    before(async () => {
+        stopServer = await startServer()
+    })
+
+    after(async () => {
+        await stopServer();
+    })
+
     const axiosInstance = axios.create({ baseURL: `http://localhost:${process.env.PORT}`, validateStatus: status => true })
 
     it('get auth URL', async() => {
