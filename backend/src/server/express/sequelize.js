@@ -5,7 +5,11 @@ const Messages = require('../../models/implementations/sequelize/Messages');
 const { Sequelize } = require('sequelize');
 
 const setupSequelize = async (context) => {
-    const sequelize = new Sequelize(process.env.DB_URL);
+    const sequelize = new Sequelize(process.env.DB_URL, {
+        logging(sql) {
+            context.getLogger().log(sql);
+        }
+    });
 
     const backups = new Backups(sequelize);
     const conversations = new Conversations(sequelize);
