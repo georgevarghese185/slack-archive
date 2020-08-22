@@ -22,7 +22,7 @@ describe('Backup APIs', () => {
 
 
 
-    describe('GET:/v1/backup/stats', () => {
+    describe('GET:/v1/backups/stats', () => {
         it('get backup stats', async () => {
             const expectedBody = {
                 messages: 100,
@@ -45,7 +45,7 @@ describe('Backup APIs', () => {
                     backups: new BackupsMock()
                 });
 
-            const response = await api['GET:/v1/backup/stats'](context, new Request());
+            const response = await api['GET:/v1/backups/stats'](context, new Request());
 
             expect(response.status).to.equal(200);
             expect(response.body).to.deep.equal(expectedBody);
@@ -72,7 +72,7 @@ describe('Backup APIs', () => {
                     backups: new BackupsMock()
                 });
 
-            const response = await api['GET:/v1/backup/stats'](context, new Request());
+            const response = await api['GET:/v1/backups/stats'](context, new Request());
 
             expect(response.status).to.equal(200);
             expect(response.body).to.deep.equal(expectedBody);
@@ -80,7 +80,7 @@ describe('Backup APIs', () => {
     });
 
 
-    describe('POST:/v1/backup', () => {
+    describe('POST:/v1/backups/new', () => {
         it('create a new backup task', async () => {
             const token = { userId: "U1" }
             let backupStarted = false;
@@ -104,7 +104,7 @@ describe('Backup APIs', () => {
                     }
                 });
 
-            const response = await api['POST:/v1/backup'](context, new Request(), token);
+            const response = await api['POST:/v1/backups/new'](context, new Request(), token);
 
             expect(backupStarted).to.be.true;
             expect(response.status).to.equal(200);
@@ -114,7 +114,7 @@ describe('Backup APIs', () => {
 
 
 
-    describe('GET:/v1/backup/:id', () => {
+    describe('GET:/v1/backups/:id', () => {
         it('get backup task', async () => {
             const backupId = '1234';
             const request = new Request({
@@ -139,7 +139,7 @@ describe('Backup APIs', () => {
                 .setModels({ backups: new BackupsMock() });
 
             const test = async () => {
-                let response = await api['GET:/v1/backup/:id'](context, request);
+                let response = await api['GET:/v1/backups/:id'](context, request);
 
                 expect(response.status).to.equal(200);
                 expect(response.body).to.deep.equal(backupTask);
@@ -176,7 +176,7 @@ describe('Backup APIs', () => {
             const context = new AppContext()
                 .setModels({ backups: new BackupsMock() });
 
-            const response = await api['GET:/v1/backup/:id'](context, request);
+            const response = await api['GET:/v1/backups/:id'](context, request);
 
             expect(response.status).to.equal(404);
             expect(response.body.errorCode).to.equal('backup_not_found');
@@ -185,7 +185,7 @@ describe('Backup APIs', () => {
 
 
 
-    describe('POST:/v1/backup/:id/cancel', () => {
+    describe('POST:/v1/backups/:id/cancel', () => {
         it('cancel a backup task', async () => {
             const backupId = '1234';
             const request = new Request({
@@ -205,7 +205,7 @@ describe('Backup APIs', () => {
             const context = new AppContext()
                 .setModels({ backups: new BackupsMock() })
 
-            const response = await api['POST:/v1/backup/:id/cancel'](context, request);
+            const response = await api['POST:/v1/backups/:id/cancel'](context, request);
 
             expect(response.status).to.equal(200);
         });
@@ -225,7 +225,7 @@ describe('Backup APIs', () => {
             const context = new AppContext()
                 .setModels({ backups: new BackupsMock() });
 
-            const response = await api['POST:/v1/backup/:id/cancel'](context, request);
+            const response = await api['POST:/v1/backups/:id/cancel'](context, request);
 
             expect(response.status).to.equal(404);
             expect(response.body.errorCode).to.equal('backup_not_found');

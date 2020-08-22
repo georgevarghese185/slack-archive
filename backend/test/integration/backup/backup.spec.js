@@ -21,7 +21,7 @@ describe('Backup', async () => {
     })
 
     it('backup stats should be empty', async () => {
-        const { data: stats } = await axiosInstance.get('/v1/backup/stats');
+        const { data: stats } = await axiosInstance.get('/v1/backups/stats');
 
         expect(stats, 'Database is not empty. Run `npm run clearDb` to clear it').to.deep.equal({
             messages: 0,
@@ -31,13 +31,13 @@ describe('Backup', async () => {
     });
 
     it('run backup', async () => {
-        const { data: { backupId } } = await axiosInstance.post('/v1/backup');
+        const { data: { backupId } } = await axiosInstance.post('/v1/backups/new');
 
         expect(backupId).not.to.be.null;
 
         let backup;
         while(true) {
-            const response = await axiosInstance.get(`/v1/backup/${backupId}`);
+            const response = await axiosInstance.get(`/v1/backups/${backupId}`);
             backup = response.data;
 
             if (backup.status === 'COMPLETED' ||
@@ -54,7 +54,7 @@ describe('Backup', async () => {
 
     it('backup APIs should fail without login', async () => {
         try {
-            await axiosInstance.get('/v1/backup/stats', {
+            await axiosInstance.get('/v1/backups/stats', {
                 headers: { Cookie: "" }
             });
         } catch (e) {

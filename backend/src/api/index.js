@@ -13,10 +13,10 @@ module.exports = {
     'GET:/v1/conversations': conversations.list,
     'GET:/v1/conversations/:id': conversations.get,
 
-    'GET:/v1/backup/stats': backup.getStats,
-    'POST:/v1/backup': backup.create,
-    'GET:/v1/backup/:id': backup.get,
-    'POST:/v1/backup/:id/cancel': backup.cancel,
+    'GET:/v1/backups/stats': backup.getStats,
+    'POST:/v1/backups/new': backup.create,
+    'GET:/v1/backups/:id': backup.get,
+    'POST:/v1/backups/:id/cancel': backup.cancel,
 
     'GET:/v1/members/:id': members.get,
 

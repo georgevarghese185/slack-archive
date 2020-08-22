@@ -93,20 +93,20 @@ const setupRoutes = (app, context) => {
 
     app.use(authMiddleware(context));
 
-    app.get('/v1/backup/stats', (req, resp) => {
-        api['GET:/v1/backup/stats'](context, toRequest(req))
+    app.get('/v1/backups/stats', (req, resp) => {
+        api['GET:/v1/backups/stats'](context, toRequest(req))
             .then(response => sendResponse(resp, response))
             .catch(e => handleError(context, resp, e));
     })
 
-    app.post('/v1/backup', (req, resp) => {
-        api['POST:/v1/backup'](context, toRequest(req), req.token)
+    app.post('/v1/backups/new', (req, resp) => {
+        api['POST:/v1/backups/new'](context, toRequest(req), req.token)
             .then(response => sendResponse(resp, response))
             .catch(e => handleError(context, resp, e));
     });
 
-    app.get('/v1/backup/:id', (req, resp) => {
-        api['GET:/v1/backup/:id'](context, toRequest(req))
+    app.get('/v1/backups/:id', (req, resp) => {
+        api['GET:/v1/backups/:id'](context, toRequest(req))
             .then(response => sendResponse(resp, response))
             .catch(e => handleError(context, resp, e));
     });
