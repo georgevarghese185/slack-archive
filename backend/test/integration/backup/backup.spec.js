@@ -52,6 +52,17 @@ describe('Backup', async () => {
         expect(backup.status).to.equal('COMPLETED');
     });
 
+    it('cancel a running backup', async () => {
+        const { data: { backupId } } = await axiosInstance.post('/v1/backups/new');
+        const response = await axiosInstance.post(`/v1/backups/${backupId}/cancel`);
+        expect(response.status).to.equal(200);
+
+        await new Promise(resolve => setTimeout(resolve, 300));
+
+        const { data: { status } } = await axiosInstance.get(`/v1/backups/${backupId}`)
+        expect(status).to.equal('CANCELED');
+    });
+
     it('backup APIs should fail without login', async () => {
         try {
             await axiosInstance.get('/v1/backups/stats', {
