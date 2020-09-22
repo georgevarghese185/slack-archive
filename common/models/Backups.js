@@ -59,6 +59,18 @@ class Backups {
 
 
     /**
+     * Get a list of all backups in a running state (ie, not COMPLETED, FAILED or CANCELED)
+     *
+     * @abstract
+     * @returns {Array<BackupTask>} A list of active backup tasks
+     */
+    async getActive() {
+        throw new Error('Not implemented');
+    }
+
+
+
+    /**
      * Get info on a backup task
      *
      * @abstract

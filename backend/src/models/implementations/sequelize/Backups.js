@@ -1,5 +1,5 @@
 const Backups = require('../../../../../common/models/Backups');
-const { DataTypes } = require('sequelize');
+const { DataTypes, Op } = require('sequelize');
 
 module.exports = class BackupsSequelize extends Backups {
     constructor (sequelize) {
@@ -88,6 +88,16 @@ module.exports = class BackupsSequelize extends Backups {
         }
 
         return this._toBackupObject(lastBackup);
+    }
+
+    async getActive () {
+        return this.backups.findAll({
+            where: {
+                [Op.not]: {
+                    status: ['CANCELED', 'COMPLETED', 'FAILED']
+                }
+            }
+        })
     }
 
     async get(id) {

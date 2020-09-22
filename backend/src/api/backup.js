@@ -19,6 +19,18 @@ const getStats = async (context, request) => {
 
 
 const create = async (context, request, token) => {
+    const activeBackups = await context.models.backups.getActive();
+
+    if (activeBackups.length) {
+        return new Response({
+            status: 409,
+            body: {
+                errorCode: constants.errorCodes.backupInProgress,
+                message: 'Another backup is already in progress'
+            }
+        });
+    }
+
     const userId = token.userId;
     const backupId = uuid();
 

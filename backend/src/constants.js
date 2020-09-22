@@ -17,7 +17,8 @@ module.exports = {
         conversationNotFound: 'conversation_not_found',
         memberNotFound: 'member_not_found',
         threadNotFound: 'thread_not_found',
-        backupNotFound: 'backup_not_found'
+        backupNotFound: 'backup_not_found',
+        backupInProgress: 'backup_in_progress'
     },
     loginTokenExpiry: '30 days',
 }

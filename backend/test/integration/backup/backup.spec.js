@@ -63,6 +63,18 @@ describe('Backup', async () => {
         expect(status).to.equal('CANCELED');
     });
 
+    it('running 2 backups simultaneously should be prevented', async () => {
+        const { data: { backupId } } = await axiosInstance.post('/v1/backups/new');
+
+        const response = await axiosInstance.post('/v1/backups/new', {}, {
+            validateStatus: () => true
+        });
+
+        await axiosInstance.post(`/v1/backups/${backupId}/cancel`);
+
+        expect(response.status).to.equal(409);
+    })
+
     it('backup APIs should fail without login', async () => {
         try {
             await axiosInstance.get('/v1/backups/stats', {

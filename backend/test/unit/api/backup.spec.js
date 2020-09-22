@@ -31,6 +31,10 @@ describe('Backup APIs', () => {
             };
 
             class BackupsMock extends Backups {
+                async getActive() {
+                    return []
+                }
+
                 async last() {
                     return {
                         endedAt: 1583128896216
@@ -60,6 +64,10 @@ describe('Backup APIs', () => {
             };
 
             class BackupsMock extends Backups {
+                async getActive() {
+                    return []
+                }
+
                 async last() {
                     return null;
                 }
@@ -87,6 +95,10 @@ describe('Backup APIs', () => {
             let backupId;
 
             class BackupsMock extends Backups {
+                async getActive() {
+                    return []
+                }
+
                 async create(backupId1, userId) {
                     expect(backupId1).to.be.a('string');
                     expect(userId).to.equal(token.userId);
@@ -110,8 +122,32 @@ describe('Backup APIs', () => {
             expect(response.status).to.equal(200);
             expect(response.body.backupId).to.equal(backupId);
         });
-    });
 
+        it('trying to run 2 backups at the same time', async () => {
+            const token = { userId: "U1" }
+
+            class BackupsMock extends Backups {
+                async getActive() {
+                    return [{}]
+                }
+
+                async create() {}
+            }
+
+            const context = new AppContext()
+                .setModels({ backups: new BackupsMock() })
+                .setActions({
+                    startBackup(backupId1, token1) {
+                    }
+                });
+
+            await api['POST:/v1/backups/new'](context, new Request(), token);
+            const response = await api['POST:/v1/backups/new'](context, new Request(), token);
+
+            expect(response.status).to.equal(409);
+            expect(response.body.errorCode).to.equal('backup_in_progress');
+        });
+    });
 
 
     describe('GET:/v1/backups/:id', () => {
@@ -129,6 +165,10 @@ describe('Backup APIs', () => {
             }
 
             class BackupsMock extends Backups {
+                async getActive() {
+                    return []
+                }
+
                 get(id) {
                     expect(id).to.equal(backupId);
                     return JSON.parse(JSON.stringify(backupTask));
@@ -168,6 +208,10 @@ describe('Backup APIs', () => {
             });
 
             class BackupsMock extends Backups {
+                async getActive() {
+                    return []
+                }
+
                 async get() {
                     return null;
                 }
@@ -193,6 +237,10 @@ describe('Backup APIs', () => {
             });
 
             class BackupsMock extends Backups {
+                async getActive() {
+                    return []
+                }
+
                 async get(id) {
                     return {};
                 }
@@ -217,6 +265,10 @@ describe('Backup APIs', () => {
             });
 
             class BackupsMock extends Backups {
+                async getActive() {
+                    return []
+                }
+
                 async get(id) {
                     return null;
                 }
