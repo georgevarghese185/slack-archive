@@ -228,6 +228,35 @@ describe('Backup APIs', () => {
     });
 
 
+    describe('GET:/v1/backups/running', () => {
+        it('get a running backup', async () => {
+            let backupTask = {
+                id: '1234',
+                status: 'BACKING_UP',
+                messagesBackedUp: 1,
+                currentConversation: 'C4',
+                backedUpConversations: ['C1', 'C2', 'C3'],
+                error: null
+            }
+
+            class BackupsMock extends Backups {
+                async getActive() {
+                    return [backupTask];
+                }
+            }
+
+            const context = new AppContext()
+                .setModels({ backups: new BackupsMock() });
+
+            const response = await api['GET:/v1/backups/running'](context, new Request());
+            expect(response.status).to.equal(200);
+            expect(response.body).to.deep.equal({
+                running: [backupTask]
+            });
+        })
+    })
+
+
 
     describe('POST:/v1/backups/:id/cancel', () => {
         it('cancel a backup task', async () => {

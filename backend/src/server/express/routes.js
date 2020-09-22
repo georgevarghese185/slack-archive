@@ -105,6 +105,12 @@ const setupRoutes = (app, context) => {
             .catch(e => handleError(context, resp, e));
     });
 
+    app.get('/v1/backups/running', (req, resp) => {
+        api['GET:/v1/backups/running'](context, toRequest(req))
+            .then(response => sendResponse(resp, response))
+            .catch(e => handleError(context, resp, e));
+    });
+
     app.get('/v1/backups/:id', (req, resp) => {
         api['GET:/v1/backups/:id'](context, toRequest(req))
             .then(response => sendResponse(resp, response))

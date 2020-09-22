@@ -71,8 +71,19 @@ describe('Backup', async () => {
         });
 
         await axiosInstance.post(`/v1/backups/${backupId}/cancel`);
+        await new Promise(resolve => setTimeout(resolve, 300));
 
         expect(response.status).to.equal(409);
+    });
+
+    it('get a running backup', async () => {
+        const { data: { backupId } } = await axiosInstance.post('/v1/backups/new');
+        const response = await axiosInstance.get('/v1/backups/running');
+        await axiosInstance.post(`/v1/backups/${backupId}/cancel`);
+        await new Promise(resolve => setTimeout(resolve, 300));
+
+        expect(response.data.running).to.have.length(1);
+        expect(response.data.running[0].id).to.equal(backupId);
     })
 
     it('backup APIs should fail without login', async () => {

@@ -68,6 +68,16 @@ const get = async (context, request) => {
     });
 }
 
+const getRunning = async (context) => {
+    const active = await context.models.backups.getActive();
+    const body = { running: active };
+
+    return new Response({
+        status: 200,
+        body
+    });
+}
+
 
 const cancel = async (context, request) => {
     const backupId = request.parameters.id;
@@ -86,5 +96,6 @@ module.exports = {
     getStats,
     create,
     get,
+    getRunning,
     cancel
 }
