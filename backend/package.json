@@ -8,6 +8,7 @@
     "test": "nyc mocha --config .mocharc.all.json",
     "test:unit": "nyc mocha --config .mocharc.unit.json",
     "test:integration": "nyc mocha --config .mocharc.integ.json",
+    "test:report": "nyc report --reporter=html",
     "clearDb": "node --require dotenv/config scripts/clearDb.js",
     "mockSlack:start": "nodemon -w test/mockSlack --require dotenv/config test/mockSlack",
     "mockSlack:generate": "node test/mockSlack/data/generator/generate.js",
