@@ -81,6 +81,8 @@ describe('Messages Backup', () => {
         let c1Messages = [];
         let c2Messages = [];
         let statusSet = false;
+        let conversationC1Set = false, conversationC2Set = false;
+        let conversationC1Done = false, conversationC2Done = false;
 
         moxios.stubRequest(/\/api\/conversations.history.*/, {
             status: 200,
@@ -116,9 +118,11 @@ describe('Messages Backup', () => {
                 if (conversationId == 'C1') {
                     expect(c1Messages).to.be.empty;
                     expect(c2Messages).to.be.empty;
+                    conversationC1Set = true;
                 } else if (conversationId == 'C2') {
                     expect(c1Messages).to.have.length(messageList.length + replies.length);
                     expect(c2Messages).to.be.empty;
+                    conversationC2Set = true;
                 } else {
                     throw new Error('Wrong conversation ID ' + conversationId);
                 }
@@ -129,8 +133,10 @@ describe('Messages Backup', () => {
 
                 if (conversationId == 'C1') {
                     expect(c1Messages).to.have.length(messageList.length + replies.length);
+                    conversationC1Done = true;
                 } else if (conversationId == 'C2') {
                     expect(c2Messages).to.have.length(messageList.length + replies.length);
+                    conversationC2Done = true;
                 } else {
                     throw new Error('Wrong conversation ID ' + conversationId);
                 }
@@ -170,6 +176,10 @@ describe('Messages Backup', () => {
         expect(statusSet).to.be.true;
         expect(c1Messages).to.deep.equal(messageList.concat(replies).map(toMessageObject));
         expect(c2Messages).to.deep.equal(messageList.concat(replies).map(toMessageObject));
+        expect(conversationC1Set).to.be.true;
+        expect(conversationC1Done).to.be.true;
+        expect(conversationC2Set).to.be.true;
+        expect(conversationC2Done).to.be.true;
 
         expect(moxios.requests.at(0).config.baseURL).to.equal(context.getSlackBaseUrl());
         expect(moxios.requests.at(0).headers['authorization']).to.equal(`Bearer ${accessToken}`);

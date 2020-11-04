@@ -18,7 +18,9 @@ const backupMessages = async (context, backupId, token) => {
     let backedUp = { count: 0 };
 
     for (const conversation of conversations) {
+        await context.models.backups.setCurrentConversation(backupId, conversation.id);
         await backupMessagesIn(context, conversation.id, backedUp, axiosInstance, backupId);
+        await context.models.backups.conversationBackupDone(backupId, conversation.id);
     }
 }
 
