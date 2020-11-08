@@ -122,6 +122,17 @@ class Backups {
 
 
     /**
+     * Sets the endedAt field of a backup task
+     *
+     * @param {string} id The backup task ID
+     * @param {Date} time The time at which the backup ended
+     */
+    async setEndedAt(id, time) {
+        throw new Error('Not implemented');
+    }
+
+
+    /**
      * Update the total number of messages that have been backed up (backup.messagesBackedUp)
      *
      * @abstract

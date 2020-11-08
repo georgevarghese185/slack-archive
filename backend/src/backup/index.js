@@ -11,6 +11,7 @@ const startBackup = async (context, backupId, token) => {
         await backupMembers(context, backupId, token);
         await backupMessages(context, backupId, token);
         context.models.backups.setStatus(backupId, 'COMPLETED');
+        context.models.backups.setEndedAt(backupId, new Date())
     } catch (e) {
         if (e instanceof BackupCanceledError) {
             await context.models.backups.setStatus(backupId, 'CANCELED');

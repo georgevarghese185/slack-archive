@@ -52,6 +52,7 @@ describe('Backup entry point', () => {
 
     it('start and complete backup', async () => {
         let status;
+        let endedAtSet = false;
 
         class ConversationsMock extends Conversations {
             async add() {}
@@ -75,6 +76,11 @@ describe('Backup entry point', () => {
             conversationBackupDone() {}
             setCurrentConversation() {}
             setMessagesBackedUp() {}
+            setEndedAt(id, time) {
+                expect(id).to.eq('1234');
+                expect(time).to.be.an.instanceOf(Date);
+                endedAtSet = true;
+            }
         }
 
         const context = new MockContext()
@@ -115,6 +121,7 @@ describe('Backup entry point', () => {
         await startBackup(context, '1234', '1234');
 
         expect(status).to.eq('COMPLETED');
+        expect(endedAtSet).to.be.true;
     })
 
     it('handle error during backup', async () => {

@@ -66,7 +66,7 @@ module.exports = class BackupsSequelize extends Backups {
     async create(backupId, userId) {
         const backup = await this.backups.create({
             id: backupId,
-            created_at: Date.now(),
+            created_at: new Date(),
             created_by: userId,
             ended_at: null,
             status: 'CREATED',
@@ -81,7 +81,14 @@ module.exports = class BackupsSequelize extends Backups {
     }
 
     async last () {
-        const lastBackup = await this.backups.findOne({ order: [['ended_at', 'DESC']] });
+        const lastBackup = await this.backups.findOne({
+            where: {
+                [Op.not]: {
+                    ended_at: null,
+                }
+            },
+            order: [['ended_at', 'DESC']],
+        });
 
         if (lastBackup == null) {
             return null;
@@ -150,6 +157,13 @@ module.exports = class BackupsSequelize extends Backups {
     async setError(id, message) {
         await this.backups.update(
             { error: message },
+            { where: { id } }
+        );
+    }
+
+    async setEndedAt(id, time) {
+        await this.backups.update(
+            { ended_at: time },
             { where: { id } }
         );
     }

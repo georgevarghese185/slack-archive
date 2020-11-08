@@ -50,6 +50,9 @@ describe('Backup', async () => {
         }
 
         expect(backup.status).to.equal('COMPLETED');
+
+        const { data: stats } = await axiosInstance.get('/v1/backups/stats');
+        expect(stats.lastBackupAt).not.to.be.null;
     });
 
     it('cancel a running backup', async () => {
@@ -62,6 +65,11 @@ describe('Backup', async () => {
         const { data: { status } } = await axiosInstance.get(`/v1/backups/${backupId}`)
         expect(status).to.equal('CANCELED');
     });
+
+    it('last canceled backup should not have affected lastBackupAt', async () => {
+        const { data: stats } = await axiosInstance.get('/v1/backups/stats');
+        expect(stats.lastBackupAt).not.to.be.null;
+    })
 
     it('running 2 backups simultaneously should be prevented', async () => {
         const { data: { backupId } } = await axiosInstance.post('/v1/backups/new');
