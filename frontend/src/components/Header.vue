@@ -23,7 +23,7 @@ export default {
       return this.$route.name === 'Archive'
     },
     isBackupsPage () {
-      return this.$route.name === 'Backups'
+      return this.$route.name === 'Backup'
     }
   },
   methods: {

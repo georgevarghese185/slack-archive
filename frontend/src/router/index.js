@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Archive from '../views/Archive.vue'
+import Backup from '../views/Backup.vue'
 import SignIn from '../views/SignIn.vue'
 import OauthRedirect from '../views/OauthRedirect.vue'
 import { isLoggedIn } from '../util/session'
@@ -12,6 +13,11 @@ const routes = isLoggedIn() ? [
     path: '/archive/:conversationId?/:ts?',
     name: 'Archive',
     component: Archive
+  },
+  {
+    path: '/backup',
+    name: 'Backup',
+    component: Backup
   },
   {
     path: '*',
