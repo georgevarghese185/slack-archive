@@ -11,10 +11,10 @@
       <div class="info"><b>Conversations</b>: 2</div>
       <Button class="button" label="Cancel" @click="startBackup"/>
     </div>
-    <div class="backup-stats">
+    <div v-if="this.stats" class="backup-stats">
       <p class="title">Stats</p>
-      <div class="info"><b>Backed Up</b>: 27569 messages across 11 conversations</div>
-      <div class="info"><b>Last successful backup</b>: 27 Nov, 2020</div>
+      <div class="info"><b>Backed Up</b>: {{ this.stats.messages }} messages across {{ this.stats.conversations }} conversations</div>
+      <div class="info"><b>Last successful backup</b>: {{ this.stats.lastBackupAt }}</div>
       <Button class="button" label="Backup Now" @click="startBackup"/>
     </div>
   </div>
@@ -25,8 +25,16 @@ import Button from '../components/Button'
 import Spinner from '../components/Spinner'
 
 export default {
+  mounted () {
+    this.$store.dispatch('loadBackupStats')
+  },
   methods: {
     startBackup () {}
+  },
+  computed: {
+    stats () {
+      return this.$store.state.backups.stats
+    }
   },
   components: {
     Button,

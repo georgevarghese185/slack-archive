@@ -33,3 +33,9 @@ export const getMessages = async (params) => {
   const { data } = await axiosInstance.get('/v1/messages', { params })
   return data.messages
 }
+
+export const getBackupStats = async () => {
+  const { data } = await axiosInstance.get('/v1/backups/stats')
+  return data
+}
+
