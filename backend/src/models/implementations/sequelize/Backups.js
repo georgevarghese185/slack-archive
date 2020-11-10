@@ -98,13 +98,15 @@ module.exports = class BackupsSequelize extends Backups {
     }
 
     async getActive () {
-        return this.backups.findAll({
+        const backups = await this.backups.findAll({
             where: {
                 [Op.not]: {
                     status: ['CANCELED', 'COMPLETED', 'FAILED']
                 }
             }
-        })
+        });
+
+        return backups.map(this._toBackupObject)
     }
 
     async get(id) {
