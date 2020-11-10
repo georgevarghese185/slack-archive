@@ -9,7 +9,7 @@ module.exports = class BackupsSequelize extends Backups {
                 type: DataTypes.TEXT,
                 primaryKey: true
             },
-            created_at: {
+            started_at: {
                 type: DataTypes.DATE,
                 allowNull: false
             },
@@ -51,7 +51,7 @@ module.exports = class BackupsSequelize extends Backups {
     _toBackupObject(row) {
         return {
             id: row.id,
-            createdAt: row.created_at,
+            createdAt: row.started_at,
             createdBy: row.created_by,
             endedAt: row.ended_at ? row.ended_at : null,
             status: row.status,
@@ -66,7 +66,7 @@ module.exports = class BackupsSequelize extends Backups {
     async create(backupId, userId) {
         const backup = await this.backups.create({
             id: backupId,
-            created_at: new Date(),
+            started_at: new Date(),
             created_by: userId,
             ended_at: null,
             status: 'CREATED',
