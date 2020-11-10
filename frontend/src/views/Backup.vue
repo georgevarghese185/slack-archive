@@ -14,13 +14,14 @@
     <div v-if="this.stats" class="backup-stats">
       <p class="title">Stats</p>
       <div class="info"><b>Backed Up</b>: {{ this.stats.messages }} messages across {{ this.stats.conversations }} conversations</div>
-      <div class="info"><b>Last successful backup</b>: {{ this.stats.lastBackupAt }}</div>
+      <div class="info"><b>Last successful backup</b>: {{ this.lastBackup }}</div>
       <Button class="button" label="Backup Now" @click="startBackup"/>
     </div>
   </div>
 </template>
 
 <script>
+import dayjs from 'dayjs'
 import Button from '../components/Button'
 import Spinner from '../components/Spinner'
 
@@ -34,6 +35,11 @@ export default {
   computed: {
     stats () {
       return this.$store.state.backups.stats
+    },
+    lastBackup () {
+      return this.stats.lastBackupAt
+        ? dayjs(this.stats.lastBackupAt).format('MMM D, YYYY')
+        : 'never'
     }
   },
   components: {
