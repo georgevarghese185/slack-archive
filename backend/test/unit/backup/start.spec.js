@@ -78,7 +78,7 @@ describe('Backup entry point', () => {
             setMessagesBackedUp() {}
             setEndedAt(id, time) {
                 expect(id).to.eq('1234');
-                expect(time).to.be.an.instanceOf(Date);
+                expect(typeof time).to.equal('number');
                 endedAtSet = true;
             }
         }

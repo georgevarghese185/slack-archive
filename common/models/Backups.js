@@ -125,7 +125,7 @@ class Backups {
      * Sets the endedAt field of a backup task
      *
      * @param {string} id The backup task ID
-     * @param {Date} time The time at which the backup ended
+     * @param {number} time The time at which the backup ended in UNIX time milliseconds
      */
     async setEndedAt(id, time) {
         throw new Error('Not implemented');

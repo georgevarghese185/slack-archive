@@ -51,9 +51,9 @@ module.exports = class BackupsSequelize extends Backups {
     _toBackupObject(row) {
         return {
             id: row.id,
-            createdAt: row.started_at,
+            createdAt: row.started_at.getTime(),
             createdBy: row.created_by,
-            endedAt: row.ended_at ? row.ended_at : null,
+            endedAt: row.ended_at ? row.ended_at.getTime() : null,
             status: row.status,
             messagesBackedUp: row.messages_backed_up,
             currentConversation: row.current_conversation,
@@ -165,7 +165,7 @@ module.exports = class BackupsSequelize extends Backups {
 
     async setEndedAt(id, time) {
         await this.backups.update(
-            { ended_at: time },
+            { ended_at: new Date(time) },
             { where: { id } }
         );
     }
