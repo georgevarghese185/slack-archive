@@ -46,6 +46,16 @@ const create = async (context, request, token) => {
 }
 
 
+const toBackupResponseBody = (backupTask) => ({
+    id: backupTask.id,
+    status: backupTask.status,
+    error: backupTask.error,
+    messagesBackedUp: backupTask.messagesBackedUp,
+    currentConversation: backupTask.currentConversation,
+    backedUpConversations: backupTask.backedUpConversations,
+})
+
+
 const get = async (context, request) => {
     const backupId = request.parameters.id;
     const backup = await context.models.backups.get(backupId);
@@ -54,23 +64,15 @@ const get = async (context, request) => {
         return notFound(constants.errorCodes.backupNotFound, "Could not find a backup task with the given ID");
     }
 
-    const body = {
-        status: backup.status,
-        error: backup.error,
-        messagesBackedUp: backup.messagesBackedUp,
-        currentConversation: backup.currentConversation,
-        backedUpConversations: backup.backedUpConversations,
-    };
-
     return new Response({
         status: 200,
-        body
+        body: toBackupResponseBody(backup)
     });
 }
 
 const getRunning = async (context) => {
     const active = await context.models.backups.getActive();
-    const body = { running: active };
+    const body = { running: active.map(toBackupResponseBody) };
 
     return new Response({
         status: 200,

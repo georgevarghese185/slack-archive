@@ -157,6 +157,10 @@ describe('Backup APIs', () => {
                 parameters: { id: backupId }
             });
             let backupTask = {
+                id: backupId,
+                createdAt: 1605019424349,
+                createdBy: 'U1234',
+                endedAt: null,
                 status: 'BACKING_UP',
                 messagesBackedUp: 1,
                 currentConversation: 'C4',
@@ -182,7 +186,14 @@ describe('Backup APIs', () => {
                 let response = await api['GET:/v1/backups/:id'](context, request);
 
                 expect(response.status).to.equal(200);
-                expect(response.body).to.deep.equal(backupTask);
+                expect(response.body).to.deep.equal({
+                    id: backupTask.id,
+                    status: backupTask.status,
+                    error: backupTask.error,
+                    messagesBackedUp: backupTask.messagesBackedUp,
+                    currentConversation: backupTask.currentConversation,
+                    backedUpConversations: backupTask.backedUpConversations
+                });
             }
 
             // normal case
@@ -232,6 +243,9 @@ describe('Backup APIs', () => {
         it('get a running backup', async () => {
             let backupTask = {
                 id: '1234',
+                createdAt: 1605019424349,
+                createdBy: 'U1234',
+                endedAt: null,
                 status: 'BACKING_UP',
                 messagesBackedUp: 1,
                 currentConversation: 'C4',
@@ -251,7 +265,14 @@ describe('Backup APIs', () => {
             const response = await api['GET:/v1/backups/running'](context, new Request());
             expect(response.status).to.equal(200);
             expect(response.body).to.deep.equal({
-                running: [backupTask]
+                running: [{
+                    id: backupTask.id,
+                    status: backupTask.status,
+                    error: backupTask.error,
+                    messagesBackedUp: backupTask.messagesBackedUp,
+                    currentConversation: backupTask.currentConversation,
+                    backedUpConversations: backupTask.backedUpConversations
+                }]
             });
         })
     })
