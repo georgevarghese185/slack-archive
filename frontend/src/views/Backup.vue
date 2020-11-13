@@ -9,13 +9,13 @@
       <div v-if="this.runningBackup.error" class="info"><b>Error</b>: {{ this.runningBackup.error }}</div>
       <div class="info"><b>Messages</b>: {{ this.runningBackup.messagesBackedUp }} </div>
       <div class="info"><b>Conversations</b>: {{ this.runningBackup.backedUpConversations.length }}</div>
-      <Button class="button" label="Cancel" @click="cancelBackup"/>
+      <Button v-if="backupInProgress" class="button" label="Cancel" @click="cancelBackup"/>
     </div>
     <div v-if="this.stats" class="backup-stats">
       <p class="title">Stats</p>
       <div class="info"><b>Backed Up</b>: {{ this.stats.messages }} messages across {{ this.stats.conversations }} conversations</div>
       <div class="info"><b>Last successful backup</b>: {{ this.lastBackup }}</div>
-      <Button v-if="!runningBackup" class="button" label="Backup Now" @click="startBackup"/>
+      <Button v-if="!backupInProgress" class="button" label="Backup Now" @click="startBackup"/>
     </div>
   </div>
 </template>
@@ -45,8 +45,13 @@ export default {
     }
   },
   methods: {
-    startBackup () {},
-    cancelBackup () {},
+    async startBackup () {
+      await this.$store.dispatch('startBackup')
+      this.pollRunningBackup()
+    },
+    cancelBackup () {
+      this.$store.dispatch('cancelBackup')
+    },
     async pollRunningBackup () {
       if (this.backupInProgress) {
         this.pollId = setTimeout(async () => {
@@ -71,7 +76,7 @@ export default {
       return this.$store.state.backups.running
     },
     backupInProgress () {
-      return ['COMPLETED', 'CANCELED', 'FAILED'].indexOf(this.runningBackup.status) === -1
+      return this.runningBackup && ['COMPLETED', 'CANCELED', 'FAILED'].indexOf(this.runningBackup.status) === -1
     },
     backupStatus () {
       const status = this.runningBackup.status

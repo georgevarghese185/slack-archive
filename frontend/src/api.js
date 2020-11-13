@@ -48,3 +48,12 @@ export const getRunningBackups = async () => {
   const { data } = await axiosInstance.get('/v1/backups/running')
   return data.running
 }
+
+export const startBackup = async () => {
+  const { data } = await axiosInstance.post('/v1/backups/new')
+  return data.backupId
+}
+
+export const cancelBackup = async (id) => {
+  await axiosInstance.post(`/v1/backups/${id}/cancel`)
+}

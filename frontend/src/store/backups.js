@@ -41,6 +41,24 @@ export default {
         // handle error
         console.error(e)
       }
+    },
+    async startBackup (context) {
+      try {
+        const id = await api.startBackup()
+        const backup = await api.getBackup(id)
+        context.commit('updateRunning', backup)
+      } catch (e) {
+        // handle error
+        console.error(e)
+      }
+    },
+    async cancelBackup (context) {
+      try {
+        await api.cancelBackup(context.state.running.id)
+      } catch (e) {
+        // handle error
+        console.error(e)
+      }
     }
   }
 }
