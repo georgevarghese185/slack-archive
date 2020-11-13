@@ -9,13 +9,13 @@
       <div v-if="this.runningBackup.error" class="info"><b>Error</b>: {{ this.runningBackup.error }}</div>
       <div class="info"><b>Messages</b>: {{ this.runningBackup.messagesBackedUp }} </div>
       <div class="info"><b>Conversations</b>: {{ this.runningBackup.backedUpConversations.length }}</div>
-      <Button v-if="backupInProgress" class="button" label="Cancel" @click="cancelBackup"/>
+      <Button v-if="backupInProgress" class="button" label="Cancel" :enabled="!backupCancelling" @click="cancelBackup"/>
     </div>
     <div v-if="this.stats" class="backup-stats">
       <p class="title">Stats</p>
       <div class="info"><b>Backed Up</b>: {{ this.stats.messages }} messages across {{ this.stats.conversations }} conversations</div>
       <div class="info"><b>Last successful backup</b>: {{ this.lastBackup }}</div>
-      <Button v-if="!backupInProgress" class="button" label="Backup Now" @click="startBackup"/>
+      <Button v-if="!backupInProgress" class="button" label="Backup Now" :enabled="!backupStarting" @click="startBackup"/>
     </div>
   </div>
 </template>
@@ -29,7 +29,9 @@ const POLL_INTERVAL = 1000
 
 export default {
   data: () => ({
-    pollId: null
+    pollId: null,
+    backupStarting: false,
+    backupCancelling: false
   }),
   async mounted () {
     this.$store.dispatch('loadBackupStats')
@@ -46,11 +48,15 @@ export default {
   },
   methods: {
     async startBackup () {
+      this.backupStarting = true
       await this.$store.dispatch('startBackup')
+      this.backupStarting = false
       this.pollRunningBackup()
     },
-    cancelBackup () {
-      this.$store.dispatch('cancelBackup')
+    async cancelBackup () {
+      this.backupCancelling = true
+      await this.$store.dispatch('cancelBackup')
+      this.backupCancelling = false
     },
     async pollRunningBackup () {
       if (this.backupInProgress) {

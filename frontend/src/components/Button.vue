@@ -1,14 +1,32 @@
 <template>
-  <button class="button-container" @click="onClick">
+  <button :class="classes" @click="onClick">
     <p class="label">{{label}}</p>
   </button>
 </template>
 
 <script>
 export default {
-  props: ['label'],
+  props: {
+    label: String,
+    enabled: {
+      type: Boolean,
+      default: true
+    }
+  },
+  computed: {
+    classes () {
+      return {
+        'button-container': true,
+        'button-container-enabled': this.enabled,
+        'button-container-disabled': !this.enabled
+      }
+    }
+  },
   methods: {
     onClick () {
+      if (!this.enabled) {
+        return
+      }
       this.$emit('click')
     }
   }
@@ -27,7 +45,11 @@ export default {
     transition: background-color 0.5s;
   }
 
-  .button-container:hover {
+  .button-container-disabled {
+    background-color: #bfbfbf
+  }
+
+  .button-container-enabled:hover {
     background: #861280;
   }
 
