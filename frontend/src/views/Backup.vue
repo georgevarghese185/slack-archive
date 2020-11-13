@@ -67,6 +67,7 @@ export default {
         }, POLL_INTERVAL)
       } else {
         this.pollId = null
+        this.$store.dispatch('loadBackupStats')
       }
     }
   },
