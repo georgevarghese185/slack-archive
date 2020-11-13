@@ -1,5 +1,6 @@
 <template>
   <div class="backup-container">
+    <Spinner v-if="!stats" class="page-loader"/>
     <div v-if="this.runningBackup" class="running-backup">
       <p class="title">Backup Running</p>
       <div class="status">
@@ -116,6 +117,12 @@ export default {
 </script>
 
 <style scoped>
+  .page-loader {
+    width: 42px;
+    position: absolute;
+    left: 50%;
+  }
+
   .backup-container {
     width: 100%;
     height: 100%;
