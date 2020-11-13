@@ -3,11 +3,14 @@ import * as api from '../api'
 export default {
   state: () => ({
     stats: null,
-    running: []
+    running: null
   }),
   mutations: {
     updateStats (state, stats) {
       state.stats = stats
+    },
+    updateRunning (state, running) {
+      state.running = running || null
     }
   },
   actions: {
@@ -21,5 +24,23 @@ export default {
         // handle error
         console.error(e)
       }
+    },
+    async loadRunningBackup (context) {
+      let backup
+
+      try {
+        if (context.state.running) {
+          backup = await api.getBackup(context.state.running.id)
+        } else {
+          const backups = await api.getRunningBackups()
+          backup = backups[0]
+        }
+
+        context.commit('updateRunning', backup)
+      } catch (e) {
+        // handle error
+        console.error(e)
+      }
+    }
   }
 }

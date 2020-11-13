@@ -39,3 +39,12 @@ export const getBackupStats = async () => {
   return data
 }
 
+export const getBackup = async (id) => {
+  const { data } = await axiosInstance.get(`/v1/backups/${id}`)
+  return data
+}
+
+export const getRunningBackups = async () => {
+  const { data } = await axiosInstance.get('/v1/backups/running')
+  return data.running
+}

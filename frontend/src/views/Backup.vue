@@ -1,21 +1,21 @@
 <template>
   <div class="backup-container">
-    <div class="running-backup">
+    <div v-if="this.runningBackup" class="running-backup">
       <p class="title">Backup Running</p>
       <div class="status">
-        <div class="info"><b>Status</b>: Collecting info...</div>
-        <Spinner class="spinner"/>
+        <div class="info"><b>Status</b>: {{ this.backupStatus }}</div>
+        <Spinner v-if="backupInProgress" class="spinner"/>
       </div>
-      <div class="info"><b>Error</b>: Something went wrong</div>
-      <div class="info"><b>Messages</b>: 3920</div>
-      <div class="info"><b>Conversations</b>: 2</div>
-      <Button class="button" label="Cancel" @click="startBackup"/>
+      <div v-if="this.runningBackup.error" class="info"><b>Error</b>: {{ this.runningBackup.error }}</div>
+      <div class="info"><b>Messages</b>: {{ this.runningBackup.messagesBackedUp }} </div>
+      <div class="info"><b>Conversations</b>: {{ this.runningBackup.backedUpConversations.length }}</div>
+      <Button class="button" label="Cancel" @click="cancelBackup"/>
     </div>
     <div v-if="this.stats" class="backup-stats">
       <p class="title">Stats</p>
       <div class="info"><b>Backed Up</b>: {{ this.stats.messages }} messages across {{ this.stats.conversations }} conversations</div>
       <div class="info"><b>Last successful backup</b>: {{ this.lastBackup }}</div>
-      <Button class="button" label="Backup Now" @click="startBackup"/>
+      <Button v-if="!runningBackup" class="button" label="Backup Now" @click="startBackup"/>
     </div>
   </div>
 </template>
@@ -25,12 +25,38 @@ import dayjs from 'dayjs'
 import Button from '../components/Button'
 import Spinner from '../components/Spinner'
 
+const POLL_INTERVAL = 1000
+
 export default {
-  mounted () {
+  data: () => ({
+    pollId: null
+  }),
+  async mounted () {
     this.$store.dispatch('loadBackupStats')
+    await this.$store.dispatch('loadRunningBackup')
+
+    if (this.runningBackup) {
+      this.pollRunningBackup()
+    }
+  },
+  beforeDestroy () {
+    if (this.pollId) {
+      clearTimeout(this.pollId)
+    }
   },
   methods: {
-    startBackup () {}
+    startBackup () {},
+    cancelBackup () {},
+    async pollRunningBackup () {
+      if (this.backupInProgress) {
+        this.pollId = setTimeout(async () => {
+          await this.$store.dispatch('loadRunningBackup')
+          this.pollRunningBackup()
+        }, POLL_INTERVAL)
+      } else {
+        this.pollId = null
+      }
+    }
   },
   computed: {
     stats () {
@@ -40,6 +66,35 @@ export default {
       return this.stats.lastBackupAt
         ? dayjs(this.stats.lastBackupAt).format('MMM D, YYYY')
         : 'never'
+    },
+    runningBackup () {
+      return this.$store.state.backups.running
+    },
+    backupInProgress () {
+      return ['COMPLETED', 'CANCELED', 'FAILED'].indexOf(this.runningBackup.status) === -1
+    },
+    backupStatus () {
+      const status = this.runningBackup.status
+      switch (status) {
+        case 'BACKING_UP':
+          return `Backing up ${this.currentConversation}...`
+        case 'COLLECTING_INFO':
+          return 'Collecting Info...'
+        default:
+          return status[0] + status.slice(1).toLowerCase()
+      }
+    },
+    currentConversation () {
+      const conversationId = this.runningBackup.currentConversation
+      const conversations = this.$store.state.archive.conversations.list || []
+      const conversation = conversations.find(c => c.id === conversationId)
+
+      if (conversation) {
+        return `#${conversation.name}`
+      } else {
+        this.$store.dispatch('loadConversations')
+        return ''
+      }
     }
   },
   components: {
