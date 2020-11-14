@@ -1,8 +1,10 @@
 const constants = require('../../constants');
-const { authorizeRequest } = require('../../api/authorize');
+const { validateLogin, MissingTokenError } = require('../../api/authorize');
 const { startBackup } = require('../../backup')
 const { setupSequelize } = require('./sequelize');
-const { toRequest } = require('./util')
+const { toRequest, sendResponse } = require('./util');
+const { TokenExpiredError } = require('jsonwebtoken');
+const { unauthorized } = require('../../util/response');
 
 const contextMiddleware = async (context) => {
     await setupSequelize(context);
@@ -23,20 +25,22 @@ const delayMiddleware = (delay) => (req, res, next) => {
 }
 
 const authMiddleware = (req, res, next) => {
-    const token = authorizeRequest(req.slackArchive.context, toRequest(req));
-
-    if (token == null) {
-        res.status(401).send({
-            errorCode: constants.errorCodes.unauthorized,
-            message: "Unauthorized"
-        });
-
-        return;
+    try {
+        token = validateLogin(req.slackArchive.context, toRequest(req));
+        req.slackArchive.token = token;
+        next();
+    } catch (e) {
+        if (e instanceof TokenExpiredError) {
+            const response = unauthorized(constants.errorCodes.tokenExpired, "Login token expired");
+            sendResponse(response, res)
+        } else if (e instanceof MissingTokenError) {
+            const response = unauthorized(constants.errorCodes.unauthorized, "Login token expected");
+            sendResponse(response, res)
+        } else {
+            const response = unauthorized(constants.errorCodes.unauthorized, "Invalid token");
+            sendResponse(response, res)
+        }
     }
-
-    req.slackArchive.token = token;
-
-    next();
 }
 
 const errorMiddleware = (err, req, res, next) => {

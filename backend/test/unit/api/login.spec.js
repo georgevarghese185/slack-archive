@@ -348,12 +348,8 @@ describe('Login APIs', () => {
                     expectedResponse: { status: 401, errorCode: 'unauthorized' }
                 },
                 {
-                    slackCodes: ['org_login_required', 'ekm_access_denied', 'team_added_to_org', 'fatal_error'],
+                    slackCodes: ['org_login_required', 'ekm_access_denied', 'team_added_to_org', 'fatal_error', '*'],
                     expectedResponse: { status: 502, errorCode: 'slack_error' }
-                },
-                {
-                    slackCodes: ['*'], // any other error
-                    expectedResponse: { status: 500, errorCode: 'internal_server_error' }
                 }
             ];
 

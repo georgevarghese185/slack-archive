@@ -5,6 +5,7 @@ const jwt = require('../util/jwt');
 const qs = require('query-string');
 const Response = require('../types/Response');
 const { fromAxiosError, fromSlackError, badRequest, unauthorized, internalError } = require('../util/response');
+const { validateSlackToken, InvalidTokenError, SlackValidationError, validateLogin, MissingTokenError, TokenParseError, ExpiredTokenError } = require('./authorize');
 
 const getAuthUrl = async (context) => {
     const scope = process.env.EXP_PRIVATE_SCOPE === 'true'
@@ -94,59 +95,24 @@ const login = async (context, request) => {
 }
 
 const validLogin = async (context, request) => {
-    const logger = context.getLogger()
-    let loginToken;
-    let accessToken;
+    const logger = context.getLogger();
 
     try {
-        loginToken = cookie.parse(request.headers['cookie']).loginToken;
+        const token = validateLogin(context, request);
+        await validateSlackToken(context, token);
     } catch (e) {
-        loginToken = null;
-    }
-
-    if (typeof loginToken != 'string') {
-        return badRequest("Missing 'loginToken' Cookie");
-    }
-
-    try {
-        accessToken = jwt.verify(loginToken, context.getAuthTokenSecret()).accessToken;
-        if(typeof accessToken != 'string') {
-            throw new Error('Invalid login token');
-        }
-    } catch (e) {
-        if(e instanceof jwt.TokenExpiredError) {
-            const token = jwt.verify(loginToken, context.getAuthTokenSecret(), { ignoreExpiration: true }).accessToken;
-            await revokeSlackToken(context, token);
+        if (e instanceof MissingTokenError) {
+            return badRequest("Missing 'loginToken' Cookie");
+        } else if (e instanceof InvalidTokenError || e instanceof TokenParseError) {
+            return unauthorized("Invalid token: " + e.message);
+        } else if (e instanceof ExpiredTokenError) {
+            await revokeSlackToken(context, e.token.accessToken);
             return unauthorized(constants.errorCodes.tokenExpired, "Login token expired");
+        } else if (e instanceof SlackValidationError) {
+            return fromSlackError(e.response)
         } else {
-            return unauthorized('Invalid login token');
-        }
-    }
-
-
-    const axiosInstance = axios.create({ baseURL: context.getSlackBaseUrl() });
-    let response;
-
-    try {
-        response = await axiosInstance.post('/api/auth.test', {}, {
-            headers: {
-                'authorization': 'Bearer ' + accessToken
-            }
-        });
-    } catch (e) {
-        logger.error("Slack '/api/auth.test' error: " + e.message);
-        logger.error(e);
-        return fromAxiosError(e);
-    }
-
-    if(!response.data.ok) {
-        if (['invalid_auth', 'account_inactive', 'token_revoked', 'no_permission', 'missing_scope'].indexOf(response.data.error) > -1) {
-            return unauthorized("Invalid token: " + response.data.error);
-        } else if (['org_login_required', 'ekm_access_denied', 'team_added_to_org', 'fatal_error'].indexOf(response.data.error) > -1) {
-            return fromSlackError(response);
-        } else {
-            logger.error("Error trying to exchange verification code with Slack: " + response.data.error);
-            return internalError("Could not obtain access token from Slack");
+            logger.error("Error trying to exchange verification code with Slack: " + e.message);
+            return internalError("Could not verify access token with Slack");
         }
     }
 
