@@ -3,21 +3,15 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 const express = require('express');
 const { authMiddleware, contextMiddleware, delayMiddleware, errorMiddleware } = require('./middleware');
-const { toRequest } = require('./util')
+const { toRequest, sendResponse } = require('./util')
 
-const routeHandler = handlerFn => async (req, resp, next) => {
+const routeHandler = handlerFn => async (req, res, next) => {
     try {
         const request = toRequest(req);
         const context = req.slackArchive.context;
         const token = req.slackArchive.token;
-
         const response = await handlerFn(context, request, token);
-
-        Object.keys(response.headers).forEach(key =>
-            resp.set(key, response.headers[key])
-        )
-        resp.status(response.status)
-        resp.send(response.body)
+        sendResponse(response, res);
     } catch (e) {
         next(e)
     }

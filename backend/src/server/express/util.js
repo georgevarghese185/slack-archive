@@ -9,6 +9,15 @@ const toRequest = (req) => {
     })
 }
 
+const sendResponse = (response, res) => {
+    Object.keys(response.headers).forEach(key =>
+        res.set(key, response.headers[key])
+    )
+    res.status(response.status)
+    res.send(response.body)
+}
+
 module.exports = {
-    toRequest
+    toRequest,
+    sendResponse
 }
