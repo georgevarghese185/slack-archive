@@ -37,7 +37,9 @@ const init = async(context) => {
 
     app.use(await contextMiddleware(context))
 
-    app.use(delayMiddleware(process.env.TEST_API_DELAY))
+    if (context.isDevEnvironment() && process.env.TEST_API_DELAY) {
+        app.use(delayMiddleware(process.env.TEST_API_DELAY))
+    }
 
     app.get('/', (req, res) => res.send('up'));
 
