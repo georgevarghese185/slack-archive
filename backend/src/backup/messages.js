@@ -58,7 +58,10 @@ const backupMessagesIn = async (context, conversationId, backedUp, axiosInstance
             throw err;
         }
 
-        if (!response.data.ok) {
+        if (!response.data.ok && response.data.error === 'channel_not_found') {
+            context.getLogger().warn(`Conversation ${conversationId} not found in Slack. Skipping...`)
+            continue;
+        } else if (!response.data.ok) {
             const error = new Error('/api/conversations.history API failed with code ' + response.data.error);
             throw error;
         }

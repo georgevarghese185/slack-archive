@@ -21,6 +21,14 @@ describe('Messages Backup', () => {
     });
 
     class MockContext extends AppContext {
+        getLogger() {
+            return {
+                log() {},
+                warn() {},
+                error() {}
+            }
+        }
+
         getSlackBaseUrl() {
             return "https://slack.com"
         }
@@ -588,6 +596,66 @@ describe('Messages Backup', () => {
 
         await expect(backupMessages(context, backupId, '1234')).to.be.rejectedWith(BackupCanceledError);
     });
+
+    it('channel not found error', async () => {
+        const backupId = '1234';
+        const accessToken = 'abc';
+        const token = { accessToken }
+        let addedMessages = [];
+
+        moxios.stubRequest(/\/api\/conversations.history.*channel=C1/, {
+            status: 200,
+            response: {
+                ok: false,
+                error: 'channel_not_found'
+            }
+        });
+
+        moxios.stubRequest(/\/api\/conversations.history.*channel=C2/, {
+            status: 200,
+            response: {
+                ok: true,
+                messages: messageList.slice(0, 2)
+            }
+        });
+
+        class BackupsMock extends BackupsMockBase {
+            async setStatus(id, status) {
+            }
+            async setMessagesBackedUp(id, numOfMessages) {
+            }
+            async setCurrentConversation(id, conversationId) {
+            }
+            async conversationBackupDone(id, conversationId) {
+            }
+        }
+
+        class ConversationsMock extends Conversations {
+            async listAll() {
+                return [
+                    { id: "C1" },
+                    { id: "C2" }
+                ]
+            }
+        }
+
+        class MessagesMock extends Messages {
+            async add(conversationId, messages) {
+                expect(conversationId).to.equal('C2');
+                addedMessages = addedMessages.concat(messages);
+            }
+        }
+
+        const context = new MockContext()
+            .setModels({
+                backups: new BackupsMock(),
+                conversations: new ConversationsMock(),
+                messages: new MessagesMock()
+            });
+
+        await backupMessages(context, backupId, token);
+        expect(addedMessages).to.deep.equal(messageList.slice(0, 2).map(toMessageObject))
+    })
 
     it('slack error', async () => {
         const token = { accessToken: 'ABC' };
