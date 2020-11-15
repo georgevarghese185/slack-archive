@@ -142,7 +142,16 @@ const deleteToken = async (context, request) => {
 
     await revokeSlackToken(context, accessToken);
 
-    return new Response({ status: 200 });
+    return new Response({
+        status: 200,
+        headers: {
+            'set-cookie': cookie.serialize(
+                'loginToken',
+                '',
+                { httpOnly: true, secure: !context.isDevEnvironment() }
+            )
+        },
+    });
 }
 
 

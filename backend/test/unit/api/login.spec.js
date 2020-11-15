@@ -412,6 +412,7 @@ describe('Login APIs', () => {
             expect(slackRequest.config.method).to.equal('post');
             expect(slackRequest.headers['authorization']).to.equal(`Bearer ${accessToken}`);
             expect(response.status).to.equal(200);
+            expect(response.headers['set-cookie']).to.equal(cookie.serialize('loginToken', '', { httpOnly: true, secure: true }))
         });
 
 
