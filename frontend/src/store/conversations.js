@@ -15,8 +15,13 @@ export default {
   },
   actions: {
     async loadConversations (context) {
-      const conversations = await models.remote.listAll()
-      context.commit('updateConversations', conversations)
+      try {
+        const conversations = await models.remote.listAll()
+        context.commit('updateConversations', conversations)
+      } catch (e) {
+        console.error(e)
+        // TODO handle error
+      }
     }
   }
 }
