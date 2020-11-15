@@ -1,6 +1,7 @@
 <template>
   <div class="channel-list-container">
     <div class="conversation-list" v-if="conversations">
+      <p v-if="conversations.length === 0" class="no-conversations">No conversations</p>
       <div :class="getConversationClass(conversation)" v-for="conversation of conversations" :key="conversation.id"
       @click="() => changeRoute(conversation.id)">
         <span class="conversation-symbol">#</span><span class="conversation-name"> {{conversation.name}} </span>
@@ -27,6 +28,10 @@ export default {
   async mounted () {
     if (!this.conversations) {
       await this.$store.dispatch('loadConversations')
+    }
+
+    if ((this.conversations || []).length === 0) {
+      return
     }
 
     const id = this.conversationId || this.conversations[0].id
@@ -64,6 +69,11 @@ export default {
     width: 100%;
     height: 100%;
     padding-top: 28px;
+  }
+
+  .no-conversations {
+    text-align: center;
+    opacity: 0.7
   }
 
   .conversation {

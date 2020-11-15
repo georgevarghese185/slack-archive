@@ -159,7 +159,10 @@ export default {
 
       // scroll to the first message from the requested day
       const e = messageList.querySelectorAll('.message-item')[index]
-      e.scrollIntoView()
+
+      if (e) {
+        e.scrollIntoView()
+      }
     },
     loadOlder () {
       this.$emit('loadOlderMessages')

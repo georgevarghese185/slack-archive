@@ -30,6 +30,10 @@ export default {
     }, { immediate: true })
   },
   computed: {
+    emptyArchive () {
+      const conversations = this.$store.state.archive.conversations.list
+      return conversations && conversations.length === 0
+    },
     conversationId () {
       return this.$route.params.conversationId
     },
@@ -40,6 +44,9 @@ export default {
       return this.$store.state.archive.messages
     },
     messages () {
+      if (this.emptyArchive) {
+        return []
+      }
       return this.store.posts.list
     },
     hasOlder () {
