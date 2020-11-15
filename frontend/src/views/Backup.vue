@@ -172,6 +172,6 @@ export default {
   }
 
   .button {
-    margin-top: 24px;
+    margin-top: 48px;
   }
 </style>

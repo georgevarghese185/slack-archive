@@ -15,6 +15,10 @@ export const login = async ({ verificationCode }) => {
   return data
 }
 
+export const checkLogin = async () => {
+  await axiosInstance.get('/v1/login/status')
+}
+
 export const logout = async () => {
   await axiosInstance.delete('/v1/login')
 }

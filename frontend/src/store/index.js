@@ -9,6 +9,14 @@ const store = new Vuex.Store({
   modules: {
     archive,
     backups
+  },
+  state: {
+    invalidLogin: false
+  },
+  mutations: {
+    setInvalidLogin (state, isInvalid) {
+      state.invalidLogin = isInvalid
+    }
   }
 })
 

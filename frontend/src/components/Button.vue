@@ -35,7 +35,6 @@ export default {
 
 <style scoped>
   .button-container {
-    margin-top: 48px;
     background: #680763;
     padding: 8px 12px 8px 12px;
     border-radius: 4px;
