@@ -16,8 +16,6 @@ const setupSequelize = async (context) => {
     const members = new Members(sequelize);
     const messages = new Messages(sequelize);
 
-    await sequelize.sync();
-
     context.setModels({
         backups,
         conversations,

@@ -9,11 +9,15 @@
     "test:unit": "nyc mocha --config .mocharc.unit.json",
     "test:integration": "nyc mocha --config .mocharc.integ.json",
     "test:report": "nyc report --reporter=html",
-    "clearDb": "node --require dotenv/config scripts/clearDb.js",
     "mockSlack:start": "nodemon -w test/mockSlack --require dotenv/config test/mockSlack",
     "mockSlack:generate": "node test/mockSlack/data/generator/generate.js",
     "express:dev": "nodemon -w src -w .env --require dotenv/config src/server/express",
-    "express:prod": "node src/server/express"
+    "express:prod": "node src/server/express",
+    "db:clear": "node --require dotenv/config scripts/clearDb.js",
+    "db:migration:run": "sequelize-cli db:migrate --url $DB_URL --migrations-path src/models/implementations/sequelize/migrations",
+    "db:migration:undo": "sequelize-cli db:migrate:undo --url $DB_URL --migrations-path src/models/implementations/sequelize/migrations",
+    "db:migration:undo:all": "sequelize-cli db:migrate:undo:all --url $DB_URL --migrations-path src/models/implementations/sequelize/migrations",
+    "db:migration:generate": "sequelize-cli migration:generate --url $DB_URL --migrations-path src/models/implementations/sequelize/migrations"
   },
   "author": "George Varghese M",
   "license": "UNLICENSE",
@@ -41,6 +45,7 @@
     "pg-hstore": "^2.3.3",
     "query-string": "^6.13.1",
     "sequelize": "^6.3.4",
+    "sequelize-cli": "^6.2.0",
     "uuid": "^8.3.0"
   }
 }
