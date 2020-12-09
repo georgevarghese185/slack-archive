@@ -9,4 +9,4 @@ COPY backend/ /root/app/backend/
 
 EXPOSE 80
 
-CMD PORT=80 npm run db:migration:run && npm run start:prod
+CMD npm run db:migration:run && PORT=80 npm run start:prod
