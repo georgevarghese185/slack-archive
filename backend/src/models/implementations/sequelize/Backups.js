@@ -34,7 +34,7 @@ module.exports = class BackupsSequelize extends Backups {
                 allowNull: true
             },
             backed_up_conversations: {
-                type: DataTypes.STRING,
+                type: DataTypes.TEXT,
                 allowNull: false
             },
             should_cancel: {
