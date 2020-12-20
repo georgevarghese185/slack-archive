@@ -1,4 +1,4 @@
-const Logger = require('./util/Logger')
+const Logger = require('./util/logger')
 
 class AppContext {
     constructor() {
@@ -14,6 +14,10 @@ class AppContext {
     setActions(actions) {
         this.actions = actions;
         return this;
+    }
+
+    setLogger(logger) {
+        this.logger = logger;
     }
 
     getLogger() {
