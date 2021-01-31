@@ -27,7 +27,7 @@ jobs:
         run: docker-compose -f .github/docker-compose.test.yml down -v
 
   lint-frontend:
-    nane: Run frontend code linter
+    name: Run frontend code linter
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
