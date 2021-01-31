@@ -6,8 +6,28 @@ on:
       - github-actions-test
 
 jobs:
-  test:
-    name: Run tests and code linters
+  test-backend:
+    name: Run backend tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Docker Layer Caching
+        uses: satackey/action-docker-layer-caching@v0.0.11
+        continue-on-error: true
+
+      - name: Start test DB
+        run: docker-compose -f .github/docker-compose.test.yml up -d db
+
+      - name: Run backend tests
+        run: docker-compose -f .github/docker-compose.test.yml up backend
+
+      - name: Clean up
+        run: docker-compose -f .github/docker-compose.test.yml down -v
+
+  lint-frontend:
+    nane: Run frontend code linter
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -25,9 +45,10 @@ jobs:
             ${{ runner.os }}-build-
             ${{ runner.os }}-
 
-      - name: Docker Layer Caching
-        uses: satackey/action-docker-layer-caching@v0.0.11
-        continue-on-error: true
+      - name: Install frontend dependencies
+        working-directory: frontend
+        run: npm install
 
-      - name: Run tests and code linters
-        uses: ./.github/actions/test
+      - name: Run linter
+        working-directory: frontend
+        run: npm run lint
