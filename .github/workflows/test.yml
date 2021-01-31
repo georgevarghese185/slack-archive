@@ -30,6 +30,4 @@ jobs:
         continue-on-error: true
 
       - name: Run tests and code linters
-        runs-on: ubuntu-latest
-        steps:
-          - uses: .github/actions/test.yml
+        uses: .github/actions/test.yml
