@@ -17,12 +17,12 @@ runs:
 
     - name: Start test DB
       shell: bash
-      run: docker-compose -f .github/actions/docker-compose.test.yml up -d db
+      run: docker-compose -f .github/actions/test/docker-compose.test.yml up -d db
 
     - name: Run backend tests
       shell: bash
-      run: docker-compose -f .github/actions/docker-compose.test.yml up backend
+      run: docker-compose -f .github/actions/test/docker-compose.test.yml up backend
 
     - name: Clean up
       shell: bash
-      run: docker-compose -f .github/actions/docker-compose.test.yml down -v
+      run: docker-compose -f .github/actions/test/docker-compose.test.yml down -v
