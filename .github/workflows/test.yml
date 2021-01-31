@@ -7,26 +7,29 @@ on:
 
 jobs:
   test:
-    - name: Checkout code
-      uses: actions/checkout@v2
+    name: Run tests and code linters
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
 
-    - name: Cache node modules
-      uses: actions/cache@v2
-      env:
-        cache-name: cache-node-modules
-      with:
-        path: ~/.npm
-        key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
-        restore-keys: |
-          ${{ runner.os }}-build-${{ env.cache-name }}-
-          ${{ runner.os }}-build-
-          ${{ runner.os }}-
+      - name: Cache node modules
+        uses: actions/cache@v2
+        env:
+          cache-name: cache-node-modules
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.cache-name }}-
+            ${{ runner.os }}-build-
+            ${{ runner.os }}-
 
-    - name: Docker Layer Caching
-      uses: satackey/action-docker-layer-caching@v0.0.11
-      continue-on-error: true
+      - name: Docker Layer Caching
+        uses: satackey/action-docker-layer-caching@v0.0.11
+        continue-on-error: true
 
-    - name: Run tests and code linters
-      runs-on: ubuntu-latest
-      steps:
-        - uses: .github/actions/test.yml
+      - name: Run tests and code linters
+        runs-on: ubuntu-latest
+        steps:
+          - uses: .github/actions/test.yml
