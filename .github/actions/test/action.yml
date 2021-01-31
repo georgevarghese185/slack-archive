@@ -7,17 +7,22 @@ runs:
   steps:
     - name: Install frontend dependencies
       working-directory: frontend
+      shell: bash
       run: npm install
 
     - name: Run linter
       working-directory: frontend
+      shell: bash
       run: npm run lint
 
     - name: Start test DB
+      shell: bash
       run: docker-compose -f .github/actions/docker-compose.test.yml up -d db
 
     - name: Run backend tests
+      shell: bash
       run: docker-compose -f .github/actions/docker-compose.test.yml up backend
 
     - name: Clean up
+      shell: bash
       run: docker-compose -f .github/actions/docker-compose.test.yml down -v
