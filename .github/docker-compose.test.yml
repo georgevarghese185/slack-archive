@@ -1,0 +1,31 @@
+version: "3.8"
+services:
+  db:
+    image: postgres:12.3
+    environment:
+      POSTGRES_USER: dev
+      POSTGRES_PASSWORD: dev
+      POSTGRES_DB: slack_archive
+  backend:
+    build:
+      context: ../
+      dockerfile: dockerfiles/backend.Dockerfile
+    depends_on:
+      - db
+    environment:
+      ENV: prod
+      PORT: 80
+      MOCK_SLACK_PORT: 8002
+      DB_URL: postgres://dev:dev@db:5432/slack_archive
+      CORS_ALLOW_ORIGIN: http://localhost:3000
+      SLACK_BASE_URL: http://localhost:8002
+      OAUTH_REDIRECT_URI: http://localhost:3000/oauth/redirect
+      SLACK_TEAM_ID: 12345
+      SLACK_CLIENT_ID: 67890
+      SLACK_CLIENT_SECRET: XYZ
+      TOKEN_SECRET: secret
+    command: sh -c '
+      npm install --only=dev &&
+      npm run mockSlack:generate &&
+      npm run db:migration:run &&
+      npm run test'

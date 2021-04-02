@@ -1,0 +1,57 @@
+name: Test
+
+on:
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  test-backend:
+    name: Run backend tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Docker Layer Caching
+        uses: satackey/action-docker-layer-caching@v0.0.11
+        continue-on-error: true
+
+      - name: Start test DB
+        run: docker-compose -f .github/docker-compose.test.yml up -d db
+
+      - name: Build backend image
+        run: docker-compose -f .github/docker-compose.test.yml build backend
+
+      - name: Run backend tests
+        run: docker-compose -f .github/docker-compose.test.yml up backend
+
+      - name: Clean up
+        run: docker-compose -f .github/docker-compose.test.yml down -v
+
+  lint-frontend:
+    name: Run frontend code linter
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Cache node modules
+        uses: actions/cache@v2
+        env:
+          cache-name: cache-node-modules
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.cache-name }}-
+            ${{ runner.os }}-build-
+            ${{ runner.os }}-
+
+      - name: Install frontend dependencies
+        working-directory: frontend
+        run: npm install
+
+      - name: Run linter
+        working-directory: frontend
+        run: npm run lint
