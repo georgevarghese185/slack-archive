@@ -22,14 +22,14 @@
   "author": "George Varghese M",
   "license": "UNLICENSE",
   "devDependencies": {
-    "chai": "^4.2.0",
+    "chai": "^4.3.4",
     "chai-as-promised": "^7.1.1",
     "chai-sorted": "^0.2.0",
-    "deep-equal-in-any-order": "^1.0.28",
+    "deep-equal-in-any-order": "^1.1.1",
     "dotenv": "^8.2.0",
-    "mocha": "^8.1.1",
+    "mocha": "^8.3.2",
     "moxios": "^0.4.0",
-    "nodemon": "^2.0.4",
+    "nodemon": "^2.0.7",
     "npm-run-all": "^4.1.5",
     "nyc": "^15.1.0"
   },
@@ -41,12 +41,12 @@
     "crypto-js": "^4.0.0",
     "express": "^4.17.1",
     "jsonwebtoken": "^8.5.1",
-    "pg": "^8.3.0",
+    "pg": "^8.5.1",
     "pg-hstore": "^2.3.3",
-    "query-string": "^6.13.1",
-    "sequelize": "^6.3.4",
+    "query-string": "^7.0.0",
+    "sequelize": "^6.6.2",
     "sequelize-cli": "^6.2.0",
-    "uuid": "^8.3.0",
+    "uuid": "^8.3.2",
     "winston": "^3.3.3"
   }
 }
