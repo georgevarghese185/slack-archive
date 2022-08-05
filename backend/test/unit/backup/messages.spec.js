@@ -659,6 +659,7 @@ describe('Messages Backup', () => {
 
     it('slack error', async () => {
         const token = { accessToken: 'ABC' };
+        let conversationError;
 
         class BackupsMock extends BackupsMockBase {
             async setStatus(id, status) {
@@ -669,13 +670,15 @@ describe('Messages Backup', () => {
             }
             async conversationBackupDone(id, conversationId) {
             }
+            addConversationError(id, conversationId, error) {
+                expect(id).to.equal('123');
+                conversationError = { conversationId, error };
+            }
         }
 
         class ConversationsMock extends Conversations {
             async listAll() {
-                return [
-                    { id: "C1" }
-                ]
+                return [{ id: "C1" }, { id: "C2" }];
             }
         }
 
@@ -693,7 +696,7 @@ describe('Messages Backup', () => {
 
         // conversations.history error
 
-        moxios.stubRequest(/\/api\/conversations.history.*/, {
+        moxios.stubRequest(/\/api\/conversations.history.*channel=C1/, {
             status: 200,
             response: {
                 ok: false,
@@ -701,12 +704,23 @@ describe('Messages Backup', () => {
             }
         });
 
-        try {
-            await backupMessages(context, '123', token);
-            throw new Error('Should have failed');
-        } catch (e) {
-            expect(e.message).to.equal('/api/conversations.history API failed with code some_error');
-        }
+        moxios.stubRequest(/\/api\/conversations.history.*channel=C2/, {
+            status: 200,
+            response: {
+                ok: true,
+                messages: [],
+                response_metadata: {
+                    next_cursor: ""
+                }
+            }
+        });
+
+        await backupMessages(context, "123", token);
+
+        expect(conversationError).to.deep.equal({
+          conversationId: "C1",
+          error: "/api/conversations.history API failed with code some_error",
+        });
 
         // conversations.replies error this time
 

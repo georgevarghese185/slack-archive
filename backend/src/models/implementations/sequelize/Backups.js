@@ -44,6 +44,10 @@ module.exports = class BackupsSequelize extends Backups {
             error: {
                 type: DataTypes.TEXT,
                 allowNull: true
+            },
+            conversation_errors: {
+                type: DataTypes.JSON,
+                allowNull: true
             }
         });
     }
@@ -168,5 +172,17 @@ module.exports = class BackupsSequelize extends Backups {
             { ended_at: new Date(time) },
             { where: { id } }
         );
+    }
+
+    async addConversationError(id, conversationId, error) {
+        const backup = await this.backups.findOne({ where: { id } });
+        const errors = backup.conversation_errors;
+
+        errors.push({ conversationId, error });
+
+        await this.backups.update(
+            { conversation_errors: errors },
+            { where: { id } }
+        )
     }
 }

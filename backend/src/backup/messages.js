@@ -62,8 +62,9 @@ const backupMessagesIn = async (context, conversationId, backedUp, axiosInstance
             context.getLogger().warn(`Conversation ${conversationId} not found in Slack. Skipping...`)
             continue;
         } else if (!response.data.ok) {
-            const error = new Error('/api/conversations.history API failed with code ' + response.data.error);
-            throw error;
+            const error = '/api/conversations.history API failed with code ' + response.data.error;
+            context.models.backups.addConversationError(backupId, conversationId, error);
+            return;
         }
 
         const messages = response.data.messages;

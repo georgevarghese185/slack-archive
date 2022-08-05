@@ -22,6 +22,15 @@
  * @property {boolean} shouldCancel - A flag that indicates whether a request has been
  * made to cancel this task.
  * @property {string|null} error - A error message describing why this task failed (if it failed)
+ * @property {Array<ConversationError>} conversationErrors A list of conversations that failed to be backed up
+ */
+
+/**
+ * A record of an error that occured while trying to back up a conversation
+ *
+ * @typedef {Object} ConversationError
+ * @property {string} conversationId ID of the conversation
+ * @property {string} error The error message
  */
 
 
@@ -181,6 +190,18 @@ class Backups {
     async setError(id, message) {
         throw new Error('Not implemented');
     }
+
+
+  /**
+   * Record an error that occured while trying to back up a conversation
+   *
+   * @param {string} id - The backup task ID
+   * @param {string} conversationId The conversation's ID
+   * @param {string} error The error message
+   */
+  async addConversationError(id, conversationId, error) {
+    throw new Error("Not implemented");
+  }
 }
 
 module.exports = Backups;
