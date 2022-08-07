@@ -1,7 +1,8 @@
 {
     "private": true,
     "scripts": {
-        "start:web": "yarn workspace @slack-archive/web dev"
+        "start:web": "yarn workspace @slack-archive/web dev",
+        "web": "yarn workspace @slack-archive/web"
     },
     "workspaces": [
         "apps/*",
