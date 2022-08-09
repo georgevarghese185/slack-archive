@@ -6,8 +6,10 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
-    "lint": "eslint src test --max-warnings 0",
+    "lint": "eslint --no-error-on-unmatched-pattern --max-warnings 0 src test",
     "lint:fix": "yarn lint --fix",
+    "format": "prettier --no-error-on-unmatched-pattern -c **/*.{ts,tsx,js,css,json}",
+    "format:fix": "yarn format --write",
     "preview": "vite preview"
   },
   "dependencies": {
@@ -21,7 +23,9 @@
     "@typescript-eslint/parser": "^5.32.0",
     "@vitejs/plugin-react": "^2.0.0",
     "eslint": "^8.21.0",
+    "eslint-config-prettier": "^8.5.0",
     "eslint-plugin-react": "^7.30.1",
+    "prettier": "2.7.1",
     "typescript": "^4.6.4",
     "vite": "^3.0.0"
   }
