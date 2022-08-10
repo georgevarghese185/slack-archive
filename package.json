@@ -1,11 +1,16 @@
 {
-    "private": true,
-    "scripts": {
-        "start:web": "yarn workspace @slack-archive/web dev",
-        "web": "yarn workspace @slack-archive/web"
-    },
-    "workspaces": [
-        "apps/*",
-        "packages/*"
-    ]
+  "private": true,
+  "scripts": {
+    "start:web": "yarn workspace @slack-archive/web dev",
+    "web": "yarn workspace @slack-archive/web",
+    "postinstall": "husky install"
+  },
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "devDependencies": {
+    "husky": "^8.0.1",
+    "lint-staged": "^13.0.3"
+  }
 }

@@ -1,0 +1,4 @@
+{
+  "*.{ts,js}": "yarn web lint:fix",
+  "*": "yarn web format:fix"
+}
