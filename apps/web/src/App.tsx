@@ -1,12 +1,15 @@
 import { useState } from 'react';
 import reactLogo from './assets/react.svg';
+import CssBaseline from '@mui/material/CssBaseline';
 import './App.css';
+import { Button } from '@mui/material';
 
 function App() {
   const [count, setCount] = useState(0);
 
   return (
     <div className="App">
+      <CssBaseline />
       <div>
         <a href="https://vitejs.dev" target="_blank" rel="noreferrer">
           <img src="/vite.svg" className="logo" alt="Vite logo" />
@@ -20,6 +23,7 @@ function App() {
         <button onClick={() => setCount(count => count + 1)}>
           count is {count}
         </button>
+        <Button variant="contained">Hello World</Button>
         <p>
           Edit <code>src/App.tsx</code> and save to test HMR
         </p>
