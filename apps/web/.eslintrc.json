@@ -34,6 +34,7 @@
         "args": "all",
         "argsIgnorePattern": "^_"
       }
-    ]
+    ],
+    "react/prop-types": "off"
   }
 }
