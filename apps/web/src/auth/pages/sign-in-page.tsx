@@ -1,8 +1,8 @@
 import { Button, Card, CardContent, Typography } from '@mui/material';
 import { Box, Container } from '@mui/system';
-import { useSignIn } from '../auth';
+import { useSignIn } from '../hooks';
 
-export const WelcomePage = () => {
+export const SignInPage = () => {
   const { signIn, loading } = useSignIn();
 
   const onSignInClick = async () => {

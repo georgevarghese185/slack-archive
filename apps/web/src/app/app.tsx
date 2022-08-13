@@ -1,8 +1,5 @@
 import CssBaseline from '@mui/material/CssBaseline';
-import { Header } from './header';
-import { ThemeProvider } from './theme-provider';
-import { WelcomePage } from '../home';
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { Header, ThemeProvider, Router } from './components';
 
 const App = () => {
   return (
@@ -10,13 +7,7 @@ const App = () => {
       <ThemeProvider>
         <CssBaseline />
         <Header />
-        <BrowserRouter>
-          <Routes>
-            <Route path="/sign-in" element={<WelcomePage />} />
-            <Route path="/" element={<Navigate to="/sign-in" replace />} />
-            <Route path="*" element={<>{'Not Found'}</>} />
-          </Routes>
-        </BrowserRouter>
+        <Router />
       </ThemeProvider>
     </div>
   );
