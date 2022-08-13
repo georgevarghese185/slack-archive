@@ -1,7 +1,14 @@
 import { Button, Card, CardContent, Typography } from '@mui/material';
 import { Box, Container } from '@mui/system';
+import { useSignIn } from '../auth';
 
 export const WelcomePage = () => {
+  const { signIn, loading } = useSignIn();
+
+  const onSignInClick = async () => {
+    signIn();
+  };
+
   return (
     <Container sx={{ marginTop: 8 }}>
       <Box sx={{ display: 'flex', justifyContent: 'center' }}>
@@ -15,7 +22,7 @@ export const WelcomePage = () => {
           >
             <WelcomeTitle />
             <WelcomeSubtitle />
-            <SignInButton />
+            <SignInButton onClick={onSignInClick} disabled={loading} />
           </CardContent>
         </Card>
       </Box>
@@ -46,13 +53,18 @@ const WelcomeSubtitle = () => {
   );
 };
 
-const SignInButton = () => {
+const SignInButton: React.FC<{ onClick?: () => void; disabled?: boolean }> = ({
+  onClick,
+  disabled,
+}) => {
   return (
     <Button
       variant="contained"
       disableElevation
       size="large"
       sx={{ marginTop: 4 }}
+      onClick={onClick}
+      disabled={disabled}
     >
       Sign In
     </Button>
