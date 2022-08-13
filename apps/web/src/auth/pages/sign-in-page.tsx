@@ -1,4 +1,10 @@
-import { Button, Card, CardContent, Typography } from '@mui/material';
+import {
+  Button,
+  Card,
+  CardContent,
+  Typography,
+  useMediaQuery,
+} from '@mui/material';
 import { Box, Container } from '@mui/system';
 import { useSignIn } from '../hooks';
 
@@ -31,9 +37,11 @@ export const SignInPage = () => {
 };
 
 const WelcomeTitle = () => {
+  const isSmall = useMediaQuery('(min-width:640px');
+
   return (
     <Typography
-      variant="h3"
+      variant={isSmall ? 'h3' : 'h4'}
       component="div"
       gutterBottom
       align="center"
