@@ -1,11 +1,5 @@
-import {
-  Button,
-  Card,
-  CardContent,
-  Typography,
-  useMediaQuery,
-} from '@mui/material';
-import { Box, Container } from '@mui/system';
+import { Button, Typography, useMediaQuery } from '@mui/material';
+import { SingleCardPage } from '../../common';
 import { useSignIn } from '../hooks';
 
 export const SignInPage = () => {
@@ -16,23 +10,11 @@ export const SignInPage = () => {
   };
 
   return (
-    <Container sx={{ marginTop: 8 }}>
-      <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-        <Card sx={{ padding: 4 }}>
-          <CardContent
-            sx={{
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-            }}
-          >
-            <WelcomeTitle />
-            <WelcomeSubtitle />
-            <SignInButton onClick={onSignInClick} disabled={loading} />
-          </CardContent>
-        </Card>
-      </Box>
-    </Container>
+    <SingleCardPage>
+      <WelcomeTitle />
+      <WelcomeSubtitle />
+      <SignInButton onClick={onSignInClick} disabled={loading} />
+    </SingleCardPage>
   );
 };
 
