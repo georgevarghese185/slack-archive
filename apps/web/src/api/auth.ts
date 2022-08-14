@@ -22,3 +22,7 @@ export const login = async (request: LoginRequest) => {
     verificationCode: request.verificationCode,
   });
 };
+
+export const logout = async () => {
+  await axiosInstance.delete('/v1/login');
+};

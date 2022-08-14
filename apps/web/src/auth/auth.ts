@@ -1,6 +1,10 @@
 import { v4 as uuid } from 'uuid';
 import qs from 'query-string';
-import { getAuthUrl as apiGetAuthUrl, login as apiLogin } from '../api';
+import {
+  getAuthUrl as apiGetAuthUrl,
+  login as apiLogin,
+  logout as apiLogout,
+} from '../api';
 import { parse } from 'query-string';
 
 export class InvalidLoginIdError extends Error {
@@ -36,6 +40,11 @@ export const login = async (code: string, state: string) => {
   await apiLogin({ verificationCode: code });
 
   setLoggedIn();
+};
+
+export const logout = async () => {
+  localStorage.clear();
+  await apiLogout();
 };
 
 const generateLoginId = () => {

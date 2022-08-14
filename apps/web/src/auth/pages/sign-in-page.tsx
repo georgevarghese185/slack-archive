@@ -5,15 +5,11 @@ import { useSignIn } from '../hooks';
 export const SignInPage = () => {
   const { signIn, loading } = useSignIn();
 
-  const onSignInClick = async () => {
-    signIn();
-  };
-
   return (
     <SingleCardPage>
       <WelcomeTitle />
       <WelcomeSubtitle />
-      <SignInButton onClick={onSignInClick} disabled={loading} />
+      <SignInButton onClick={signIn} disabled={loading} />
     </SingleCardPage>
   );
 };
