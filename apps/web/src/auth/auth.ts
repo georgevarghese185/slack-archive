@@ -11,6 +11,14 @@ export class InvalidLoginIdError extends Error {
   }
 }
 
+/**
+ * Is the user logged in
+ *
+ * This flag is purposely evaluated once on first load for simplicity. If login state changes,
+ * the web app MUST be fully reloaded
+ */
+export const isLoggedIn = localStorage.getItem('loggedIn') === 'true';
+
 export const getAuthUrl = async (): Promise<string> => {
   const { url, parameters } = await apiGetAuthUrl();
 
