@@ -1,7 +1,10 @@
 import { Typography } from '@mui/material';
 import { SingleCardPage } from '../../common';
+import { useLogin } from '../hooks';
 
 export const OAuthRedirectPage = () => {
+  useLogin();
+
   return (
     <SingleCardPage>
       <Typography

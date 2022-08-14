@@ -12,3 +12,13 @@ export const getAuthUrl = async (): Promise<GetAuthUrlResponse> => {
 
   return data;
 };
+
+export type LoginRequest = {
+  verificationCode: string;
+};
+
+export const login = async (request: LoginRequest) => {
+  await axiosInstance.post('/v1/login', {
+    verificationCode: request.verificationCode,
+  });
+};
