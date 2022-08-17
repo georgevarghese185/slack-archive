@@ -8,11 +8,16 @@ export const useSignIn = () => {
 
   const signIn = useCallback(() => {
     setLoading(true);
+    setError(null);
+
     getAuthUrl()
       .then(url => {
         redirectTo(url);
       })
-      .catch(setError);
+      .catch(e => {
+        setLoading(false);
+        setError(e);
+      });
   }, []);
 
   return { signIn, loading, error };
