@@ -1,4 +1,5 @@
-import { Button, Typography, useMediaQuery } from '@mui/material';
+import { Typography, useMediaQuery } from '@mui/material';
+import { LoadingButton } from '@mui/lab';
 import { SingleCardPage } from '../../common';
 import { useSignIn } from '../hooks';
 
@@ -9,7 +10,7 @@ export const SignInPage = () => {
     <SingleCardPage>
       <WelcomeTitle />
       <WelcomeSubtitle />
-      <SignInButton onClick={signIn} disabled={loading} />
+      <SignInButton onClick={signIn} loading={loading} />
     </SingleCardPage>
   );
 };
@@ -39,20 +40,21 @@ const WelcomeSubtitle = () => {
   );
 };
 
-const SignInButton: React.FC<{ onClick?: () => void; disabled?: boolean }> = ({
+const SignInButton: React.FC<{ onClick?: () => void; loading?: boolean }> = ({
   onClick,
-  disabled,
+  loading,
 }) => {
   return (
-    <Button
+    <LoadingButton
       variant="contained"
       disableElevation
       size="large"
       sx={{ marginTop: 4 }}
       onClick={onClick}
-      disabled={disabled}
+      disabled={loading}
+      loading={loading}
     >
       Sign In
-    </Button>
+    </LoadingButton>
   );
 };
