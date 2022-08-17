@@ -35,6 +35,7 @@
         "argsIgnorePattern": "^_"
       }
     ],
-    "react/prop-types": "off"
+    "react/prop-types": "off",
+    "@typescript-eslint/no-empty-function": "off"
   }
 }
