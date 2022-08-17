@@ -2,9 +2,18 @@ import { Typography, useMediaQuery } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
 import { SingleCardPage } from '../../common';
 import { useSignIn } from '../hooks';
+import { useEffect } from 'react';
+import { useGlobalNotifications } from '../../notification';
 
 export const SignInPage = () => {
-  const { signIn, loading } = useSignIn();
+  const { signIn, loading, error } = useSignIn();
+  const { pushError } = useGlobalNotifications();
+
+  useEffect(() => {
+    if (error) {
+      pushError(error);
+    }
+  }, [error]);
 
   return (
     <SingleCardPage>
