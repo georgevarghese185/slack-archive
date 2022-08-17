@@ -1,6 +1,7 @@
 import { isLoggedIn, SignInPage } from '../../auth';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { OAuthRedirectPage } from '../../auth';
+import { ArchivePage } from '../../archive';
 
 export const Router = () => {
   return (
@@ -11,7 +12,7 @@ export const Router = () => {
           path="/oauth/redirect"
           element={withLogout(<OAuthRedirectPage />)}
         />
-        <Route path="/archive" element={withLogin(<>{'Archive'}</>)} />
+        <Route path="/archive" element={withLogin(<ArchivePage />)} />
         <Route path="/" element={<Index />} />
         <Route path="*" element={<>{'Not Found'}</>} />
       </Routes>

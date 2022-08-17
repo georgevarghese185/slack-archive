@@ -1,10 +1,11 @@
 import CssBaseline from '@mui/material/CssBaseline';
 import { Header, ThemeProvider, Router } from './components';
 import { GlobalNotificationProvider } from '../notification';
+import { Box } from '@mui/system';
 
 const App = () => {
   return (
-    <div>
+    <Box height="100%" width="100%">
       <ThemeProvider>
         <CssBaseline />
         <GlobalNotificationProvider>
@@ -12,7 +13,7 @@ const App = () => {
           <Router />
         </GlobalNotificationProvider>
       </ThemeProvider>
-    </div>
+    </Box>
   );
 };
 
