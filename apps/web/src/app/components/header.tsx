@@ -5,7 +5,7 @@ import { useLogout } from '../../auth/hooks/use-logout';
 
 export const Header = () => {
   return (
-    <Box sx={{ flexGrow: 1 }}>
+    <Box>
       <AppBar position="relative" sx={{ zIndex: 99 }}>
         <Toolbar style={{ height: 58, minHeight: 58 }}>
           <Typography variant="h5" component="div" sx={{ flexGrow: 1 }}>

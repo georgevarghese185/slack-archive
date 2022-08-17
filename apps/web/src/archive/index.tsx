@@ -1,1 +1,1 @@
-export * from './archive-page';
+export * from './pages';

@@ -5,7 +5,7 @@ import { Box } from '@mui/system';
 
 const App = () => {
   return (
-    <Box height="100%" width="100%">
+    <Box height="100%" width="100%" display="flex" flexDirection="column">
       <ThemeProvider>
         <CssBaseline />
         <GlobalNotificationProvider>
