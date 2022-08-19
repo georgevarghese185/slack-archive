@@ -1,24 +1,42 @@
 import { isLoggedIn, SignInPage } from '../../auth';
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import {
+  BrowserRouter,
+  Routes,
+  Route,
+  Navigate,
+  Outlet,
+} from 'react-router-dom';
 import { OAuthRedirectPage } from '../../auth';
 import { ArchivePage } from '../../archive';
+import { Header } from './header';
 
 export const Router = () => {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/sign-in" element={withLogout(<SignInPage />)} />
-        <Route
-          path="/oauth/redirect"
-          element={withLogout(<OAuthRedirectPage />)}
-        />
-        <Route path="/archive/channels" element={withLogin(<ArchivePage />)}>
-          <Route path=":channelId" element={withLogin(<ArchivePage />)} />
+        <Route path="/" element={<Root />}>
+          <Route path="/sign-in" element={withLogout(<SignInPage />)} />
+          <Route
+            path="/oauth/redirect"
+            element={withLogout(<OAuthRedirectPage />)}
+          />
+          <Route path="/archive/channels" element={withLogin(<ArchivePage />)}>
+            <Route path=":channelId" element={withLogin(<ArchivePage />)} />
+          </Route>
+          <Route path="/" element={<Index />} />
+          <Route path="*" element={<>{'Not Found'}</>} />
         </Route>
-        <Route path="/" element={<Index />} />
-        <Route path="*" element={<>{'Not Found'}</>} />
       </Routes>
     </BrowserRouter>
+  );
+};
+
+const Root = () => {
+  return (
+    <>
+      <Header />
+      <Outlet />
+    </>
   );
 };
 

@@ -1,0 +1,7 @@
+.home-link {
+  text-decoration: none;
+}
+
+.home-link:visited {
+  color: inherit;
+}
