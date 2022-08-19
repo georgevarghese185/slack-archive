@@ -1,9 +1,12 @@
 import { Box, Stack } from '@mui/system';
 import { Channel, ChannelPicker } from '../../channels';
+import { useNavigate } from 'react-router-dom';
 
 export const ArchivePage = () => {
+  const navigate = useNavigate();
+
   const onChannelChange = (channel: Channel) => {
-    console.log(channel);
+    navigate(channel.id);
   };
 
   return (

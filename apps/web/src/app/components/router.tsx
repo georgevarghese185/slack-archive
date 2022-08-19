@@ -12,7 +12,9 @@ export const Router = () => {
           path="/oauth/redirect"
           element={withLogout(<OAuthRedirectPage />)}
         />
-        <Route path="/archive" element={withLogin(<ArchivePage />)} />
+        <Route path="/archive/channels" element={withLogin(<ArchivePage />)}>
+          <Route path=":channelId" element={withLogin(<ArchivePage />)} />
+        </Route>
         <Route path="/" element={<Index />} />
         <Route path="*" element={<>{'Not Found'}</>} />
       </Routes>
@@ -21,7 +23,7 @@ export const Router = () => {
 };
 
 const Index = () => {
-  return isLoggedIn ? navigate('/archive') : navigate('/sign-in');
+  return isLoggedIn ? navigate('/archive/channels') : navigate('/sign-in');
 };
 
 /**
@@ -37,7 +39,7 @@ const withLogin = (element: React.ReactNode): React.ReactNode => {
  * @param element Element to render
  */
 const withLogout = (element: React.ReactNode): React.ReactNode => {
-  return isLoggedIn ? navigate('/archive') : element;
+  return isLoggedIn ? navigate('/archive/channels') : element;
 };
 
 const navigate = (path: string) => <Navigate to={path} replace />;
