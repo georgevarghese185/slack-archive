@@ -1,7 +1,6 @@
 {
   "private": true,
   "scripts": {
-    "start:web": "yarn workspace @slack-archive/web dev",
     "web": "yarn workspace @slack-archive/web",
     "postinstall": "husky install"
   },
