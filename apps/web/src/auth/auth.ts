@@ -4,7 +4,7 @@ import {
   getAuthUrl as apiGetAuthUrl,
   login as apiLogin,
   logout as apiLogout,
-} from './api';
+} from './auth-api';
 import { parse } from 'query-string';
 
 export class InvalidLoginIdError extends Error {
