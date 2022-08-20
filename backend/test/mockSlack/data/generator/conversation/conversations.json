@@ -24,6 +24,36 @@
             "name": "movies",
             "topic": "Nicholas Cage is the best",
             "purpose": "Talk about movies starring Nick Cage and NO ONE ELSE"
+        },
+        {
+          "name": "culture",
+          "topic": "We're so refined",
+          "purpose": "Modern progressive tolerant office space talk"
+        },
+        {
+          "name": "camping",
+          "topic": "Don't forget the mosquito repellent",
+          "purpose": "We love the outdoors but only when it's convenient"
+        },
+        {
+          "name": "cars",
+          "topic": "Nyoooooom",
+          "purpose": "Don't buy drugs.... BUY RIMS!!"
+        },
+        {
+          "name": "stocks",
+          "topic": "stonks",
+          "purpose": "stonks"
+        },
+        {
+          "name": "carl",
+          "topic": "Nice guy",
+          "purpose": "All things Carl"
+        },
+        {
+          "name": "gaming",
+          "topic": "I haven't played a video game since 1985",
+          "purpose": "I can move pixels by tapping on buttons"
         }
     ]
 }
