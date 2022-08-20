@@ -1,37 +1,22 @@
-import { useState } from 'react';
-import { Channel } from '../channel';
-
-const mockChannels = [
-  'general',
-  'random',
-  'jokes',
-  'technology',
-  'anime',
-  'cooking',
-  'road-trips',
-  'movies',
-  'games',
-  'stamp-collection',
-  'hideout',
-  'camping',
-  'shop-talk',
-  'general2',
-  'random2',
-  'jokes2',
-  'technology2',
-  'anime2',
-  'cooking2',
-  'road-trips2',
-  'movies2',
-  'games2',
-  'stamp-collection2',
-  'hideout2',
-  'camping2',
-  'shop-talk2',
-].map((ch, idx) => ({ name: ch, id: (idx + 1).toString() }));
+import { useEffect, useState } from 'react';
+import { getChannels, Channel } from '../channel';
 
 export const useChannels = () => {
-  const [channels] = useState<Channel[] | null>(mockChannels);
+  const [channels, setChannels] = useState<Channel[] | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<Error | null>(null);
 
-  return { channels };
+  useEffect(() => {
+    getChannels()
+      .then(channels => {
+        setLoading(false);
+        setChannels(channels);
+      })
+      .catch(error => {
+        setLoading(false);
+        setError(error);
+      });
+  }, []);
+
+  return { channels, loading, error };
 };
