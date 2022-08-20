@@ -38,7 +38,22 @@ class ConversationGenerator {
         const conversations = [];
 
         for (let i = 0; i < this.maxConversations; i++) {
-            const conversation = this.generateConversation(conversationInfo[i]);
+            // If `this.maxConversations` is greater than the number of example conversation objects available in
+            // `conversations.json`, this code will repeat the same conversations but with suffixes like '-2', '-3',
+            // '-4', .... '-n' in the conversation name
+            const index = i % conversationInfo.length;
+            const suffix = Math.floor(i / conversationInfo.length);
+
+            let conversation = this.generateConversation(conversationInfo[index]);
+
+            if (suffix) {
+                conversation = {
+                ...conversation,
+                name: `${conversation.name}-${suffix}`,
+                name_normalized: `${conversation.name}-${suffix}`,
+                };
+            }
+
             conversations.push(conversation);
         }
 
