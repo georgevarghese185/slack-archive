@@ -1,4 +1,6 @@
 {
-  "*.{ts,tsx,js}": "yarn web lint:fix",
-  "*.{ts,tsx,js,json,css}": "yarn web format:fix"
+  "apps/web/**/*.{ts,tsx,js}": "yarn web lint:fix",
+  "apps/web/**/*.{ts,tsx,js,json,css}": "yarn web format:fix",
+  "apps/server/{src,test}/*.{ts,js}": "yarn server lint:fix",
+  "apps/server/*.{ts,js,json,css}": "yarn server format:fix"
 }
