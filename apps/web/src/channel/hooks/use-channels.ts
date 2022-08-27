@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
-import { getChannels, Channel } from '../channel';
+import { Channel } from '../channel';
+import { getChannels } from '../channel-service';
 
 export const useChannels = () => {
   const [channels, setChannels] = useState<Channel[] | null>(null);

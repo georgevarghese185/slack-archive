@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { login } from '../auth';
+import { login } from '../auth-service';
 import { redirectTo } from '../../browser';
 
 export const useLogin = () => {

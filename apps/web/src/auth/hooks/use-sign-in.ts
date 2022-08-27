@@ -1,6 +1,6 @@
 import { useCallback, useState } from 'react';
 import { redirectTo } from '../../browser';
-import { getAuthUrl } from '../auth';
+import { getAuthUrl } from '../auth-service';
 
 export const useSignIn = () => {
   const [loading, setLoading] = useState(false);

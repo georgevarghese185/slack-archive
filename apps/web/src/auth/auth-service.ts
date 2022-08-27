@@ -6,14 +6,7 @@ import {
   logout as apiLogout,
 } from './auth-api';
 import { parse } from 'query-string';
-
-export class InvalidLoginIdError extends Error {
-  constructor() {
-    super(
-      'This login was attempted from a different session. Try logging in again'
-    );
-  }
-}
+import { InvalidLoginIdError } from './auth-errors';
 
 /**
  * Is the user logged in
