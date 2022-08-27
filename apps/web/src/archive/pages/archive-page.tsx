@@ -1,7 +1,7 @@
-import { Box, Stack } from '@mui/system';
 import { Channel, ChannelPicker } from '../channel';
 import { useNavigate, useParams } from 'react-router-dom';
 import { MessageHistory } from '../message';
+import { Grid } from '@mui/material';
 
 export const ArchivePage = () => {
   const navigate = useNavigate();
@@ -12,21 +12,24 @@ export const ArchivePage = () => {
   };
 
   return (
-    <Stack direction="row" display="flex" flexGrow="1" overflow="hidden">
-      <Box width={275} overflow="auto">
+    <Grid container flexGrow="1" overflow="hidden">
+      <Grid item xs={2} overflow="auto" height="100%">
         <ChannelPicker
           selectedChannelId={channelId}
           onChange={onChannelChange}
         />
-      </Box>
-      <Box
-        sx={{ flexGrow: 1, backgroundColor: 'white' }}
+      </Grid>
+      <Grid
+        item
+        xs
+        sx={{ backgroundColor: 'white' }}
         overflow="auto"
+        height="100%"
         display="flex"
         flexDirection="column"
       >
         {channelId && <MessageHistory channelId={channelId} />}
-      </Box>
-    </Stack>
+      </Grid>
+    </Grid>
   );
 };
