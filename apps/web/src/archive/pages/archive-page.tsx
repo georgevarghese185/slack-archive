@@ -14,7 +14,10 @@ export const ArchivePage = () => {
   return (
     <Stack direction="row" display="flex" flexGrow="1" overflow="hidden">
       <Box width={275} overflow="auto">
-        <ChannelPicker onChange={onChannelChange} />
+        <ChannelPicker
+          selectedChannelId={channelId}
+          onChange={onChannelChange}
+        />
       </Box>
       <Box
         sx={{ flexGrow: 1, backgroundColor: 'white' }}
