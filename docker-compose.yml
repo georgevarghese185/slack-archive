@@ -26,6 +26,7 @@ services:
       SLACK_CLIENT_ID: 67890
       SLACK_CLIENT_SECRET: XYZ
       TOKEN_SECRET: secret
+      TEST_API_DELAY: ${TEST_API_DELAY:-0}
     ports:
       - "${BACKEND_PORT:-8080}:80"
       - "${MOCK_SLACK_PORT:-8002}:${MOCK_SLACK_PORT:-8002}"
