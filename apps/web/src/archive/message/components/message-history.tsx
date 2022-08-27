@@ -1,6 +1,7 @@
 import { List, ListItemButton } from '@mui/material';
 import { useMessages } from '../hooks';
 import { Message } from '../message';
+import { MessageItem } from './message-item';
 
 export const MessageHistory: React.FC<{ channelId: string }> = ({
   channelId,
@@ -19,8 +20,12 @@ export const MessageHistory: React.FC<{ channelId: string }> = ({
 
 const MessageListItem: React.FC<{ message: Message }> = ({ message }) => {
   return (
-    <ListItemButton disableRipple sx={{ cursor: 'default' }} key={message.ts}>
-      {message.text}
+    <ListItemButton
+      disableRipple
+      sx={{ cursor: 'default', paddingY: 2 }}
+      key={message.ts}
+    >
+      <MessageItem message={message} />
     </ListItemButton>
   );
 };
