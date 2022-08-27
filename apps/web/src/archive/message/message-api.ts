@@ -1,4 +1,4 @@
-import { axiosInstance } from '../api';
+import { axiosInstance } from '../../api';
 
 export type Message = {
   type: string;

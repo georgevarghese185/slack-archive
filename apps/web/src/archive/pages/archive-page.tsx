@@ -1,7 +1,7 @@
 import { Box, Stack } from '@mui/system';
-import { Channel, ChannelPicker } from '../../channel';
+import { Channel, ChannelPicker } from '../channel';
 import { useNavigate, useParams } from 'react-router-dom';
-import { MessageHistory } from '../../message';
+import { MessageHistory } from '../message';
 
 export const ArchivePage = () => {
   const navigate = useNavigate();
