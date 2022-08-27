@@ -14,16 +14,17 @@ export const MessageHistory: React.FC<{ channelId: string }> = ({
         messages.map(message => (
           <MessageListItem message={message} key={message.ts} />
         ))}
+      {!messages && new Array(20).fill(<MessageListItem />)}
     </List>
   );
 };
 
-const MessageListItem: React.FC<{ message: Message }> = ({ message }) => {
+const MessageListItem: React.FC<{ message?: Message }> = ({ message }) => {
   return (
     <ListItemButton
       disableRipple
       sx={{ cursor: 'default', paddingY: 2 }}
-      key={message.ts}
+      key={message?.ts}
     >
       <MessageItem message={message} />
     </ListItemButton>

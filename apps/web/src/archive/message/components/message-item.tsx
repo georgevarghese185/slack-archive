@@ -1,7 +1,9 @@
 import { Grid, Skeleton, Typography } from '@mui/material';
 import { Message, getTime as getMessageTime } from '../message';
 
-export const MessageItem: React.FC<{ message: Message }> = ({ message }) => {
+export type MessageProps = { message?: Message };
+
+export const MessageItem: React.FC<MessageProps> = ({ message }) => {
   return (
     <Grid container spacing={2}>
       <Grid item xs="auto">
@@ -22,26 +24,45 @@ export const MessageItem: React.FC<{ message: Message }> = ({ message }) => {
   );
 };
 
-const Avatar: React.FC<{ message: Message }> = () => {
+const Avatar: React.FC<MessageProps> = () => {
   return <Skeleton variant="rounded" animation="wave" width={48} height={48} />;
 };
 
-const Username: React.FC<{ message: Message }> = ({ message }) => {
-  return (
+const Username: React.FC<MessageProps> = ({ message }) => {
+  return message ? (
     <Typography variant="body2" fontWeight="bold">
       {message.user}
     </Typography>
+  ) : (
+    <TextSkeleton width={120} />
   );
 };
 
-const Time: React.FC<{ message: Message }> = ({ message }) => {
-  return (
+const Time: React.FC<MessageProps> = ({ message }) => {
+  return message ? (
     <Typography variant="body2" sx={{ opacity: 0.7 }}>
       {getMessageTime(message)}
     </Typography>
+  ) : (
+    <TextSkeleton width={48} />
   );
 };
 
-const Content: React.FC<{ message: Message }> = ({ message }) => {
-  return <Typography>{message.text}</Typography>;
+const Content: React.FC<MessageProps> = ({ message }) => {
+  return message ? (
+    <Typography>{message.text}</Typography>
+  ) : (
+    <TextSkeleton width={300} />
+  );
+};
+
+const TextSkeleton: React.FC<{ width: number }> = ({ width }) => {
+  return (
+    <Skeleton
+      variant="text"
+      animation="wave"
+      sx={{ fontSize: '1rem', lineHeight: '1.25', maxWidth: '100%' }}
+      width={width}
+    />
+  );
 };
