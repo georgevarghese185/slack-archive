@@ -8,6 +8,7 @@ export const useMessages = (channelId: string) => {
   const [error, setError] = useState<Error | null>(null);
 
   useEffect(() => {
+    setLoading(true);
     getMessageHistory(channelId)
       .then(setMessages)
       .catch(setError)

@@ -6,15 +6,16 @@ import { MessageItem } from './message-item';
 export const MessageHistory: React.FC<{ channelId: string }> = ({
   channelId,
 }) => {
-  const { messages } = useMessages(channelId);
+  const { messages, loading } = useMessages(channelId);
 
   return (
     <List sx={{ marginTop: 'auto' }}>
-      {messages &&
+      {!loading &&
+        messages &&
         messages.map(message => (
           <MessageListItem message={message} key={message.ts} />
         ))}
-      {!messages && new Array(20).fill(<MessageListItem />)}
+      {loading && new Array(20).fill(<MessageListItem />)}
     </List>
   );
 };
