@@ -9,14 +9,9 @@ export const useChannels = () => {
 
   useEffect(() => {
     getChannels()
-      .then(channels => {
-        setLoading(false);
-        setChannels(channels);
-      })
-      .catch(error => {
-        setLoading(false);
-        setError(error);
-      });
+      .then(channels => setChannels(channels))
+      .catch(error => setError(error))
+      .finally(() => setLoading(false));
   }, []);
 
   return { channels, loading, error };
