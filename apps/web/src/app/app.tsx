@@ -2,6 +2,7 @@ import CssBaseline from '@mui/material/CssBaseline';
 import { ThemeProvider, Router } from './components';
 import { GlobalNotificationProvider } from '../notification';
 import { Box } from '@mui/system';
+import { MemberProvider } from '../archive/member';
 
 const App = () => {
   return (
@@ -9,7 +10,9 @@ const App = () => {
       <ThemeProvider>
         <CssBaseline />
         <GlobalNotificationProvider>
-          <Router />
+          <MemberProvider>
+            <Router />
+          </MemberProvider>
         </GlobalNotificationProvider>
       </ThemeProvider>
     </Box>
