@@ -8,8 +8,8 @@
     "build": "tsc && vite build",
     "lint": "eslint --no-error-on-unmatched-pattern --max-warnings 0 src test",
     "lint:fix": "yarn lint --fix",
-    "format": "prettier --no-error-on-unmatched-pattern -c **/*.{ts,tsx,js,css,json}",
-    "format:fix": "yarn format --write",
+    "format": "prettier --no-error-on-unmatched-pattern -c src",
+    "format:fix": "prettier --no-error-on-unmatched-pattern src --write",
     "preview": "vite preview"
   },
   "dependencies": {
