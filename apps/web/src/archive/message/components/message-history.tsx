@@ -1,5 +1,5 @@
 import { Box, List, ListItemButton } from '@mui/material';
-import { useEffect, useRef, useState } from 'react';
+import { RefObject, useEffect, useRef, useState } from 'react';
 import { useMessages } from '../hooks';
 import { Message } from '../message';
 import { MessageItem } from './message-item';
@@ -42,6 +42,7 @@ export const MessageHistory: React.FC<{ channelId: string }> = ({
             messages={messages}
             showOlderMessagesLoader={historyLoaded && hasOlder}
             showNewerMessagesLoader={historyLoaded && hasNewer}
+            scrollContainer={listRef}
           />
         )}
       </List>
@@ -49,11 +50,23 @@ export const MessageHistory: React.FC<{ channelId: string }> = ({
   );
 };
 
-const Messages: React.FC<{
+interface MessagesProp<E extends HTMLElement> {
+  scrollContainer?: RefObject<E>;
   messages: Message[];
   showOlderMessagesLoader: boolean;
   showNewerMessagesLoader: boolean;
-}> = ({ messages, showOlderMessagesLoader, showNewerMessagesLoader }) => {
+}
+
+const Messages = function <E extends HTMLElement>({
+  messages,
+  showOlderMessagesLoader,
+  showNewerMessagesLoader,
+  scrollContainer,
+}: MessagesProp<E>) {
+  useEffect(() => {
+    new Scroll();
+  });
+
   return (
     <>
       {showOlderMessagesLoader && <MessageLoader n={5} />}
@@ -67,22 +80,29 @@ const Messages: React.FC<{
   );
 };
 
-const MessageLoader: React.FC<{ n: number }> = ({ n }) => {
+const MessageLoader: React.FC<{
+  n: number;
+  ref?: RefObject<HTMLDivElement>;
+}> = ({ n, ref }) => {
   return (
     <>
       {new Array(n).fill(null).map((_, idx) => (
-        <MessageListItem key={idx} />
+        <MessageListItem key={idx} ref={ref} />
       ))}
     </>
   );
 };
 
-const MessageListItem: React.FC<{ message?: Message }> = ({ message }) => {
+const MessageListItem: React.FC<{
+  message?: Message;
+  ref?: RefObject<HTMLDivElement>;
+}> = ({ message, ref }) => {
   return (
     <ListItemButton
       disableRipple
       sx={{ cursor: 'default', paddingY: 2 }}
       key={message?.ts}
+      ref={ref}
     >
       <MessageItem message={message} />
     </ListItemButton>
