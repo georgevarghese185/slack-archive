@@ -6,11 +6,18 @@ export const useMessages = (channelId: string) => {
   const [messages, setMessages] = useState<Message[] | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
+  const [hasNewer, setHasNewer] = useState(false);
+  const [hasOlder, setHasOlder] = useState(false);
 
   useEffect(() => {
     setLoading(true);
+
     getMessageHistory(channelId)
-      .then(setMessages)
+      .then(messages => {
+        setMessages(messages);
+        setHasNewer(false);
+        setHasOlder(true);
+      })
       .catch(setError)
       .finally(() => setLoading(false));
   }, [channelId]);
@@ -19,5 +26,7 @@ export const useMessages = (channelId: string) => {
     messages,
     loading,
     error,
+    hasNewer,
+    hasOlder,
   };
 };

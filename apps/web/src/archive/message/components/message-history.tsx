@@ -7,7 +7,7 @@ import { MessageItem } from './message-item';
 export const MessageHistory: React.FC<{ channelId: string }> = ({
   channelId,
 }) => {
-  const { messages, loading } = useMessages(channelId);
+  const { messages, loading, hasNewer, hasOlder } = useMessages(channelId);
   const [historyLoaded, setHistoryLoaded] = useState(false);
   const listRef = useRef<HTMLElement | null>(null);
 
@@ -35,17 +35,45 @@ export const MessageHistory: React.FC<{ channelId: string }> = ({
       ref={listRef}
     >
       <List sx={{ marginTop: 'auto' }}>
-        {!loading &&
-          messages &&
-          messages.map(message => (
-            <MessageListItem message={message} key={message.ts} />
-          ))}
-        {loading &&
-          new Array(20)
-            .fill(null)
-            .map((_, idx) => <MessageListItem key={idx} />)}
+        {loading && <MessageLoader n={20} />}
+
+        {!loading && messages && (
+          <Messages
+            messages={messages}
+            showOlderMessagesLoader={historyLoaded && hasOlder}
+            showNewerMessagesLoader={historyLoaded && hasNewer}
+          />
+        )}
       </List>
     </Box>
+  );
+};
+
+const Messages: React.FC<{
+  messages: Message[];
+  showOlderMessagesLoader: boolean;
+  showNewerMessagesLoader: boolean;
+}> = ({ messages, showOlderMessagesLoader, showNewerMessagesLoader }) => {
+  return (
+    <>
+      {showOlderMessagesLoader && <MessageLoader n={5} />}
+
+      {messages.map(message => (
+        <MessageListItem message={message} key={message.ts} />
+      ))}
+
+      {showNewerMessagesLoader && <MessageLoader n={5} />}
+    </>
+  );
+};
+
+const MessageLoader: React.FC<{ n: number }> = ({ n }) => {
+  return (
+    <>
+      {new Array(n).fill(null).map((_, idx) => (
+        <MessageListItem key={idx} />
+      ))}
+    </>
   );
 };
 
