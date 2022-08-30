@@ -19,15 +19,7 @@ export const ArchivePage = () => {
           onChange={onChannelChange}
         />
       </Grid>
-      <Grid
-        item
-        xs
-        sx={{ backgroundColor: 'white' }}
-        overflow="auto"
-        height="100%"
-        display="flex"
-        flexDirection="column"
-      >
+      <Grid item xs height="100%">
         {channelId && <MessageHistory channelId={channelId} />}
       </Grid>
     </Grid>
