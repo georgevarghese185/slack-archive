@@ -39,7 +39,10 @@ export const ChannelPicker: React.FC<ChannelPickerProps> = ({
             onClick={() => onChannelClick(channel)}
           />
         ))}
-      {loading && Array(10).fill(<ChannelListItem />)}
+      {loading &&
+        Array(10)
+          .fill(null)
+          .map((_, idx) => <ChannelListItem key={idx} />)}
     </List>
   );
 };

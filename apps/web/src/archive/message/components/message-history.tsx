@@ -15,7 +15,8 @@ export const MessageHistory: React.FC<{ channelId: string }> = ({
         messages.map(message => (
           <MessageListItem message={message} key={message.ts} />
         ))}
-      {loading && new Array(20).fill(<MessageListItem />)}
+      {loading &&
+        new Array(20).fill(null).map((_, idx) => <MessageListItem key={idx} />)}
     </List>
   );
 };
