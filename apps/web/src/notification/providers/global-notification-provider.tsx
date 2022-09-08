@@ -1,8 +1,8 @@
-import { ReactNode, useEffect, useState } from 'react';
+import { PropsWithChildren, useEffect, useState } from 'react';
 import { NotificationSnackbar } from '../components';
 import { GlobalNotificationContext } from '../contexts';
 
-export const GlobalNotificationProvider: React.FC<{ children?: ReactNode }> = ({
+export const GlobalNotificationProvider: React.FC<PropsWithChildren> = ({
   children,
 }) => {
   const [open, setOpen] = useState(false);

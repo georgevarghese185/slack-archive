@@ -1,4 +1,5 @@
 import { ThemeProvider as MuiThemeProvider, createTheme } from '@mui/material';
+import { PropsWithChildren } from 'react';
 
 const theme = createTheme({
   components: {
@@ -30,10 +31,6 @@ const theme = createTheme({
   },
 });
 
-export type ThemeProviderProps = {
-  children?: React.ReactNode;
-};
-
-export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
+export const ThemeProvider: React.FC<PropsWithChildren> = ({ children }) => {
   return <MuiThemeProvider theme={theme}>{children}</MuiThemeProvider>;
 };
