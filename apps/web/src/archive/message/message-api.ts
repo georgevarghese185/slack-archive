@@ -9,6 +9,7 @@ export type Message = {
 
 export type GetMessageHistoryRequest = {
   channelId: string;
+  before?: string;
 };
 
 export type GetMessageHistoryResponse = {
@@ -17,12 +18,14 @@ export type GetMessageHistoryResponse = {
 
 export const getMessageHistory = async ({
   channelId,
+  before,
 }: GetMessageHistoryRequest): Promise<GetMessageHistoryResponse> => {
   const response = await axiosInstance.get<GetMessageHistoryResponse>(
     '/v1/messages',
     {
       params: {
         conversationId: channelId,
+        before,
         limit: 100,
       },
     }
