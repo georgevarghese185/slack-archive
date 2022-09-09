@@ -8,7 +8,8 @@ import { MessageItem } from './message-item';
 export const MessageHistory: React.FC<{ channelId: string }> = ({
   channelId,
 }) => {
-  const { messages, loading, hasNewer, hasOlder } = useMessages(channelId);
+  const { messages, loading, hasNewer, hasOlder, loadOlder } =
+    useMessages(channelId);
   const [historyLoaded, setHistoryLoaded] = useState(false);
   const containerRef = useRef<HTMLElement>(null);
 
@@ -39,14 +40,14 @@ export const MessageHistory: React.FC<{ channelId: string }> = ({
     >
       <ScrollProvider scrollContainer={containerRef}>
         <List sx={{ marginTop: 'auto' }}>
-          {loading && <MessageLoader n={20} />}
+          {loading && !messages && <MessageLoader n={20} />}
 
-          {!loading && messages && (
+          {messages && (
             <Messages
               messages={messages}
               showOlderMessagesLoader={historyLoaded && hasOlder}
               showNewerMessagesLoader={historyLoaded && hasNewer}
-              loadOlderMessages={() => console.log('load older')}
+              loadOlderMessages={loadOlder}
               loadNewerMessages={() => console.log('load newer')}
             />
           )}

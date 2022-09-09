@@ -1,6 +1,8 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Message } from '../message';
-import { getMessageHistory } from '../message-service';
+import { getMessageHistory, MessageHistoryOptions } from '../message-service';
+
+type LoadOperation = 'replace' | 'append' | 'prepend';
 
 export const useMessages = (channelId: string) => {
   const [messages, setMessages] = useState<Message[] | null>(null);
@@ -9,18 +11,39 @@ export const useMessages = (channelId: string) => {
   const [hasNewer, setHasNewer] = useState(false);
   const [hasOlder, setHasOlder] = useState(false);
 
-  useEffect(() => {
-    setLoading(true);
+  const getMessages = useCallback(
+    (options: MessageHistoryOptions, operation: LoadOperation) => {
+      setLoading(true);
 
-    getMessageHistory(channelId)
-      .then(messages => {
-        setMessages(messages);
-        setHasNewer(false);
-        setHasOlder(true);
-      })
-      .catch(setError)
-      .finally(() => setLoading(false));
-  }, [channelId]);
+      if (operation === 'replace') {
+        setMessages(null);
+      }
+
+      getMessageHistory(channelId, options)
+        .then(newMessages => {
+          setMessages(combineMessages(messages || [], newMessages, operation));
+          setHasNewer(operation === 'append' && newMessages.length > 0);
+          setHasOlder(!(operation === 'prepend'));
+        })
+        .catch(setError)
+        .finally(() => setLoading(false));
+    },
+    [channelId]
+  );
+
+  useEffect(() => {
+    getMessages({}, 'replace');
+  }, [getMessages]);
+
+  const loadOlder = () => {
+    const oldestMessage = messages?.[0];
+
+    if (!oldestMessage) {
+      return;
+    }
+
+    getMessages({ before: oldestMessage.ts }, 'prepend');
+  };
 
   return {
     messages,
@@ -28,5 +51,21 @@ export const useMessages = (channelId: string) => {
     error,
     hasNewer,
     hasOlder,
+    loadOlder,
   };
+};
+
+const combineMessages = (
+  currentMessages: Message[],
+  newMessages: Message[],
+  operation: LoadOperation
+) => {
+  switch (operation) {
+    case 'prepend':
+      return newMessages.concat(currentMessages);
+    case 'replace':
+      return newMessages;
+    default:
+      return currentMessages.concat(newMessages);
+  }
 };
