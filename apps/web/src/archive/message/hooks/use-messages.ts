@@ -1,18 +1,26 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { Message } from '../message';
 import { getMessageHistory, MessageHistoryOptions } from '../message-service';
 
 type LoadOperation = 'replace' | 'append' | 'prepend';
 
-export const useMessages = (channelId: string) => {
+export const useMessages = (
+  channelId: string,
+  onChange?: (messages: Message[]) => void
+) => {
   const [messages, setMessages] = useState<Message[] | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
   const [hasNewer, setHasNewer] = useState(false);
   const [hasOlder, setHasOlder] = useState(false);
+  const processing = useRef(false);
 
   const getMessages = useCallback(
     (options: MessageHistoryOptions, operation: LoadOperation) => {
+      if (processing.current) {
+        return;
+      }
+      processing.current = true;
       setLoading(true);
 
       if (operation === 'replace') {
@@ -21,12 +29,20 @@ export const useMessages = (channelId: string) => {
 
       getMessageHistory(channelId, options)
         .then(newMessages => {
-          setMessages(combineMessages(messages || [], newMessages, operation));
+          if (operation === 'prepend') {
+            onWhatever?.();
+          }
+          setMessages(messages =>
+            combineMessages(messages || [], newMessages, operation)
+          );
           setHasNewer(operation === 'append' && newMessages.length > 0);
           setHasOlder(!(operation === 'prepend'));
         })
         .catch(setError)
-        .finally(() => setLoading(false));
+        .finally(() => {
+          setLoading(false);
+          processing.current = false;
+        });
     },
     [channelId]
   );
@@ -36,6 +52,7 @@ export const useMessages = (channelId: string) => {
   }, [getMessages]);
 
   const loadOlder = () => {
+    console.log('load older');
     const oldestMessage = messages?.[0];
 
     if (!oldestMessage) {
