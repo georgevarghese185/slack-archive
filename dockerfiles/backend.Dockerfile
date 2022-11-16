@@ -2,7 +2,7 @@ FROM node:14-alpine
 
 COPY backend/package*.json /root/app/backend/
 WORKDIR /root/app/backend
-RUN npm install --only=prod
+RUN yarn install --prod
 
 COPY common /root/app/common
 COPY backend/ /root/app/backend/
