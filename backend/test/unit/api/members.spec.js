@@ -1,7 +1,7 @@
 const api = require('../../../src/api');
 const AppContext = require('../../../src/AppContext')
 const expect = require('chai').expect;
-const Members = require('../../../../common/models/Members');
+const Members = require('../../../src/models/Members');
 const Request = require('../../../src/types/Request');
 
 describe('Member APIs', () => {

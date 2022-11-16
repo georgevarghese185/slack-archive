@@ -1,6 +1,6 @@
 const api = require('../../../src/api');
 const AppContext = require('../../../src/AppContext')
-const Conversations = require('../../../../common/models/Conversations');
+const Conversations = require('../../../src/models/Conversations');
 const expect = require('chai').expect;
 const Request = require('../../../src/types/Request');
 

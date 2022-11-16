@@ -1,9 +1,9 @@
 const api = require('../../../src/api');
 const AppContext = require('../../../src/AppContext')
-const Backups = require('../../../../common/models/Backups');
-const Conversations = require('../../../../common/models/Conversations');
+const Backups = require('../../../src/models/Backups');
+const Conversations = require('../../../src/models/Conversations');
 const expect = require('chai').expect;
-const Messages = require('../../../../common/models/Messages');
+const Messages = require('../../../src/models/Messages');
 const Request = require('../../../src/types/Request');
 
 describe('Backup APIs', () => {

@@ -5,7 +5,6 @@ WORKDIR /root/app/frontend
 
 RUN npm install && npm install http-server
 
-COPY common /root/app/common
 COPY frontend /root/app/frontend
 
 ARG apiUrl

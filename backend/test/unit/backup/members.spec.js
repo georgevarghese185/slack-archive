@@ -1,9 +1,9 @@
 const AppContext = require('../../../src/AppContext')
-const Backups = require('../../../../common/models/Backups');
+const Backups = require('../../../src/models/Backups');
 const chai = require('chai');
 const chaiAsPromised = require('chai-as-promised');
 const expect= chai.expect;
-const Members = require('../../../../common/models/Members');
+const Members = require('../../../src/models/Members');
 const moxios = require('moxios');
 const { BackupCanceledError } = require('../../../src/types/errors');
 const { backupMembers } = require('../../../src/backup/members');

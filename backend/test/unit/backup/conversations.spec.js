@@ -1,6 +1,6 @@
 const AppContext = require('../../../src/AppContext');
-const Backups = require('../../../../common/models/Backups');
-const Conversations = require('../../../../common/models/Conversations');
+const Backups = require('../../../src/models/Backups');
+const Conversations = require('../../../src/models/Conversations');
 const chai = require('chai');
 const chaiAsPromised = require('chai-as-promised');
 const expect= chai.expect;

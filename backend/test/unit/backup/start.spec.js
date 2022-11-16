@@ -1,8 +1,8 @@
 const AppContext = require('../../../src/AppContext');
-const Backups = require('../../../../common/models/Backups');
-const Conversations = require('../../../../common/models/Conversations');
-const Members = require('../../../../common/models/Members');
-const Messages = require('../../../../common/models/Messages');
+const Backups = require('../../../src/models/Backups');
+const Conversations = require('../../../src/models/Conversations');
+const Members = require('../../../src/models/Members');
+const Messages = require('../../../src/models/Messages');
 const moxios = require('moxios');
 const { startBackup } = require('../../../src/backup');
 const { expect } = require('chai');

@@ -1,5 +1,5 @@
 const { DataTypes } = require('sequelize');
-const Conversations = require('../../../../../common/models/Conversations');
+const Conversations = require('../../Conversations');
 
 const COLUMNS = {
     id: {
