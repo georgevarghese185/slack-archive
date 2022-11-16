@@ -1,5 +1,5 @@
 {
-  "name": "slack-archive",
+  "name": "@slack-archive/server",
   "version": "0.1.0",
   "description": "A webapp to backup content in a Slack Workspace",
   "scripts": {

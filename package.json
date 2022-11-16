@@ -1,0 +1,14 @@
+{
+    "private": true,
+    "workspaces": [
+        "frontend",
+        "backend"
+    ],
+    "scripts": {
+        "run:server": "yarn workspace @slack-archive/server",
+        "run:web": "yarn workspace @slack-archive/web"
+    },
+    "engines": {
+        "node": ">=14 <15"
+    }
+}

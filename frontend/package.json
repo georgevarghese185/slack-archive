@@ -1,5 +1,5 @@
 {
-  "name": "slack-archive-web",
+  "name": "@slack-archive/web",
   "version": "0.1.0",
   "private": true,
   "scripts": {
