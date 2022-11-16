@@ -1,9 +1,7 @@
 const AppContext = require('../../../src/AppContext')
-const Backups = require('../../../../common/models/Backups');
+const { Backups, Conversations, Messages } = require('@slack-archive/common');
 const chai = require('chai');
 const chaiAsPromised = require('chai-as-promised');
-const Conversations = require('../../../../common/models/Conversations');
-const Messages = require('../../../../common/models/Messages');
 const moxios = require('moxios');
 const expect = chai.expect;
 const { BackupCanceledError } = require('../../../src/types/errors');

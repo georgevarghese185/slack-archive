@@ -1,4 +1,4 @@
-const Messages = require('../../../../../common/models/Messages');
+const { Messages } = require('@slack-archive/common');
 const { DataTypes, Op } = require('sequelize');
 
 const COLUMNS = {

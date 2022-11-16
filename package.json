@@ -1,7 +1,8 @@
 {
     "private": true,
     "workspaces": [
-        "apps/*"
+        "apps/*",
+        "libs/*"
     ],
     "scripts": {
         "run:server": "yarn workspace @slack-archive/server",

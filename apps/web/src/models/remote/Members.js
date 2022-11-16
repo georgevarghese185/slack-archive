@@ -1,5 +1,5 @@
 import * as api from '../../api'
-import Members from '../../../../common/models/Members'
+import { Members } from '@slack-archive/common'
 
 export default class extends Members {
   async get (id) {

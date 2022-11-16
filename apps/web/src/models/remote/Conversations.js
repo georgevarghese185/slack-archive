@@ -1,4 +1,4 @@
-import Conversations from '../../../../common/models/Conversations'
+import { Conversations } from '@slack-archive/common'
 import * as api from '../../api'
 
 export default class ConversationsRemote extends Conversations {

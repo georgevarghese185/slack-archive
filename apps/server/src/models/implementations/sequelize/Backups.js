@@ -1,4 +1,4 @@
-const Backups = require('../../../../../common/models/Backups');
+const { Backups } = require('@slack-archive/common');
 const { DataTypes, Op } = require('sequelize');
 
 module.exports = class BackupsSequelize extends Backups {

@@ -1,5 +1,5 @@
 import * as api from '../../api'
-import Messages from '../../../../common/models/Messages'
+import { Messages } from '@slack-archive/common'
 
 export default class MessagesRemote extends Messages {
   async get (from, to, conversationId, postsOnly, threadTs, limit) {

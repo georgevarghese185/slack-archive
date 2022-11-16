@@ -1,6 +1,5 @@
 const AppContext = require('../../../src/AppContext');
-const Backups = require('../../../../common/models/Backups');
-const Conversations = require('../../../../common/models/Conversations');
+const { Backups, Conversations } = require('@slack-archive/common');
 const chai = require('chai');
 const chaiAsPromised = require('chai-as-promised');
 const expect= chai.expect;

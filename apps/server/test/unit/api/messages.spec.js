@@ -1,8 +1,8 @@
 const api = require('../../../src/api');
 const AppContext = require('../../../src/AppContext');
-const Conversations = require('../../../../common/models/Conversations');
+const { Conversations } = require('@slack-archive/common');
 const expect = require('chai').expect;
-const Messages = require('../../../../common/models/Messages');
+const { Messages } = require('@slack-archive/common');
 const Request = require('../../../src/types/Request');
 
 describe('Message APIs', () => {
