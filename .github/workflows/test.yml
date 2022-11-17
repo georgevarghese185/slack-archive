@@ -1,57 +1,49 @@
 name: Test
 
 on:
-  pull_request:
-    branches:
-      - master
+  workflow_call:
 
 jobs:
-  test-backend:
-    name: Run backend tests
+  test-server:
+    name: Test server
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
-      - name: Docker Layer Caching
-        uses: satackey/action-docker-layer-caching@v0.0.11
-        continue-on-error: true
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v2
 
-      - name: Start test DB
-        run: docker-compose -f .github/docker-compose.test.yml up -d db
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
 
-      - name: Build backend image
-        run: docker-compose -f .github/docker-compose.test.yml build backend
-
-      - name: Run backend tests
-        run: docker-compose -f .github/docker-compose.test.yml up backend
-
-      - name: Clean up
-        run: docker-compose -f .github/docker-compose.test.yml down -v
-
-  lint-frontend:
-    name: Run frontend code linter
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-
-      - name: Cache node modules
-        uses: actions/cache@v2
+      - name: Pull job image
         env:
-          cache-name: cache-node-modules
+          tag: job-${{ github.run_id }}
+        run: |
+          docker pull georgevm185/slack-archive:$tag
+          docker tag georgevm185/slack-archive:$tag slack-archive_test:latest
+
+      - name: Run tests
+        run: docker-compose -f docker-compose.test.yml -p slack-archive run --rm test
+
+  lint:
+    name: Lint code
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
         with:
-          path: ~/.npm
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-build-${{ env.cache-name }}-
-            ${{ runner.os }}-build-
-            ${{ runner.os }}-
+          node-version: 14
+          cache: "yarn"
 
-      - name: Install frontend dependencies
-        working-directory: frontend
-        run: npm install
+      - name: Install dependencies
+        run: yarn
 
-      - name: Run linter
-        working-directory: frontend
-        run: npm run lint
+      - name: Lint code
+        run: yarn run:web lint

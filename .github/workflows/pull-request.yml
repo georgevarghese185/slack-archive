@@ -1,0 +1,30 @@
+name: Pull request checks
+
+on:
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  build:
+    name: Build job image
+    uses: ./.github/workflows/build-and-push.yml
+    with:
+      tag: job-${{ github.run_id }}
+    secrets:
+      dockerhub_token: ${{ secrets.DOCKERHUB_TOKEN }}
+
+  test:
+    name: Check and test
+    needs: build
+    uses: ./.github/workflows/test.yml
+
+  cleanup:
+    name: Cleanup job image
+    uses: ./.github/workflows/delete-tag.yml
+    needs: test
+    if: ${{ always() }}
+    with:
+      tag: job-${{ github.run_id }}
+    secrets:
+      dockerhub_token: ${{ secrets.DOCKERHUB_TOKEN }}

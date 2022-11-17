@@ -1,0 +1,38 @@
+name: Release dev
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build job image
+    uses: ./.github/workflows/build-and-push.yml
+    with:
+      tag: job-${{ github.run_id }}
+    secrets:
+      dockerhub_token: ${{ secrets.DOCKERHUB_TOKEN }}
+
+  test:
+    name: Check and test
+    needs: build
+    uses: ./.github/workflows/test.yml
+
+  promote:
+    name: Promote build to dev
+    needs: test
+    uses: ./.github/workflows/promote-build.yml
+    with:
+      from: job-${{ github.run_id }}
+      to: dev
+    secrets:
+      dockerhub_token: ${{ secrets.DOCKERHUB_TOKEN }}
+
+  cleanup:
+    name: Cleanup job image
+    uses: ./.github/workflows/delete-tag.yml
+    needs: promote
+    if: ${{ always() }}
+    with:
+      tag: job-${{ github.run_id }}
+    secrets:
+      dockerhub_token: ${{ secrets.DOCKERHUB_TOKEN }}
