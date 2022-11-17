@@ -6,10 +6,9 @@ services:
       POSTGRES_USER: dev
       POSTGRES_PASSWORD: dev
       POSTGRES_DB: slack_archive
-  backend:
+  test:
     build:
-      context: ../
-      dockerfile: dockerfiles/backend.Dockerfile
+      context: .
     depends_on:
       - db
     environment:
@@ -17,15 +16,15 @@ services:
       PORT: 80
       MOCK_SLACK_PORT: 8002
       DB_URL: postgres://dev:dev@db:5432/slack_archive
-      CORS_ALLOW_ORIGIN: http://localhost:3000
+      CORS_ALLOW_ORIGIN: http://localhost:8080
       SLACK_BASE_URL: http://localhost:8002
-      OAUTH_REDIRECT_URI: http://localhost:3000/oauth/redirect
+      OAUTH_REDIRECT_URI: http://localhost:8080/oauth/redirect
       SLACK_TEAM_ID: 12345
       SLACK_CLIENT_ID: 67890
       SLACK_CLIENT_SECRET: XYZ
       TOKEN_SECRET: secret
-    command: sh -c '
-      npm install --only=dev &&
-      npm run mockSlack:generate &&
-      npm run db:migration:run &&
-      npm run test'
+    ports:
+      - 8080:80
+      - 8002:8002
+    # command: sh -c 'yarn && yarn db:migration:run && yarn db:clear && yarn mockSlack:generate && yarn start:dev'
+    command: sh -c 'yarn && yarn mockSlack:generate && yarn db:migration:run && yarn test'
