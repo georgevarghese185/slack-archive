@@ -1,0 +1,43 @@
+name: Promote build
+
+on:
+  workflow_call:
+    inputs:
+      from:
+        description: Tag to promote the Docker image from
+        type: string
+        required: true
+      to:
+        description: Tag to promote the Docker image to
+        type: string
+        required: true
+    secrets:
+      dockerhub_token:
+        required: true
+
+jobs:
+  promote:
+    name: Promote build
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v2
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: georgevm185
+          password: ${{ secrets.dockerhub_token }}
+
+      - name: Promote tag
+        run: |
+          docker pull georgevm185/slack-archive:${{ inputs.from }}
+          docker tag georgevm185/slack-archive:${{ inputs.from }} georgevm185/slack-archive:${{ inputs.to }}
+          docker push georgevm185/slack-archive:${{ inputs.to }}

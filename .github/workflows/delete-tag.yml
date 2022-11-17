@@ -1,0 +1,38 @@
+name: Delete tag
+
+on:
+  workflow_call:
+    inputs:
+      tag:
+        description: Tag to delete
+        type: string
+        required: true
+    secrets:
+      dockerhub_token:
+        required: true
+
+jobs:
+  delete-tag:
+    name: Delete Docker image tag
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Get Docker Hub API Token
+        env:
+          DOCKERHUB_USERNAME: georgevm185
+          DOCKERHUB_PASSWORD: ${{ secrets.dockerhub_token }}
+        run: |
+          DATA="{\"username\":\"$DOCKERHUB_USERNAME\",\"password\":\"$DOCKERHUB_PASSWORD\"}"
+          TOKEN=$(curl -X POST https://hub.docker.com/v2/users/login -H "Content-Type: application/json" -d "$DATA" | jq -r '.token')
+          echo "::add-mask::$TOKEN"
+          echo "token=$TOKEN" >> $GITHUB_ENV
+
+      - name: Delete tag
+        env:
+          TAG: ${{ inputs.tag }}
+          TOKEN: ${{ env.token }}
+        run: |
+          RESPONSE=$(curl -X DELETE https://hub.docker.com/v2/repositories/georgevm185/slack-archive/tags/$TAG/ -H "Authorization: Bearer $TOKEN" -w "%{http_code}")
+          echo $RESPONSE
+          CODE=$(echo "$RESPONSE" | tail -1)
+          [[ $CODE = "204" ]]
