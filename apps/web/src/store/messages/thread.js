@@ -1,4 +1,4 @@
-import { baseStore, models, MESSAGE_API_LIMIT } from './base'
+import { baseStore } from './base'
 
 export default {
   namespaced: true,
