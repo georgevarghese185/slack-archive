@@ -30,5 +30,7 @@ COPY --from=builder /root/slack-archive/build /root/slack-archive/
 WORKDIR /root/slack-archive/apps/server
 
 ENV STATIC_WEB_DIR=./public
+ENV PORT=80
+EXPOSE 80
 
 CMD yarn start:prod
