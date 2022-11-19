@@ -33,4 +33,4 @@ ENV STATIC_WEB_DIR=./public
 ENV PORT=80
 EXPOSE 80
 
-CMD yarn start:prod
+CMD yarn db:migration:run && yarn start:prod
