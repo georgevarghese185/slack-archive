@@ -1,23 +1,10 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { AuthUrl } from 'src/auth';
 import { AuthService } from 'src/auth/auth.service';
+import { TokenService } from 'src/auth/token/token.service';
 import { ConfigService } from 'src/config/config.service';
-import { SlackConfig, ExperimentsConfig } from 'src/config';
-
-const createMockConfigService = () => {
-  return {
-    experiments: {
-      backupPrivateMessages: false,
-    } as ExperimentsConfig,
-
-    slack: {
-      baseUrl: 'https://slack.com',
-      clientId: '1234',
-      teamId: 'T1234',
-      oauthRedirectUri: 'https://slack-archive/authorize',
-    } as SlackConfig,
-  } as ConfigService;
-};
+import { SlackApiProvider } from 'src/slack/slack-api.provider';
+import { createMockConfigService } from 'test/mock/config';
 
 describe('Get Auth URL', () => {
   let service: AuthService;
@@ -29,6 +16,8 @@ describe('Get Auth URL', () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         AuthService,
+        SlackApiProvider,
+        TokenService,
         { provide: ConfigService, useValue: mockConfigService },
       ],
     }).compile();

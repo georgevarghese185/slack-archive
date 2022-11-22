@@ -32,4 +32,8 @@ export class ConfigService {
         this.nestConfigService.getOrThrow<string>('OAUTH_REDIRECT_URI'),
     };
   }
+
+  get tokenSecret() {
+    return this.nestConfigService.getOrThrow<string>('TOKEN_SECRET');
+  }
 }
