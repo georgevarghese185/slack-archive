@@ -7,9 +7,14 @@
     ],
     "scripts": {
         "run:server": "yarn workspace @slack-archive/server",
+        "run:server-nest": "yarn workspace @slack-archive/server-nest",
         "run:web": "yarn workspace @slack-archive/web"
     },
     "engines": {
         "node": ">=16 <17"
+    },
+    "devDependencies": {
+        "husky": "^8.0.2",
+        "lint-staged": "^13.0.3"
     }
 }

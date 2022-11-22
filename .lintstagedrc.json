@@ -1,0 +1,4 @@
+{
+  "apps/server-nest/{src,test}/*.{ts,js}": "yarn run:server-nest lint",
+  "apps/server-nest/*.{ts,js,json,css}": "yarn run:server-nest format"
+}
