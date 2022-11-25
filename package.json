@@ -6,8 +6,10 @@
         "libs/*"
     ],
     "scripts": {
+        "postinstall": "husky install",
         "run:server": "yarn workspace @slack-archive/server",
         "run:server-nest": "yarn workspace @slack-archive/server-nest",
+        "run:mock-slack": "yarn workspace @slack-archive/mock-slack",
         "run:web": "yarn workspace @slack-archive/web"
     },
     "engines": {

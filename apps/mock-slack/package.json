@@ -1,0 +1,19 @@
+{
+  "name": "@slack-archive/mock-slack",
+  "version": "0.1.0",
+  "description": "A mock server that implements slack APIs for testing slack-archive",
+  "scripts": {
+    "start": "nodemon -w src/app src/app",
+    "generate": "node src/generator",
+    "format": "prettier -c \"src/**/*.{js,json}\"",
+    "format:fix": "prettier --write \"src/**/*.{js,json}\""
+  },
+  "author": "George Varghese M",
+  "license": "UNLICENSE",
+  "dependencies": {
+    "dotenv": "^8.2.0",
+    "express": "^4.17.1",
+    "nodemon": "^2.0.7",
+    "uuid": "^8.3.2"
+  }
+}
