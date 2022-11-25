@@ -1,15 +1,11 @@
-export type SlackApiRequests = {
-  '/api/oauth.access': {
-    code: string;
-    redirect_uri: string;
-  };
+export type ExchangeCodeRequest = {
+  code: string;
+  redirect_uri: string;
 };
 
-export type SlackApiResponses = {
-  '/api/oauth.access': {
-    access_token: string;
-    user_id: string;
-  };
+export type ExchangeCodeResponse = {
+  access_token: string;
+  user_id: string;
 };
 
 export type SlackApiResponse<R> =

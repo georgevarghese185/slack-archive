@@ -9,6 +9,12 @@ export type ExperimentsConfig = {
 export type SlackConfig = {
   baseUrl: string;
   clientId: string;
+  clientSecret: string;
   teamId: string;
   oauthRedirectUri: string;
 };
+
+export enum Env {
+  dev = 'dev',
+  prod = 'prod',
+}

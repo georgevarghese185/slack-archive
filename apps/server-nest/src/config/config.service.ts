@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService as NestConfigService } from '@nestjs/config';
-import { ServerConfig } from '.';
+import { Env, ServerConfig } from '.';
 import { defaultPort, defaultSlackBaseUrl } from './config.defaults';
 import { ExperimentsConfig, SlackConfig } from './config.types';
 
@@ -12,6 +12,23 @@ export class ConfigService {
     return {
       port: +(this.nestConfigService.get<string>('PORT') || defaultPort),
     };
+  }
+
+  get env() {
+    const env = this.nestConfigService.get('ENV') || 'dev';
+    const validEnvs = Object.values(Env);
+
+    if (!validEnvs.includes(env)) {
+      throw new Error(
+        'Value of env variable ENV should be one of: ' + validEnvs.join(', '),
+      );
+    }
+
+    return env as Env;
+  }
+
+  get isDev() {
+    return this.env === Env.dev;
   }
 
   get experiments(): ExperimentsConfig {
@@ -26,14 +43,25 @@ export class ConfigService {
       baseUrl:
         this.nestConfigService.get<string>('SLACK_BASE_URL') ||
         defaultSlackBaseUrl,
-      clientId: this.nestConfigService.getOrThrow<string>('SLACK_CLIENT_ID'),
-      teamId: this.nestConfigService.getOrThrow<string>('SLACK_TEAM_ID'),
-      oauthRedirectUri:
-        this.nestConfigService.getOrThrow<string>('OAUTH_REDIRECT_URI'),
+      clientId: this.getOrThrowrow('SLACK_CLIENT_ID'),
+      clientSecret: this.getOrThrowrow('SLACK_CLIENT_SECRET'),
+      teamId: this.getOrThrowrow('SLACK_TEAM_ID'),
+      oauthRedirectUri: this.getOrThrowrow('OAUTH_REDIRECT_URI'),
     };
   }
 
   get tokenSecret() {
-    return this.nestConfigService.getOrThrow<string>('TOKEN_SECRET');
+    return this.getOrThrowrow('TOKEN_SECRET');
+  }
+
+  private getOrThrowrow(key: string): string {
+    const value = this.nestConfigService.get<string>(key);
+
+    if (value === null || value === undefined) {
+      throw new Error(
+        `Environment variable ${key} is required but missing. Please provide this variable`,
+      );
+    }
+    return value;
   }
 }

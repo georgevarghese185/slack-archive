@@ -1,7 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { AuthService } from 'src/auth/auth.service';
 import { ConfigService } from 'src/config/config.service';
-import { LoginDto } from 'src/auth/dto/login.dto';
 import { createMockConfigService } from 'test/mock/config';
 import { TokenService } from 'src/auth/token/token.service';
 import { SlackApiProvider } from 'src/slack/slack-api.provider';
@@ -26,7 +25,7 @@ describe('Get Auth URL', () => {
         AuthService,
         TokenService,
         { provide: ConfigService, useValue: mockConfigService },
-        { provide: SlackApiProvider, useValue: { request: jest.fn() } },
+        { provide: SlackApiProvider, useValue: { exchangeCode: jest.fn() } },
         { provide: Logger, useValue: { error: jest.fn() } },
       ],
     }).compile();
@@ -40,19 +39,17 @@ describe('Get Auth URL', () => {
     const verificationCode = 'XYZ';
     const userId = 'U1234';
     const accessToken = 'ABC';
-    const loginDto = new LoginDto();
-    loginDto.verificationCode = verificationCode;
 
-    jest.mocked(slackApiProvider.request).mockResolvedValueOnce({
+    jest.mocked(slackApiProvider.exchangeCode).mockResolvedValueOnce({
       ok: true,
       access_token: accessToken,
       user_id: userId,
     });
 
-    const { token } = await service.login(loginDto);
+    const { token } = await service.login(verificationCode);
     const decodedToken = await tokenService.verify(token);
 
-    expect(slackApiProvider.request).toHaveBeenCalledWith('/api/oauth.access', {
+    expect(slackApiProvider.exchangeCode).toHaveBeenCalledWith({
       code: verificationCode,
       redirect_uri: mockConfigService.slack.oauthRedirectUri,
     });
@@ -75,15 +72,14 @@ describe('Get Auth URL', () => {
 
     for (const error of userErrorCodes) {
       it(`should handle ${error.code} error`, async () => {
-        const loginDto = new LoginDto();
-        loginDto.verificationCode = 'XYZ';
+        const verificationCode = 'XYZ';
 
-        jest.mocked(slackApiProvider.request).mockResolvedValueOnce({
+        jest.mocked(slackApiProvider.exchangeCode).mockResolvedValueOnce({
           ok: false,
           error: error.code,
         });
 
-        await expect(service.login(loginDto)).rejects.toBeInstanceOf(
+        await expect(service.login(verificationCode)).rejects.toBeInstanceOf(
           error.expectedError,
         );
       });
@@ -91,15 +87,14 @@ describe('Get Auth URL', () => {
 
     it('should handle other unknown slack error codes', async () => {
       const errorCode = 'some_unknown_slack_error';
-      const loginDto = new LoginDto();
-      loginDto.verificationCode = 'XYZ';
+      const verificationCode = 'XYZ';
 
-      jest.mocked(slackApiProvider.request).mockResolvedValueOnce({
+      jest.mocked(slackApiProvider.exchangeCode).mockResolvedValueOnce({
         ok: false,
         error: errorCode,
       });
 
-      await expect(service.login(loginDto)).rejects.toEqual(
+      await expect(service.login(verificationCode)).rejects.toEqual(
         new SlackApiError(errorCode),
       );
     });

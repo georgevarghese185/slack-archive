@@ -10,7 +10,6 @@ import {
   SpentVerificationCodeError,
 } from './auth.errors';
 import { AuthUrl, LoginToken } from './auth.types';
-import { LoginDto } from './dto/login.dto';
 import { TokenService } from './token/token.service';
 
 @Injectable()
@@ -36,8 +35,8 @@ export class AuthService {
     };
   }
 
-  async login({ verificationCode }: LoginDto): Promise<LoginToken> {
-    const response = await this.slackProvider.request('/api/oauth.access', {
+  async login(verificationCode: string): Promise<LoginToken> {
+    const response = await this.slackProvider.exchangeCode({
       code: verificationCode,
       redirect_uri: this.config.slack.oauthRedirectUri,
     });
