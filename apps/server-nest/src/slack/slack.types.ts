@@ -8,7 +8,15 @@ export type ExchangeCodeResponse = {
   user_id: string;
 };
 
-export type SlackApiResponse<R> =
+export type TestAuthRequest = {
+  token: string;
+};
+
+export type RevokeAuthRequest = {
+  token: string;
+};
+
+export type SlackApiResponse<R = unknown> =
   | {
       ok: false;
       error: string;

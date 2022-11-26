@@ -6,9 +6,18 @@ import {
   randomBytes,
   scryptSync,
 } from 'crypto';
-import { JwtPayload, sign, verify } from 'jsonwebtoken';
+import {
+  JwtPayload,
+  sign,
+  TokenExpiredError as JwtTokenExpiredError,
+  verify,
+} from 'jsonwebtoken';
 import { ConfigService } from 'src/config/config.service';
-import { InvalidTokenFormat } from './token.errors';
+import {
+  ExpiredTokenError,
+  InvalidTokenError,
+  TokenParseError,
+} from './token.errors';
 
 /**
  * This class does a slow scrypt key derivation on instantiation so don't scope it by request. It should be instantiated
@@ -19,14 +28,16 @@ export class TokenService {
   private algorithm = 'aes-256-gcm' as const;
   private keySize = 32;
   private key: Buffer;
-  private expiresIn = '30 days';
+  private expiresIn;
 
-  constructor(private configService: ConfigService) {
+  constructor(private config: ConfigService) {
     this.key = scryptSync(
-      configService.tokenSecret,
-      configService.tokenSecret, // since the token secret is assumed to be a strong random string and kept secret, the salt doesn't really matter so we're using the token itself as a salt
+      config.tokenSecret,
+      config.tokenSecret, // since the token secret is assumed to be a strong random string and kept secret, the salt doesn't really matter so we're using the token itself as a salt
       this.keySize,
     );
+
+    this.expiresIn = config.tokenExpiry;
   }
 
   async sign(payload: TokenPayload): Promise<string> {
@@ -46,11 +57,25 @@ export class TokenService {
     ].join('_');
   }
 
-  async verify(token: string): Promise<TokenPayload & JwtPayload> {
+  async verify(
+    token: string,
+    ignoreExpired = false,
+  ): Promise<TokenPayload & JwtPayload> {
+    const decryptedToken = await this.decryptToken(token);
+    const decodedToken = this.jwtVerify(decryptedToken, ignoreExpired);
+
+    if (typeof decodedToken === 'string') {
+      throw new InvalidTokenError();
+    }
+
+    return decodedToken as TokenPayload & JwtPayload;
+  }
+
+  private async decryptToken(token: string) {
     const [encryptedToken, iv, authTag] = token.split('_');
 
     if (!encryptedToken || !iv || !authTag) {
-      throw new InvalidTokenFormat();
+      throw new TokenParseError();
     }
 
     const decipher = createDecipheriv(
@@ -64,22 +89,26 @@ export class TokenService {
       decipher.update(encryptedToken, 'base64', 'utf-8') +
       decipher.final('utf-8');
 
-    const decodedToken = this.jwtVerify(decryptedToken);
-
-    if (typeof decodedToken === 'string') {
-      throw new Error('Unexpected JWT string');
-    }
-
-    return decodedToken as TokenPayload & JwtPayload;
+    return decryptedToken;
   }
 
   private jwtSign(payload: object) {
-    return sign(payload, this.configService.tokenSecret, {
+    return sign(payload, this.config.tokenSecret, {
       expiresIn: this.expiresIn,
     });
   }
 
-  private jwtVerify(token: string) {
-    return verify(token, this.configService.tokenSecret);
+  private jwtVerify(token: string, ignoreExpired: boolean) {
+    try {
+      return verify(token, this.config.tokenSecret, {
+        ignoreExpiration: ignoreExpired,
+      });
+    } catch (e) {
+      if (e instanceof JwtTokenExpiredError) {
+        throw new ExpiredTokenError();
+      }
+
+      throw new InvalidTokenError();
+    }
   }
 }

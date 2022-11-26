@@ -54,6 +54,8 @@ export class ConfigService {
     return this.getOrThrowrow('TOKEN_SECRET');
   }
 
+  tokenExpiry = '30 days';
+
   private getOrThrowrow(key: string): string {
     const value = this.nestConfigService.get<string>(key);
 

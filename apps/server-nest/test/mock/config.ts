@@ -1,5 +1,6 @@
 import type { ExperimentsConfig, SlackConfig } from 'src/config';
-import type { ConfigService } from 'src/config/config.service';
+
+export type MockConfig = ReturnType<typeof createMockConfigService>;
 
 export const createMockConfigService = () => {
   return {
@@ -15,5 +16,6 @@ export const createMockConfigService = () => {
     } as SlackConfig,
 
     tokenSecret: 'secret',
-  } as ConfigService;
+    tokenExpiry: '30 days',
+  };
 };

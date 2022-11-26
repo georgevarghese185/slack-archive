@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { AuthService } from 'src/auth/auth.service';
 import { ConfigService } from 'src/config/config.service';
-import { createMockConfigService } from 'test/mock/config';
+import { createMockConfigService, MockConfig } from 'test/mock/config';
 import { TokenService } from 'src/auth/token/token.service';
 import { SlackApiProvider } from 'src/slack/slack-api.provider';
 import {
@@ -13,7 +13,7 @@ import { Logger } from 'src/common/logger/logger';
 
 describe('Login', () => {
   let service: AuthService;
-  let mockConfigService: ConfigService;
+  let mockConfigService: MockConfig;
   let tokenService: TokenService;
   let slackApiProvider: SlackApiProvider;
 

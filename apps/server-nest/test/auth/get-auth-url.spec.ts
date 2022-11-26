@@ -5,11 +5,11 @@ import { TokenService } from 'src/auth/token/token.service';
 import { Logger } from 'src/common/logger/logger';
 import { ConfigService } from 'src/config/config.service';
 import { SlackApiProvider } from 'src/slack/slack-api.provider';
-import { createMockConfigService } from 'test/mock/config';
+import { createMockConfigService, MockConfig } from 'test/mock/config';
 
 describe('Get Auth URL', () => {
   let service: AuthService;
-  let mockConfigService: ConfigService;
+  let mockConfigService: MockConfig;
 
   beforeEach(async () => {
     mockConfigService = createMockConfigService();

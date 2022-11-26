@@ -11,6 +11,18 @@ import {
   SpentVerificationCodeError,
 } from './auth.errors';
 import { TokenService } from './token/token.service';
+import {
+  ExpiredTokenError,
+  InvalidTokenError,
+} from './token/token.errors';
+
+const invalidTokenSlackErrorCodes = [
+  'invalid_auth',
+  'account_inactive',
+  'token_revoked',
+  'no_permission',
+  'missing_scope',
+];
 
 @Injectable()
 export class AuthService {
@@ -52,6 +64,41 @@ export class AuthService {
     });
 
     return { token };
+  }
+
+  async validateToken(token: string) {
+    try {
+      const { accessToken } = await this.tokenService.verify(token);
+      const testResponse = await this.slackProvider.testAuth({
+        token: accessToken,
+      });
+
+      if (!testResponse.ok) {
+        if (invalidTokenSlackErrorCodes.includes(testResponse.error)) {
+          throw new InvalidTokenError();
+        }
+
+        this.logger.error(
+          `Error validating Slack token: ${testResponse.error}`,
+        );
+        throw new SlackApiError(testResponse.error);
+      }
+    } catch (e) {
+      if (e instanceof ExpiredTokenError) {
+        this.revokeToken(token);
+      }
+
+      throw e;
+    }
+  }
+
+  private async revokeToken(token: string) {
+    try {
+      const { accessToken } = await this.tokenService.verify(token, true);
+      await this.slackProvider.revokeAuth({ token: accessToken });
+    } catch (e) {
+      this.logger.error(e);
+    }
   }
 
   private getLoginError(slackErrorCode: string): SlackArchiveError {

@@ -1,7 +1,9 @@
 import type {
   ExchangeCodeRequest,
   ExchangeCodeResponse,
+  RevokeAuthRequest,
   SlackApiResponse,
+  TestAuthRequest,
 } from './slack.types';
 import { HttpStatus, Injectable, Logger } from '@nestjs/common';
 import axios from 'axios';
@@ -40,5 +42,14 @@ export class SlackApiProvider {
         HttpStatus.BAD_GATEWAY,
       );
     }
+  }
+
+  async testAuth(_request: TestAuthRequest): Promise<SlackApiResponse> {
+    throw new Error('Not Implemented');
+  }
+
+  async revokeAuth(_request: RevokeAuthRequest): Promise<SlackApiResponse> {
+    console.log('ooooo');
+    throw new Error('Not Implemented');
   }
 }
