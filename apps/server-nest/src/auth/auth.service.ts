@@ -1,5 +1,6 @@
+import type { SlackArchiveError } from 'src/common/error';
+import type { AuthUrl, LoginToken } from './auth.types';
 import { Injectable } from '@nestjs/common';
-import { SlackArchiveError } from 'src/common/error';
 import { Logger } from 'src/common/logger/logger';
 import { ConfigService } from 'src/config/config.service';
 import { SCOPE_PRIVATE_MESSAGES, SCOPE_PUBLIC_MESSAGES } from 'src/slack';
@@ -9,7 +10,6 @@ import {
   InvalidVerificationCodeError,
   SpentVerificationCodeError,
 } from './auth.errors';
-import { AuthUrl, LoginToken } from './auth.types';
 import { TokenService } from './token/token.service';
 
 @Injectable()

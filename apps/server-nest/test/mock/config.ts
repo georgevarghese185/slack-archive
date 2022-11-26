@@ -1,5 +1,5 @@
-import { ExperimentsConfig, SlackConfig } from 'src/config';
-import { ConfigService } from 'src/config/config.service';
+import type { ExperimentsConfig, SlackConfig } from 'src/config';
+import type { ConfigService } from 'src/config/config.service';
 
 export const createMockConfigService = () => {
   return {

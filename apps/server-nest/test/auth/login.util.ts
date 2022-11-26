@@ -1,7 +1,7 @@
-import * as request from 'supertest';
+import type { INestApplication } from '@nestjs/common';
+import request from 'supertest';
 import axios from 'axios';
 import { parse, stringify } from 'querystring';
-import { INestApplication } from '@nestjs/common';
 
 export const getVerificationCode = async (app: INestApplication) => {
   const {
@@ -15,9 +15,9 @@ export const getVerificationCode = async (app: INestApplication) => {
     validateStatus: (status) => status === 302,
   });
 
-  const redirectUrl = authResponse.headers.location;
+  const redirectUrl = authResponse.headers['location'] || '';
 
-  const verificationCode = parse(redirectUrl.split('?')[1]).code;
+  const verificationCode = parse(redirectUrl.split('?')[1] || '')['code'];
 
   return verificationCode;
 };

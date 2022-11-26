@@ -1,4 +1,4 @@
-import { HttpStatus } from '@nestjs/common';
+import type { HttpStatus } from '@nestjs/common';
 
 export class SlackArchiveError extends Error {
   constructor(

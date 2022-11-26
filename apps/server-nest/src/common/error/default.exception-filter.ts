@@ -1,3 +1,4 @@
+import type { Response } from 'express';
 import {
   ArgumentsHost,
   Catch,
@@ -5,7 +6,6 @@ import {
   HttpException,
   HttpStatus,
 } from '@nestjs/common';
-import { Response } from 'express';
 import { Logger } from '../logger/logger';
 import { SlackArchiveError } from './error';
 

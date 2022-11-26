@@ -1,3 +1,4 @@
+import type { TokenPayload } from '../auth.types';
 import { Injectable } from '@nestjs/common';
 import {
   createCipheriv,
@@ -7,7 +8,7 @@ import {
 } from 'crypto';
 import { JwtPayload, sign, verify } from 'jsonwebtoken';
 import { ConfigService } from 'src/config/config.service';
-import { TokenPayload } from '../auth.types';
+import { InvalidTokenFormat } from './token.errors';
 
 /**
  * This class does a slow scrypt key derivation on instantiation so don't scope it by request. It should be instantiated
@@ -47,6 +48,10 @@ export class TokenService {
 
   async verify(token: string): Promise<TokenPayload & JwtPayload> {
     const [encryptedToken, iv, authTag] = token.split('_');
+
+    if (!encryptedToken || !iv || !authTag) {
+      throw new InvalidTokenFormat();
+    }
 
     const decipher = createDecipheriv(
       this.algorithm,

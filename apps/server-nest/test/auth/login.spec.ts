@@ -11,7 +11,7 @@ import {
 import { SlackApiError } from 'src/slack/slack.errors';
 import { Logger } from 'src/common/logger/logger';
 
-describe('Get Auth URL', () => {
+describe('Login', () => {
   let service: AuthService;
   let mockConfigService: ConfigService;
   let tokenService: TokenService;
@@ -61,7 +61,9 @@ describe('Get Auth URL', () => {
       }),
     );
 
-    expect(decodedToken.exp - decodedToken.iat).toEqual(30 * 24 * 60 * 60);
+    expect((decodedToken.exp || 0) - (decodedToken.iat || 0)).toEqual(
+      30 * 24 * 60 * 60,
+    );
   });
 
   describe('Slack error handling', () => {

@@ -1,8 +1,8 @@
+import type { ExperimentsConfig, SlackConfig } from './config.types';
 import { Injectable } from '@nestjs/common';
 import { ConfigService as NestConfigService } from '@nestjs/config';
 import { Env, ServerConfig } from '.';
 import { defaultPort, defaultSlackBaseUrl } from './config.defaults';
-import { ExperimentsConfig, SlackConfig } from './config.types';
 
 @Injectable()
 export class ConfigService {

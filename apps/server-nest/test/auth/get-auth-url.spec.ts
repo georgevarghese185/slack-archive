@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { AuthUrl } from 'src/auth';
+import type { AuthUrl } from 'src/auth';
 import { AuthService } from 'src/auth/auth.service';
 import { TokenService } from 'src/auth/token/token.service';
 import { Logger } from 'src/common/logger/logger';

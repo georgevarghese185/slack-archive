@@ -4,7 +4,7 @@ import { ConfigModule as NestConfigModule } from '@nestjs/config';
 
 const envFilePaths = [
   '.env',
-  ...(process.env.ENV === 'dev' ? ['.env.local'] : []),
+  ...(process.env['ENV'] === 'dev' ? ['.env.local'] : []),
 ];
 
 @Module({

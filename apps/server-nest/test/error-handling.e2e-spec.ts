@@ -1,5 +1,5 @@
-import { INestApplication } from '@nestjs/common';
-import * as request from 'supertest';
+import type { INestApplication } from '@nestjs/common';
+import request from 'supertest';
 import { createTestApp } from './test-app.module';
 
 describe('Error Handling (e2e)', () => {

@@ -1,5 +1,5 @@
-import { INestApplication } from '@nestjs/common';
-import * as request from 'supertest';
+import type { INestApplication } from '@nestjs/common';
+import request from 'supertest';
 import { getVerificationCode } from './login.util';
 import { createTestApp } from 'test/test-app.module';
 
@@ -15,12 +15,12 @@ describe('Login (e2e)', () => {
       .get('/v1/login/auth-url')
       .expect(200)
       .expect({
-        url: process.env.SLACK_BASE_URL + '/oauth/authorize',
+        url: process.env['SLACK_BASE_URL'] + '/oauth/authorize',
         parameters: {
-          client_id: process.env.SLACK_CLIENT_ID,
-          team: process.env.SLACK_TEAM_ID,
+          client_id: process.env['SLACK_CLIENT_ID'],
+          team: process.env['SLACK_TEAM_ID'],
           scope: 'channels:history,channels:read,users:read',
-          redirect_uri: process.env.OAUTH_REDIRECT_URI,
+          redirect_uri: process.env['OAUTH_REDIRECT_URI'],
         },
       });
   });

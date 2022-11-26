@@ -1,9 +1,9 @@
-import { HttpStatus, Injectable, Logger } from '@nestjs/common';
-import {
+import type {
   ExchangeCodeRequest,
   ExchangeCodeResponse,
   SlackApiResponse,
 } from './slack.types';
+import { HttpStatus, Injectable, Logger } from '@nestjs/common';
 import axios from 'axios';
 import { ConfigService } from 'src/config/config.service';
 import { stringify } from 'querystring';
