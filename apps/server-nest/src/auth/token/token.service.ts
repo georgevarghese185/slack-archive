@@ -1,4 +1,4 @@
-import type { TokenPayload } from '../auth.types';
+import { TokenPayload } from '../auth.types';
 import { Injectable } from '@nestjs/common';
 import {
   createCipheriv,

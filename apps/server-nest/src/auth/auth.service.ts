@@ -1,5 +1,5 @@
-import type { SlackArchiveError } from 'src/common/error';
-import type { AuthUrl, LoginToken } from './auth.types';
+import { SlackArchiveError } from 'src/common/error';
+import { AuthUrl, LoginToken } from './auth.types';
 import { Injectable } from '@nestjs/common';
 import { Logger } from 'src/common/logger/logger';
 import { ConfigService } from 'src/config/config.service';
@@ -11,10 +11,7 @@ import {
   SpentVerificationCodeError,
 } from './auth.errors';
 import { TokenService } from './token/token.service';
-import {
-  ExpiredTokenError,
-  InvalidTokenError,
-} from './token/token.errors';
+import { ExpiredTokenError, InvalidTokenError } from './token/token.errors';
 
 const invalidTokenSlackErrorCodes = [
   'invalid_auth',

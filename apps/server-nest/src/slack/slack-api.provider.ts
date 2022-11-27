@@ -1,4 +1,4 @@
-import type {
+import {
   ExchangeCodeRequest,
   ExchangeCodeResponse,
   RevokeAuthRequest,

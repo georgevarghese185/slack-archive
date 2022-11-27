@@ -1,4 +1,4 @@
-import type { INestApplication } from '@nestjs/common';
+import { INestApplication } from '@nestjs/common';
 import request from 'supertest';
 import axios from 'axios';
 import { parse, stringify } from 'querystring';

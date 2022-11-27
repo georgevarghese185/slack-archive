@@ -26,7 +26,6 @@
     "noImplicitReturns": true,
     "noPropertyAccessFromIndexSignature": true,
     "noUncheckedIndexedAccess": true,
-    "noUnusedLocals": false,
-    "importsNotUsedAsValues": "error"
+    "noUnusedLocals": false
   }
 }

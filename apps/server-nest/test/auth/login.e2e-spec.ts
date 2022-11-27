@@ -1,4 +1,4 @@
-import type { INestApplication } from '@nestjs/common';
+import { INestApplication } from '@nestjs/common';
 import request from 'supertest';
 import { getVerificationCode } from './login.util';
 import { createTestApp } from 'test/test-app.module';

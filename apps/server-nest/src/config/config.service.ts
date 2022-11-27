@@ -1,4 +1,4 @@
-import type { ExperimentsConfig, SlackConfig } from './config.types';
+import { ExperimentsConfig, SlackConfig } from './config.types';
 import { Injectable } from '@nestjs/common';
 import { ConfigService as NestConfigService } from '@nestjs/config';
 import { Env, ServerConfig } from '.';

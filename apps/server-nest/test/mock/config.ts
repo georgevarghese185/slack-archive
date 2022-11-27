@@ -1,4 +1,4 @@
-import type { ExperimentsConfig, SlackConfig } from 'src/config';
+import { ExperimentsConfig, SlackConfig } from 'src/config';
 
 export type MockConfig = ReturnType<typeof createMockConfigService>;
 
