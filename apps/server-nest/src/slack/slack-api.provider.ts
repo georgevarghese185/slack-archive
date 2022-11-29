@@ -6,7 +6,7 @@ import {
   TestAuthRequest,
 } from './slack.types';
 import { HttpStatus, Injectable, Logger } from '@nestjs/common';
-import axios from 'axios';
+import axios, { AxiosRequestConfig } from 'axios';
 import { ConfigService } from 'src/config/config.service';
 import { stringify } from 'querystring';
 import { SlackArchiveError } from 'src/common/error';
@@ -18,19 +18,45 @@ export class SlackApiProvider {
   async exchangeCode(
     request: ExchangeCodeRequest,
   ): Promise<SlackApiResponse<ExchangeCodeResponse>> {
+    return this.post({
+      method: 'POST',
+      url: `${this.configService.slack.baseUrl}/api/oauth.access`,
+      headers: {
+        'content-type': 'application/x-www-form-urlencoded',
+      },
+      auth: {
+        username: this.configService.slack.clientId,
+        password: this.configService.slack.clientSecret,
+      },
+      data: stringify(request),
+    });
+  }
+
+  async testAuth(request: TestAuthRequest): Promise<SlackApiResponse> {
+    return this.post({
+      method: 'POST',
+      url: `${this.configService.slack.baseUrl}/api/auth.test`,
+      headers: {
+        authorization: `Bearer ${request.token}`,
+      },
+    });
+  }
+
+  async revokeAuth(request: RevokeAuthRequest): Promise<SlackApiResponse> {
+    return this.post({
+      method: 'POST',
+      url: `${this.configService.slack.baseUrl}/api/auth.revoke`,
+      headers: {
+        authorization: `Bearer ${request.token}`,
+      },
+    });
+  }
+
+  private async post<R>(
+    config: AxiosRequestConfig,
+  ): Promise<SlackApiResponse<R>> {
     try {
-      const response = await axios({
-        method: 'POST',
-        url: `${this.configService.slack.baseUrl}/api/oauth.access`,
-        headers: {
-          'content-type': 'application/x-www-form-urlencoded',
-        },
-        auth: {
-          username: this.configService.slack.clientId,
-          password: this.configService.slack.clientSecret,
-        },
-        data: stringify(request),
-      });
+      const response = await axios(config);
 
       return response.data;
     } catch (e) {
@@ -42,14 +68,5 @@ export class SlackApiProvider {
         HttpStatus.BAD_GATEWAY,
       );
     }
-  }
-
-  async testAuth(_request: TestAuthRequest): Promise<SlackApiResponse> {
-    throw new Error('Not Implemented');
-  }
-
-  async revokeAuth(_request: RevokeAuthRequest): Promise<SlackApiResponse> {
-    console.log('ooooo');
-    throw new Error('Not Implemented');
   }
 }

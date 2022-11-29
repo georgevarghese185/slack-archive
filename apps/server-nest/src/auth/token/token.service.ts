@@ -40,10 +40,10 @@ export class TokenService {
     this.expiresIn = config.tokenExpiry;
   }
 
-  async sign(payload: TokenPayload): Promise<string> {
+  async sign(payload: TokenPayload, tokenExpiry?: string): Promise<string> {
     const iv = randomBytes(this.keySize);
     const cipher = createCipheriv(this.algorithm, this.key, iv);
-    const token = this.jwtSign(payload);
+    const token = this.jwtSign(payload, tokenExpiry);
 
     const encryptedToken =
       cipher.update(token, 'utf-8', 'base64') + cipher.final('base64');
@@ -92,9 +92,9 @@ export class TokenService {
     return decryptedToken;
   }
 
-  private jwtSign(payload: object) {
+  private jwtSign(payload: object, expiresIn: string = this.expiresIn) {
     return sign(payload, this.config.tokenSecret, {
-      expiresIn: this.expiresIn,
+      expiresIn,
     });
   }
 

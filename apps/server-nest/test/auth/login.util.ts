@@ -21,3 +21,18 @@ export const getVerificationCode = async (app: INestApplication) => {
 
   return verificationCode;
 };
+
+export const login = async (app: INestApplication) => {
+  const verificationCode = await getVerificationCode(app);
+  const response = await request(app.getHttpServer())
+    .post('/v1/login')
+    .send({ verificationCode })
+    .expect(200);
+
+  const cookie = response.headers['set-cookie'][0];
+  const token = decodeURIComponent(
+    cookie.match(/loginToken=([^\s]+);/)?.[1] || '',
+  );
+
+  return { cookie, token };
+};

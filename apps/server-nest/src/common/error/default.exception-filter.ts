@@ -21,7 +21,10 @@ export class DefaultExceptionFilter implements ExceptionFilter {
     let status: number;
 
     if (error instanceof HttpException) {
-      throw error;
+      const exception = error as HttpException;
+      code = `http_${exception.getStatus()}`;
+      message = exception.message;
+      status = exception.getStatus();
     } else if (error instanceof SlackArchiveError) {
       code = error.code;
       message = error.message;
@@ -32,7 +35,9 @@ export class DefaultExceptionFilter implements ExceptionFilter {
       status = HttpStatus.INTERNAL_SERVER_ERROR;
     }
 
-    this.logger.error(error.stack || error);
+    if (status >= HttpStatus.INTERNAL_SERVER_ERROR) {
+      this.logger.error(error.stack || error);
+    }
 
     response.status(status).json({
       errorCode: code,

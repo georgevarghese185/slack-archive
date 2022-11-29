@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { AppModule } from 'src/app.module';
-import { Logger } from 'src/common/logger/logger';
+import { applyMiddleware, AppModule } from 'src/app.module';
+import { Logger } from '@nestjs/common';
 
 export const createTestApp = async () => {
   const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -11,6 +11,7 @@ export const createTestApp = async () => {
     .compile();
 
   const app = moduleFixture.createNestApplication();
+  applyMiddleware(app);
   await app.init();
   return app;
 };

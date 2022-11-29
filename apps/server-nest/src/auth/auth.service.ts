@@ -1,5 +1,5 @@
 import { SlackArchiveError } from 'src/common/error';
-import { AuthUrl, LoginToken } from './auth.types';
+import { AuthUrl } from './auth.types';
 import { Injectable } from '@nestjs/common';
 import { Logger } from 'src/common/logger/logger';
 import { ConfigService } from 'src/config/config.service';
@@ -44,7 +44,7 @@ export class AuthService {
     };
   }
 
-  async login(verificationCode: string): Promise<LoginToken> {
+  async login(verificationCode: string): Promise<string> {
     const response = await this.slackProvider.exchangeCode({
       code: verificationCode,
       redirect_uri: this.config.slack.oauthRedirectUri,
@@ -60,26 +60,29 @@ export class AuthService {
       userId: user_id,
     });
 
-    return { token };
+    return token;
   }
 
   async validateToken(token: string) {
+    const accessToken = await this.verifyToken(token);
+    const testResponse = await this.slackProvider.testAuth({
+      token: accessToken,
+    });
+
+    if (!testResponse.ok) {
+      if (invalidTokenSlackErrorCodes.includes(testResponse.error)) {
+        throw new InvalidTokenError();
+      }
+
+      this.logger.error(`Error validating Slack token: ${testResponse.error}`);
+      throw new SlackApiError(testResponse.error);
+    }
+  }
+
+  async verifyToken(token: string): Promise<string> {
     try {
       const { accessToken } = await this.tokenService.verify(token);
-      const testResponse = await this.slackProvider.testAuth({
-        token: accessToken,
-      });
-
-      if (!testResponse.ok) {
-        if (invalidTokenSlackErrorCodes.includes(testResponse.error)) {
-          throw new InvalidTokenError();
-        }
-
-        this.logger.error(
-          `Error validating Slack token: ${testResponse.error}`,
-        );
-        throw new SlackApiError(testResponse.error);
-      }
+      return accessToken;
     } catch (e) {
       if (e instanceof ExpiredTokenError) {
         this.revokeToken(token);

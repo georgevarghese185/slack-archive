@@ -46,7 +46,7 @@ describe('Login', () => {
       user_id: userId,
     });
 
-    const { token } = await service.login(verificationCode);
+    const token = await service.login(verificationCode);
     const decodedToken = await tokenService.verify(token);
 
     expect(slackApiProvider.exchangeCode).toHaveBeenCalledWith({
