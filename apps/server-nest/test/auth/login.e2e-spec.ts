@@ -1,10 +1,9 @@
 import { INestApplication } from '@nestjs/common';
 import request from 'supertest';
-import { getVerificationCode, login } from './login.util';
+import { getVerificationCode, isSlackTokenValid, login } from './auth.util';
 import { createTestApp } from 'test/test-app.module';
 import { TokenService } from 'src/auth/token/token.service';
 import { ConfigService } from 'src/config/config.service';
-import axios from 'axios';
 
 describe('Login (e2e)', () => {
   let app: INestApplication;
@@ -128,18 +127,32 @@ describe('Login (e2e)', () => {
         });
 
       // make sure the slack token has been revoked
-      const response = await axios.post(
-        '/api/auth.test',
-        {},
-        {
-          baseURL: configService.slack.baseUrl,
-          headers: {
-            authorization: `Bearer ${accessToken}`,
-          },
-        },
+      const isRevoked = await isSlackTokenValid(
+        configService.slack.baseUrl,
+        accessToken,
       );
 
-      expect(response.data.ok).toEqual(false);
+      expect(isRevoked).toEqual(false);
     });
+  });
+
+  it('/v1/login (DELETE)', async () => {
+    const { cookie, token } = await login(app);
+    const { accessToken } = await tokenService.verify(token);
+
+    await request(app.getHttpServer())
+      .delete('/v1/login')
+      .set('cookie', cookie)
+      .expect(200)
+      .expect((response) =>
+        expect(response.get('Set-Cookie')[0]).toMatch(/loginToken=;/),
+      );
+
+    const isRevoked = await isSlackTokenValid(
+      configService.slack.baseUrl,
+      accessToken,
+    );
+
+    expect(isRevoked).toEqual(false);
   });
 });

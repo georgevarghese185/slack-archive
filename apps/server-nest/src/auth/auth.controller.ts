@@ -2,6 +2,7 @@ import { Response } from 'express';
 import {
   Body,
   Controller,
+  Delete,
   Get,
   HttpCode,
   Post,
@@ -17,6 +18,11 @@ export const Public = () => SetMetadata('isPublic', true);
 
 @Controller('/v1/login')
 export class AuthController {
+  private cookieOptions = {
+    httpOnly: true,
+    secure: !this.config.isDev,
+  };
+
   constructor(
     private authService: AuthService,
     private config: ConfigService,
@@ -37,10 +43,7 @@ export class AuthController {
   ) {
     const token = await this.authService.login(verificationCode);
 
-    res.cookie('loginToken', token, {
-      httpOnly: true,
-      secure: !this.config.isDev,
-    });
+    res.cookie('loginToken', token, this.cookieOptions);
 
     return {};
   }
@@ -48,5 +51,14 @@ export class AuthController {
   @Get('status')
   async getLoginStatus(@Token() token: string) {
     await this.authService.validateToken(token);
+  }
+
+  @Delete()
+  async logout(
+    @Token() token: string,
+    @Res({ passthrough: true }) res: Response,
+  ) {
+    await this.authService.logout(token);
+    res.cookie('loginToken', '', this.cookieOptions);
   }
 }

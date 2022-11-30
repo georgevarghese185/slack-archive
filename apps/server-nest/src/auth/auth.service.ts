@@ -63,6 +63,10 @@ export class AuthService {
     return token;
   }
 
+  async logout(token: string) {
+    await this.revokeToken(token);
+  }
+
   async validateToken(token: string) {
     const accessToken = await this.verifyToken(token);
     const testResponse = await this.slackProvider.testAuth({

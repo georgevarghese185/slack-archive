@@ -36,3 +36,21 @@ export const login = async (app: INestApplication) => {
 
   return { cookie, token };
 };
+
+export const isSlackTokenValid = async (
+  baseUrl: string,
+  token: string,
+): Promise<boolean> => {
+  const response = await axios.post(
+    '/api/auth.test',
+    {},
+    {
+      baseURL: baseUrl,
+      headers: {
+        authorization: `Bearer ${token}`,
+      },
+    },
+  );
+
+  return response.data.ok;
+};
