@@ -3,8 +3,8 @@
   "version": "0.1.0",
   "description": "A webapp to backup content in a Slack Workspace",
   "scripts": {
-    "start:dev": "ENV=dev npm-run-all --parallel mockSlack:start express:dev",
-    "start:prod": "ENV=prod npm run express:prod",
+    "start:dev": "ENV=dev yarn express:dev",
+    "start:prod": "ENV=prod yarn express:prod",
     "test": "nyc mocha --config .mocharc.all.json",
     "test:unit": "nyc mocha --config .mocharc.unit.json",
     "test:integration": "nyc mocha --config .mocharc.integ.json",
