@@ -56,6 +56,12 @@ export class ConfigService {
 
   tokenExpiry = '30 days';
 
+  get db() {
+    return {
+      url: this.getOrThrowrow('DB_URL'),
+    };
+  }
+
   private getOrThrowrow(key: string): string {
     const value = this.nestConfigService.get<string>(key);
 

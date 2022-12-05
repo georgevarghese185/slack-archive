@@ -6,10 +6,17 @@ import { DefaultExceptionFilter } from './common/error/default.exception-filter'
 import { LoggerModule } from './common/logger/logger.module';
 import { ConfigModule } from './config/config.module';
 import { SlackModule } from './slack/slack.module';
+import { DatabaseModule } from './database/database.module';
 import cookieParser from 'cookie-parser';
 
 @Module({
-  imports: [AuthModule, ConfigModule, SlackModule, LoggerModule],
+  imports: [
+    AuthModule,
+    ConfigModule,
+    SlackModule,
+    LoggerModule,
+    DatabaseModule,
+  ],
   controllers: [AppController],
   providers: [
     {
