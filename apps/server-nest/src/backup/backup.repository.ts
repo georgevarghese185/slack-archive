@@ -1,9 +1,17 @@
 import { Injectable } from '@nestjs/common';
-import { Backup } from './backup.types';
+import { Backup, CreateBackup } from './backup.types';
 
 @Injectable()
 export class BackupRepository {
-  getLast(): Promise<Backup | null> {
+  async getLast(): Promise<Backup | null> {
+    throw new Error('Not Implemented');
+  }
+
+  async save(_backup: CreateBackup): Promise<Backup> {
+    throw new Error('Not Implemented');
+  }
+
+  async getActive(): Promise<Backup | null> {
     throw new Error('Not Implemented');
   }
 }

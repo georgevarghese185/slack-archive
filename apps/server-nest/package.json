@@ -73,6 +73,7 @@
       "json",
       "ts"
     ],
+    "resetMocks": true,
     "rootDir": ".",
     "moduleDirectories": [
       "<rootDir>",

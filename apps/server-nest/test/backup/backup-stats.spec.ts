@@ -7,7 +7,7 @@ import { BackupStatus } from 'src/backup/backup.types';
 import { MessageService } from 'src/message/message.service';
 import { ConversationService } from 'src/conversation/conversation.service';
 
-describe('Backup', () => {
+describe('Backup stats', () => {
   let service: BackupService;
   let backupRepository: BackupRepository;
   let messageRepository: MessageRepository;
@@ -64,6 +64,27 @@ describe('Backup', () => {
       messages: messagesCount,
       conversations: conversationsCount,
       lastBackupAt: mockBackup.endedAt,
+    });
+  });
+
+  it('should return backup stats with no last backup', async () => {
+    const messagesCount = 100;
+    const conversationsCount = 5;
+
+    jest.mocked(backupRepository.getLast).mockResolvedValueOnce(null);
+    jest
+      .mocked(messageRepository.getCount)
+      .mockResolvedValueOnce(messagesCount);
+    jest
+      .mocked(conversationRepository.getCount)
+      .mockResolvedValueOnce(conversationsCount);
+
+    const stats = await service.getBackupStats();
+
+    expect(stats).toEqual({
+      messages: messagesCount,
+      conversations: conversationsCount,
+      lastBackupAt: null,
     });
   });
 });

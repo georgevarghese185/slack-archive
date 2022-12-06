@@ -25,6 +25,8 @@ export interface Backup {
   conversationErrors: ConversationError[];
 }
 
+export type CreateBackup = Omit<Backup, 'id'>;
+
 export type BackupStats = {
   messages: number;
   conversations: number;
