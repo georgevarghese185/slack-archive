@@ -12,7 +12,7 @@ export class BackupService {
     private backupRepository: BackupRepository,
   ) {}
 
-  async getBackupStatus(): Promise<BackupStats> {
+  async getBackupStats(): Promise<BackupStats> {
     const [messageCount, conversationCount, lastBackup] = await Promise.all([
       await this.messageService.getCount(),
       await this.conversationService.getCount(),

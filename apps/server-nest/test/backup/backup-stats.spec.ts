@@ -33,7 +33,7 @@ describe('Backup', () => {
     );
   });
 
-  it('should return backup status', async () => {
+  it('should return backup stats', async () => {
     const messagesCount = 100;
     const conversationsCount = 5;
     const mockBackup = {
@@ -58,7 +58,7 @@ describe('Backup', () => {
       .mocked(conversationRepository.getCount)
       .mockResolvedValueOnce(conversationsCount);
 
-    const stats = await service.getBackupStatus();
+    const stats = await service.getBackupStats();
 
     expect(stats).toEqual({
       messages: messagesCount,
