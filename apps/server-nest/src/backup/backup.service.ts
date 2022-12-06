@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { ConversationService } from 'src/conversation/conversation.service';
 import { MessageService } from 'src/message/message.service';
-import { BackupInProgressError } from './backup.errors';
+import { BackupInProgressError, BackupNotFoundError } from './backup.errors';
 import { BackupRepository } from './backup.repository';
 import { Backup, BackupStats, BackupStatus } from './backup.types';
 
@@ -46,5 +46,19 @@ export class BackupService {
       status: BackupStatus.CollectingInfo,
       startedAt: new Date(),
     });
+  }
+
+  async getRunning(): Promise<Backup | null> {
+    return this.backupRepository.getActive();
+  }
+
+  async get(id: string): Promise<Backup> {
+    const backup = await this.backupRepository.findById(id);
+
+    if (!backup) {
+      throw new BackupNotFoundError();
+    }
+
+    return backup;
   }
 }

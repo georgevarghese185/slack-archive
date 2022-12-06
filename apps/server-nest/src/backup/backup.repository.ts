@@ -14,4 +14,8 @@ export class BackupRepository {
   async getActive(): Promise<Backup | null> {
     throw new Error('Not Implemented');
   }
+
+  async findById(_id: string): Promise<Backup | null> {
+    throw new Error('Not Implemented');
+  }
 }
