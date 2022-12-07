@@ -7,6 +7,7 @@ import { Backup } from 'src/backup/backup.types';
 import { MessageService } from 'src/message/message.service';
 import { ConversationService } from 'src/conversation/conversation.service';
 import { BackupInProgressError } from 'src/backup/backup.errors';
+import { BackupDto } from 'src/backup/dto/backup.dto';
 
 describe('New Backup', () => {
   let service: BackupService;
@@ -32,22 +33,16 @@ describe('New Backup', () => {
   });
 
   it('should create a new backup task', async () => {
-    const startTime = new Date();
     const userId = 'U1234';
     const mockBackupId = '1234';
     const expectedBackup = {
       id: mockBackupId,
       backedUpConversations: [],
-      conversationErrors: [],
-      createdBy: userId,
       currentConversation: null,
-      endedAt: null,
-      error: null,
       messagesBackedUp: 0,
-      shouldCancel: false,
+      error: null,
       status: 'COLLECTING_INFO',
-      startedAt: expect.any(Date),
-    } as Backup;
+    } as BackupDto;
 
     jest
       .mocked(backupRepository.save)
@@ -62,20 +57,16 @@ describe('New Backup', () => {
 
     expect(backupRepository.save).toBeCalledWith({
       backedUpConversations: expectedBackup.backedUpConversations,
-      conversationErrors: expectedBackup.conversationErrors,
-      createdBy: expectedBackup.createdBy,
+      conversationErrors: [],
+      createdBy: userId,
       currentConversation: expectedBackup.currentConversation,
-      endedAt: expectedBackup.endedAt,
+      endedAt: null,
       error: expectedBackup.error,
       messagesBackedUp: expectedBackup.messagesBackedUp,
-      shouldCancel: expectedBackup.shouldCancel,
+      shouldCancel: false,
       status: expectedBackup.status,
-      startedAt: expectedBackup.startedAt,
+      startedAt: expect.any(Date),
     });
-
-    expect(backup.startedAt.getTime()).toBeGreaterThanOrEqual(
-      startTime.getTime(),
-    );
   });
 
   it('should not allow 2 backups parallel backups to run at the same time', async () => {

@@ -1,5 +1,5 @@
 import { SlackArchiveError } from 'src/common/error';
-import { AuthUrl } from './auth.types';
+import { AuthUrl, TokenPayload } from './auth.types';
 import { Injectable } from '@nestjs/common';
 import { Logger } from 'src/common/logger/logger';
 import { ConfigService } from 'src/config/config.service';
@@ -68,7 +68,7 @@ export class AuthService {
   }
 
   async validateToken(token: string) {
-    const accessToken = await this.verifyToken(token);
+    const { accessToken } = await this.verifyToken(token);
     const testResponse = await this.slackProvider.testAuth({
       token: accessToken,
     });
@@ -83,10 +83,10 @@ export class AuthService {
     }
   }
 
-  async verifyToken(token: string): Promise<string> {
+  async verifyToken(token: string): Promise<TokenPayload> {
     try {
-      const { accessToken } = await this.tokenService.verify(token);
-      return accessToken;
+      const { accessToken, userId } = await this.tokenService.verify(token);
+      return { accessToken, userId };
     } catch (e) {
       if (e instanceof ExpiredTokenError) {
         this.revokeToken(token);

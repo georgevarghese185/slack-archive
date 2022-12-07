@@ -7,6 +7,9 @@ import { LoggerModule } from './common/logger/logger.module';
 import { ConfigModule } from './config/config.module';
 import { SlackModule } from './slack/slack.module';
 import { DatabaseModule } from './database/database.module';
+import { BackupModule } from './backup/backup.module';
+import { MessageModule } from './message/message.module';
+import { ConversationModule } from './conversation/conversation.module';
 import cookieParser from 'cookie-parser';
 
 @Module({
@@ -16,6 +19,9 @@ import cookieParser from 'cookie-parser';
     SlackModule,
     LoggerModule,
     DatabaseModule,
+    BackupModule,
+    MessageModule,
+    ConversationModule,
   ],
   controllers: [AppController],
   providers: [

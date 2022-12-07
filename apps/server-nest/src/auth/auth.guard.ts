@@ -13,8 +13,12 @@ export class AuthGuard implements CanActivate {
       return true;
     }
 
-    const loginToken = this.extractLoginToken(context);
-    await this.authService.verifyToken(loginToken);
+    const request = context.switchToHttp().getRequest<Request>();
+    const loginToken = this.extractLoginToken(request);
+    const tokenPayload = await this.authService.verifyToken(loginToken);
+
+    request.tokenPayload = tokenPayload;
+
     return true;
   }
 
@@ -25,8 +29,7 @@ export class AuthGuard implements CanActivate {
     );
   }
 
-  private extractLoginToken(context: ExecutionContext) {
-    const request = context.switchToHttp().getRequest<Request>();
+  private extractLoginToken(request: Request) {
     const loginToken = request.cookies.loginToken;
 
     if (!loginToken) {

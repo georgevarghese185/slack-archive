@@ -48,7 +48,14 @@ describe('Get Backup', () => {
   it('should get running backup', async () => {
     jest.mocked(backupRepository.getActive).mockResolvedValueOnce(mockBackup);
     const backup = await service.getRunning();
-    expect(backup).toEqual(mockBackup);
+    expect(backup).toEqual({
+      id: mockBackup.id,
+      status: mockBackup.status,
+      error: mockBackup.error,
+      messagesBackedUp: mockBackup.messagesBackedUp,
+      currentConversation: mockBackup.currentConversation,
+      backedUpConversations: mockBackup.backedUpConversations,
+    });
   });
 
   it('should return null when there is no running backup', async () => {
@@ -60,7 +67,14 @@ describe('Get Backup', () => {
   it('should get backup by id', async () => {
     jest.mocked(backupRepository.findById).mockResolvedValueOnce(mockBackup);
     const backup = await service.get(mockBackup.id);
-    expect(backup).toEqual(mockBackup);
+    expect(backup).toEqual({
+      id: mockBackup.id,
+      status: mockBackup.status,
+      error: mockBackup.error,
+      messagesBackedUp: mockBackup.messagesBackedUp,
+      currentConversation: mockBackup.currentConversation,
+      backedUpConversations: mockBackup.backedUpConversations,
+    });
     expect(backupRepository.findById).toHaveBeenCalledWith(mockBackup.id);
   });
 

@@ -3,7 +3,8 @@ import { ConversationService } from 'src/conversation/conversation.service';
 import { MessageService } from 'src/message/message.service';
 import { BackupInProgressError, BackupNotFoundError } from './backup.errors';
 import { BackupRepository } from './backup.repository';
-import { Backup, BackupStats, BackupStatus } from './backup.types';
+import { BackupStats, BackupStatus } from './backup.types';
+import { BackupDto } from './dto/backup.dto';
 
 @Injectable()
 export class BackupService {
@@ -27,14 +28,14 @@ export class BackupService {
     };
   }
 
-  async startBackup(createdBy: string): Promise<Backup> {
+  async startBackup(createdBy: string): Promise<BackupDto> {
     const activeBackup = await this.backupRepository.getActive();
 
     if (activeBackup) {
       throw new BackupInProgressError();
     }
 
-    return this.backupRepository.save({
+    const backup = await this.backupRepository.save({
       backedUpConversations: [],
       conversationErrors: [],
       createdBy,
@@ -46,19 +47,27 @@ export class BackupService {
       status: BackupStatus.CollectingInfo,
       startedAt: new Date(),
     });
+
+    return BackupDto.fromBackup(backup);
   }
 
-  async getRunning(): Promise<Backup | null> {
-    return this.backupRepository.getActive();
+  async getRunning(): Promise<BackupDto | null> {
+    const backup = await this.backupRepository.getActive();
+
+    if (!backup) {
+      return null;
+    }
+
+    return BackupDto.fromBackup(backup);
   }
 
-  async get(id: string): Promise<Backup> {
+  async get(id: string): Promise<BackupDto> {
     const backup = await this.backupRepository.findById(id);
 
     if (!backup) {
       throw new BackupNotFoundError();
     }
 
-    return backup;
+    return BackupDto.fromBackup(backup);
   }
 }
