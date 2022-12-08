@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Not, In, Repository } from 'typeorm';
 import BackupEntity from './backup.entity';
 import { Backup, BackupStatus, CreateBackup } from './backup.types';
+import { v4 as uuid } from 'uuid';
 
 @Injectable()
 export class BackupRepository {
@@ -12,11 +13,19 @@ export class BackupRepository {
   ) {}
 
   async getLast(): Promise<Backup | null> {
-    throw new Error('Not Implemented');
+    const backups = await this.repository.find({
+      order: { endedAt: 'DESC' },
+      take: 1,
+    });
+
+    return backups[0] || null;
   }
 
-  async save(_backup: CreateBackup): Promise<Backup> {
-    throw new Error('Not Implemented');
+  async save(createBackup: CreateBackup): Promise<Backup> {
+    const backup = BackupEntity.create(createBackup);
+    backup.id = uuid();
+
+    return this.repository.save(backup);
   }
 
   async getActive(): Promise<Backup | null> {
@@ -33,7 +42,7 @@ export class BackupRepository {
     });
   }
 
-  async findById(_id: string): Promise<Backup | null> {
-    throw new Error('Not Implemented');
+  async findById(id: string): Promise<Backup | null> {
+    return this.repository.findOneBy({ id });
   }
 }

@@ -26,7 +26,10 @@ export class BackupController {
   }
 
   @Post('new')
-  startBackup(@UserId() userId: string) {
-    this.backupService.startBackup(userId);
+  async startBackup(@UserId() userId: string) {
+    const backup = await this.backupService.startBackup(userId);
+    return {
+      backupId: backup.id,
+    };
   }
 }

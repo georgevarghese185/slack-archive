@@ -1,5 +1,17 @@
-import { Column, Entity, PrimaryColumn } from 'typeorm';
-import { Backup, BackupStatus, ConversationError } from './backup.types';
+import {
+  AfterLoad,
+  BeforeInsert,
+  BeforeUpdate,
+  Column,
+  Entity,
+  PrimaryColumn,
+} from 'typeorm';
+import {
+  Backup,
+  BackupStatus,
+  ConversationError,
+  CreateBackup,
+} from './backup.types';
 
 @Entity({ name: 'backups' })
 export default class BackupEntity implements Backup {
@@ -60,4 +72,50 @@ export default class BackupEntity implements Backup {
 
   @Column({ type: 'timestamp with time zone', nullable: false })
   createdAt!: Date;
+
+  @BeforeInsert()
+  @BeforeUpdate()
+  async setBackupedUpConversations() {
+    this._backedUpConversations = JSON.stringify(this.backedUpConversations);
+  }
+
+  @BeforeInsert()
+  async setDates() {
+    const now = new Date();
+
+    if (!this.createdAt) {
+      this.createdAt = now;
+    }
+
+    if (!this.updatedAt) {
+      this.updatedAt = now;
+    }
+  }
+
+  @BeforeUpdate()
+  async updateDate() {
+    this.updatedAt = new Date();
+  }
+
+  @AfterLoad()
+  async loadBackedUpConversations() {
+    this.backedUpConversations = JSON.parse(this._backedUpConversations);
+  }
+
+  static create(createBackup: CreateBackup) {
+    const backup = new BackupEntity();
+
+    backup.createdBy = createBackup.createdBy;
+    backup.startedAt = createBackup.startedAt;
+    backup.endedAt = createBackup.endedAt;
+    backup.status = createBackup.status;
+    backup.messagesBackedUp = createBackup.messagesBackedUp;
+    backup.currentConversation = createBackup.currentConversation;
+    backup.backedUpConversations = createBackup.backedUpConversations;
+    backup.shouldCancel = createBackup.shouldCancel;
+    backup.error = createBackup.error;
+    backup.conversationErrors = createBackup.conversationErrors;
+
+    return backup;
+  }
 }
