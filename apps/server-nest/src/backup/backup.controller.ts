@@ -1,5 +1,5 @@
 import { Controller, Get, Param, Post } from '@nestjs/common';
-import { UserId } from 'src/auth/user-id.decorator';
+import { UserId } from 'src/auth';
 import { BackupService } from './backup.service';
 
 @Controller('/v1/backups')

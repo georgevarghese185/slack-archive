@@ -1,4 +1,4 @@
-import { SlackArchiveError } from 'src/common/error';
+import { SlackArchiveError } from 'src/common';
 
 export class BackupInProgressError extends SlackArchiveError {
   constructor() {

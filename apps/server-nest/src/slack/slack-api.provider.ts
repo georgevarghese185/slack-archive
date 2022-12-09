@@ -9,7 +9,7 @@ import { HttpStatus, Injectable, Logger } from '@nestjs/common';
 import axios, { AxiosRequestConfig } from 'axios';
 import { ConfigService } from 'src/config/config.service';
 import { stringify } from 'querystring';
-import { SlackArchiveError } from 'src/common/error';
+import { SlackArchiveError } from 'src/common';
 
 @Injectable()
 export class SlackApiProvider {

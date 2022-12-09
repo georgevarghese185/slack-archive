@@ -10,9 +10,9 @@ import {
   SetMetadata,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { LoginDto } from './dto/login.dto';
+import { LoginDto } from './dto';
 import { ConfigService } from 'src/config/config.service';
-import { Token } from './token.decorator';
+import { Token } from './decorator';
 
 export const Public = () => SetMetadata('isPublic', true);
 

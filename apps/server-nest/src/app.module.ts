@@ -2,7 +2,7 @@ import { INestApplication, Module } from '@nestjs/common';
 import { APP_FILTER } from '@nestjs/core';
 import { AppController } from './app.controller';
 import { AuthModule } from './auth/auth.module';
-import { DefaultExceptionFilter } from './common/error/default.exception-filter';
+import { DefaultExceptionFilter } from './common/error';
 import { LoggerModule } from './common/logger/logger.module';
 import { ConfigModule } from './config/config.module';
 import { SlackModule } from './slack/slack.module';

@@ -1,17 +1,17 @@
-import { SlackArchiveError } from 'src/common/error';
+import { SlackArchiveError } from 'src/common';
 import { AuthUrl, TokenPayload } from './auth.types';
 import { Injectable } from '@nestjs/common';
 import { Logger } from 'src/common/logger/logger';
 import { ConfigService } from 'src/config/config.service';
 import { SCOPE_PRIVATE_MESSAGES, SCOPE_PUBLIC_MESSAGES } from 'src/slack';
 import { SlackApiProvider } from 'src/slack/slack-api.provider';
-import { SlackApiError } from 'src/slack/slack.errors';
+import { SlackApiError } from 'src/slack';
 import {
   InvalidVerificationCodeError,
   SpentVerificationCodeError,
 } from './auth.errors';
 import { TokenService } from './token/token.service';
-import { ExpiredTokenError, InvalidTokenError } from './token/token.errors';
+import { ExpiredTokenError, InvalidTokenError } from './token';
 
 const invalidTokenSlackErrorCodes = [
   'invalid_auth',

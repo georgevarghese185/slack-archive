@@ -4,7 +4,7 @@ import { MessageService } from 'src/message/message.service';
 import { BackupInProgressError, BackupNotFoundError } from './backup.errors';
 import { BackupRepository } from './backup.repository';
 import { BackupStats, BackupStatus } from './backup.types';
-import { BackupDto } from './dto/backup.dto';
+import { BackupDto } from './dto';
 
 @Injectable()
 export class BackupService {

@@ -1,5 +1,5 @@
 import { HttpStatus } from '@nestjs/common';
-import { SlackArchiveError } from 'src/common/error';
+import { SlackArchiveError } from 'src/common';
 
 export class InvalidVerificationCodeError extends SlackArchiveError {
   constructor() {
