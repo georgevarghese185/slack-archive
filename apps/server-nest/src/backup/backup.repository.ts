@@ -4,6 +4,7 @@ import { Not, In, Repository } from 'typeorm';
 import BackupEntity from './backup.entity';
 import { Backup, BackupStatus, CreateBackup } from './backup.types';
 import { v4 as uuid } from 'uuid';
+import { BackupNotFoundError } from './backup.errors';
 
 @Injectable()
 export class BackupRepository {
@@ -28,6 +29,10 @@ export class BackupRepository {
     return this.repository.save(backup);
   }
 
+  async update(id: string, update: Partial<Backup>) {
+    return this.repository.update({ id }, update);
+  }
+
   async getActive(): Promise<Backup | null> {
     return this.repository.findOne({
       where: {
@@ -44,5 +49,18 @@ export class BackupRepository {
 
   async findById(id: string): Promise<Backup | null> {
     return this.repository.findOneBy({ id });
+  }
+
+  async shouldCancel(id: string): Promise<boolean> {
+    const backups = await this.repository.find({
+      where: { id },
+      select: ['shouldCancel'],
+    });
+
+    if (!backups[0]) {
+      throw new BackupNotFoundError();
+    }
+
+    return backups[0]?.shouldCancel || false;
   }
 }

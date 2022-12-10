@@ -8,7 +8,7 @@ import { MessageService } from 'src/message/message.service';
 import { ConversationService } from 'src/conversation/conversation.service';
 import { BackupNotFoundError } from 'src/backup/backup.errors';
 
-const mockBackup = {
+const mockBackup = Object.freeze({
   id: '1234',
   backedUpConversations: [],
   conversationErrors: [],
@@ -20,7 +20,7 @@ const mockBackup = {
   shouldCancel: false,
   status: 'COLLECTING_INFO',
   startedAt: expect.any(Date),
-} as Backup;
+} as Backup);
 
 describe('Get Backup', () => {
   let service: BackupService;

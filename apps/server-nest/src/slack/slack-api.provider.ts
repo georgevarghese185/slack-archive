@@ -1,4 +1,5 @@
 import {
+  ConversationsRequest,
   ConversationsResponse,
   ExchangeCodeRequest,
   ExchangeCodeResponse,
@@ -53,8 +54,12 @@ export class SlackApiProvider {
     });
   }
 
-  async getConversations(): Promise<SlackApiResponse<ConversationsResponse>> {
+  async getConversations(
+    _request: ConversationsRequest = {},
+  ): Promise<SlackApiResponse<ConversationsResponse>> {
     throw new Error('Not Implemented');
+
+    // TODO: handle rate limiting
   }
 
   private async post<R>(

@@ -16,6 +16,10 @@ export type RevokeAuthRequest = {
   token: string;
 };
 
+export type ConversationsRequest = {
+  cursor?: string;
+};
+
 export type ConversationsResponse = {
   channels: Channel[];
 };

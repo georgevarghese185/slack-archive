@@ -1,4 +1,10 @@
-import { SlackArchiveError } from 'src/common';
+import { InternalSlackArchiveError, SlackArchiveError } from 'src/common';
+
+export class BackupCancelledError extends InternalSlackArchiveError {
+  constructor() {
+    super('Backup cancelled');
+  }
+}
 
 export class BackupInProgressError extends SlackArchiveError {
   constructor() {
