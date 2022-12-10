@@ -8,4 +8,6 @@ async function bootstrap() {
   const config = app.get<ConfigService>(ConfigService);
   await app.listen(config.server.port);
 }
-bootstrap();
+
+// eslint-disable-next-line no-console
+bootstrap().catch(console.error);

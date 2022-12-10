@@ -89,7 +89,7 @@ export class AuthService {
       return { accessToken, userId };
     } catch (e) {
       if (e instanceof ExpiredTokenError) {
-        this.revokeToken(token);
+        void this.revokeToken(token);
       }
 
       throw e;
