@@ -27,7 +27,7 @@ export class BackupController {
 
   @Post('new')
   async startBackup(@UserId() userId: string) {
-    const backup = await this.backupService.startBackup(userId);
+    const backup = await this.backupService.createBackup(userId);
     return {
       backupId: backup.id,
     };

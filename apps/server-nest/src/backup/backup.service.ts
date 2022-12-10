@@ -28,7 +28,7 @@ export class BackupService {
     };
   }
 
-  async startBackup(createdBy: string): Promise<BackupDto> {
+  async createBackup(createdBy: string): Promise<BackupDto> {
     const activeBackup = await this.backupRepository.getActive();
 
     if (activeBackup) {

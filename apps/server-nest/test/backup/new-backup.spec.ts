@@ -51,7 +51,7 @@ describe('New Backup', () => {
         id: mockBackupId,
       }));
 
-    const backup = await service.startBackup(userId);
+    const backup = await service.createBackup(userId);
 
     expect(backup).toEqual(expectedBackup);
 
@@ -76,7 +76,7 @@ describe('New Backup', () => {
 
     jest.mocked(backupRepository.getActive).mockResolvedValueOnce(activeBackup);
 
-    await expect(service.startBackup('U1234')).rejects.toBeInstanceOf(
+    await expect(service.createBackup('U1234')).rejects.toBeInstanceOf(
       BackupInProgressError,
     );
   });
