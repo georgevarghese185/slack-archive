@@ -1,4 +1,5 @@
 import {
+  ConversationsResponse,
   ExchangeCodeRequest,
   ExchangeCodeResponse,
   RevokeAuthRequest,
@@ -50,6 +51,10 @@ export class SlackApiProvider {
         authorization: `Bearer ${request.token}`,
       },
     });
+  }
+
+  async getConversations(): Promise<SlackApiResponse<ConversationsResponse>> {
+    throw new Error('Not Implemented');
   }
 
   private async post<R>(

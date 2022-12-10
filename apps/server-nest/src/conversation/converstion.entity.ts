@@ -1,7 +1,8 @@
 import { Column, Entity, PrimaryColumn } from 'typeorm';
+import { Conversation } from './conversation.types';
 
 @Entity('conversations')
-export default class ConversationEntity {
+export default class ConversationEntity implements Conversation {
   @PrimaryColumn({ type: 'text' })
   id!: string;
 

@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { Conversation } from './conversation.types';
 import ConversationEntity from './converstion.entity';
 
 @Injectable()
@@ -12,5 +13,9 @@ export class ConversationRepository {
 
   getCount(): Promise<number> {
     return this.repository.count();
+  }
+
+  async save(_conversations: Conversation[]) {
+    throw new Error('Not Implemented');
   }
 }
