@@ -18,4 +18,8 @@ export class ConversationRepository {
   async save(_conversations: Conversation[]) {
     throw new Error('Not Implemented');
   }
+
+  async list(): Promise<Conversation[]> {
+    return this.repository.find();
+  }
 }

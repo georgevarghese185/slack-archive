@@ -13,4 +13,8 @@ export class ConversationService {
   async add(conversations: Conversation[]) {
     await this.conversationRepository.save(conversations);
   }
+
+  async list() {
+    return this.conversationRepository.list();
+  }
 }
