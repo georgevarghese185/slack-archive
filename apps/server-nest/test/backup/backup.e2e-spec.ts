@@ -10,8 +10,12 @@ import { Repository } from 'typeorm';
 describe('Backup (e2e)', () => {
   let app: INestApplication;
 
-  beforeEach(async () => {
+  beforeAll(async () => {
     app = await createTestApp();
+  });
+
+  afterAll(async () => {
+    await app.close();
   });
 
   describe('/v1/backups/stats', () => {

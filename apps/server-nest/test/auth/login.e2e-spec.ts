@@ -10,10 +10,14 @@ describe('Login (e2e)', () => {
   let tokenService: TokenService;
   let configService: ConfigService;
 
-  beforeEach(async () => {
+  beforeAll(async () => {
     app = await createTestApp();
     tokenService = app.get<TokenService>(TokenService);
     configService = app.get<ConfigService>(ConfigService);
+  });
+
+  afterAll(async () => {
+    await app.close();
   });
 
   it('/v1/login/auth-url (GET)', () => {

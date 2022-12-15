@@ -5,8 +5,12 @@ import { createTestApp } from './test-app.module';
 describe('Error Handling (e2e)', () => {
   let app: INestApplication;
 
-  beforeEach(async () => {
+  beforeAll(async () => {
     app = await createTestApp();
+  });
+
+  afterAll(async () => {
+    await app.close();
   });
 
   it('should handle slack API errors', async () => {
