@@ -12,6 +12,7 @@ import axios, { AxiosRequestConfig } from 'axios';
 import { ConfigService } from 'src/config/config.service';
 import { stringify } from 'querystring';
 import { SlackArchiveError } from 'src/common';
+import { withRateLimiting } from 'src/common/axios/with-rate-limiting';
 
 @Injectable()
 export class SlackApiProvider {
@@ -69,6 +70,8 @@ export class SlackApiProvider {
       const axiosInstance = axios.create({
         baseURL: this.config.slack.baseUrl,
       });
+
+      withRateLimiting(axiosInstance);
 
       const response = await axiosInstance(config);
 
