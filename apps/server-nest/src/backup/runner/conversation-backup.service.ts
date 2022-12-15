@@ -12,10 +12,14 @@ export class ConversationBackupService {
     private cancelService: BackupCancellationService,
   ) {}
 
-  async backup(backupId: string, cursor?: string): Promise<void> {
+  async backup(
+    backupId: string,
+    accessToken: string,
+    cursor?: string,
+  ): Promise<void> {
     await this.cancelService.checkCancellation(backupId);
 
-    const response = await this.getConversations(cursor);
+    const response = await this.getConversations(accessToken, cursor);
 
     if (!response.ok) {
       throw new Error('Not Implemented');
@@ -27,14 +31,14 @@ export class ConversationBackupService {
     await this.saveConversations(channels);
 
     if (nextCursor) {
-      return this.backup(backupId, nextCursor);
+      return this.backup(backupId, accessToken, nextCursor);
     }
   }
 
-  private async getConversations(cursor?: string) {
+  private async getConversations(token: string, cursor?: string) {
     return cursor
-      ? await this.slackApiProvider.getConversations({ cursor })
-      : await this.slackApiProvider.getConversations();
+      ? await this.slackApiProvider.getConversations({ cursor, token })
+      : await this.slackApiProvider.getConversations({ token });
   }
 
   private async saveConversations(channels: Channel[]) {

@@ -32,3 +32,8 @@ export type BackupStats = {
   conversations: number;
   lastBackupAt: Date | null;
 };
+
+export type BackupEventPayload = {
+  backupId: string;
+  accessToken: string;
+};

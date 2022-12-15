@@ -75,12 +75,12 @@ export default class BackupEntity implements Backup {
 
   @BeforeInsert()
   @BeforeUpdate()
-  async setBackupedUpConversations() {
+  private async setBackupedUpConversations() {
     this._backedUpConversations = JSON.stringify(this.backedUpConversations);
   }
 
   @BeforeInsert()
-  async setDates() {
+  private async setDates() {
     const now = new Date();
 
     if (!this.createdAt) {
@@ -93,12 +93,15 @@ export default class BackupEntity implements Backup {
   }
 
   @BeforeUpdate()
-  async updateDate() {
+  private async updateDate() {
     this.updatedAt = new Date();
   }
 
   @AfterLoad()
-  async loadBackedUpConversations() {
+  private async loadBackedUpConversations() {
+    if (!this._backedUpConversations) {
+      return;
+    }
     this.backedUpConversations = JSON.parse(this._backedUpConversations);
   }
 

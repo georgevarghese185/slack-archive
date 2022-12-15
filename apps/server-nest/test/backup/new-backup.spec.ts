@@ -8,10 +8,12 @@ import { MessageService } from 'src/message/message.service';
 import { ConversationService } from 'src/conversation/conversation.service';
 import { BackupInProgressError } from 'src/backup/backup.errors';
 import { BackupDto } from 'src/backup/dto/backup.dto';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 
 describe('New Backup', () => {
   let service: BackupService;
   let backupRepository: BackupRepository;
+  let eventEmitter: EventEmitter2;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -25,16 +27,19 @@ describe('New Backup', () => {
         },
         { provide: MessageRepository, useValue: {} },
         { provide: ConversationRepository, useValue: {} },
+        { provide: EventEmitter2, useValue: { emit: jest.fn() } },
       ],
     }).compile();
 
     service = module.get<BackupService>(BackupService);
     backupRepository = module.get<BackupRepository>(BackupRepository);
+    eventEmitter = module.get<EventEmitter2>(EventEmitter2);
   });
 
   it('should create a new backup task', async () => {
     const userId = 'U1234';
     const mockBackupId = '1234';
+    const accessToken = '1111';
     const expectedBackup = {
       id: mockBackupId,
       backedUpConversations: [],
@@ -51,7 +56,7 @@ describe('New Backup', () => {
         id: mockBackupId,
       }));
 
-    const backup = await service.createBackup(userId);
+    const backup = await service.createBackup(userId, accessToken);
 
     expect(backup).toEqual(expectedBackup);
 
@@ -67,6 +72,11 @@ describe('New Backup', () => {
       status: expectedBackup.status,
       startedAt: expect.any(Date),
     });
+
+    expect(eventEmitter.emit).toBeCalledWith('backup.created', {
+      backupId: backup.id,
+      accessToken,
+    });
   });
 
   it('should not allow 2 backups parallel backups to run at the same time', async () => {
@@ -76,7 +86,7 @@ describe('New Backup', () => {
 
     jest.mocked(backupRepository.getActive).mockResolvedValueOnce(activeBackup);
 
-    await expect(service.createBackup('U1234')).rejects.toBeInstanceOf(
+    await expect(service.createBackup('U1234', '1111')).rejects.toBeInstanceOf(
       BackupInProgressError,
     );
   });

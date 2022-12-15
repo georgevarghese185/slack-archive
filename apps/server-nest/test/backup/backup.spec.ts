@@ -4,6 +4,7 @@ import { BackupRepository } from 'src/backup/backup.repository';
 import { BackupCancellationService } from 'src/backup/runner/backup-cancellation.service';
 import { BackupRunnerService } from 'src/backup/runner/backup-runner.service';
 import { ConversationBackupService } from 'src/backup/runner/conversation-backup.service';
+import { Logger } from 'src/common/logger/logger';
 import { ConversationRepository } from 'src/conversation/conversation.repository';
 import { ConversationService } from 'src/conversation/conversation.service';
 import { Channel } from 'src/slack';
@@ -41,6 +42,10 @@ describe('Backup conversations', () => {
           provide: SlackApiProvider,
           useValue: { getConversations: jest.fn() },
         },
+        {
+          provide: Logger,
+          useValue: { error: jest.fn() },
+        },
       ],
     }).compile();
 
@@ -60,7 +65,7 @@ describe('Backup conversations', () => {
 
     jest.useFakeTimers().setSystemTime(expectedEndedAt);
 
-    await service.runBackup(backupId);
+    await service.runBackup(backupId, '1111');
 
     expect(backupRespository.update).toBeCalledWith(backupId, {
       status: 'COMPLETED',

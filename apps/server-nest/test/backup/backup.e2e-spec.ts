@@ -5,7 +5,7 @@ import { BackupStatus } from 'src/backup/backup.types';
 import request from 'supertest';
 import { login } from 'test/auth/auth.util';
 import { createTestApp } from 'test/test-app.module';
-import { Repository } from 'typeorm';
+import { In, Not, Repository } from 'typeorm';
 
 describe('Backup (e2e)', () => {
   let app: INestApplication;
@@ -85,7 +85,15 @@ describe('Backup (e2e)', () => {
 
     afterAll(async () => {
       await backupRepository.update(
-        { id: backupId },
+        {
+          status: Not(
+            In([
+              BackupStatus.Cancelled,
+              BackupStatus.Completed,
+              BackupStatus.Failed,
+            ]),
+          ),
+        },
         { status: BackupStatus.Failed, error: 'Stopping test backup' },
       );
     });
@@ -149,6 +157,24 @@ describe('Backup (e2e)', () => {
             backedUpConversations: expect.toBeArray(),
           }),
         );
+    });
+
+    it('should complete backup', async () => {
+      let response;
+
+      for (let i = 0; i < 4; i++) {
+        response = await request(app.getHttpServer())
+          .get(`/v1/backups/${backupId}`)
+          .set('cookie', cookie);
+
+        if (response.body.status === 'COMPLETED') {
+          break;
+        }
+
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+      }
+
+      expect(response?.body.status).toEqual('COMPLETED');
     });
   });
 });

@@ -17,6 +17,7 @@ export type RevokeAuthRequest = {
 };
 
 export type ConversationsRequest = {
+  token: string;
   cursor?: string;
 };
 

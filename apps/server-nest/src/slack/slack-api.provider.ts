@@ -56,11 +56,27 @@ export class SlackApiProvider {
   }
 
   async getConversations(
-    _request: ConversationsRequest = {},
+    request: ConversationsRequest,
   ): Promise<SlackApiResponse<ConversationsResponse>> {
-    throw new Error('Not Implemented');
+    const params: Record<string, string> = {};
 
-    // TODO: handle rate limiting
+    if (request.cursor) {
+      params['cursor'] = request.cursor;
+    }
+
+    if (this.config.experiments.backupPrivateMessages) {
+      // for experimental use. Not officially supported yet
+      params['types'] = 'public_channel,private_channel,mpim,im';
+    }
+
+    return this.request({
+      method: 'GET',
+      url: '/api/conversations.list',
+      headers: {
+        authorization: `Bearer ${request.token}`,
+      },
+      params,
+    });
   }
 
   private async request<R>(

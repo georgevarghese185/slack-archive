@@ -8,6 +8,7 @@ import { SlackApiProvider } from 'src/slack/slack-api.provider';
 import { Channel } from 'src/slack';
 import { BackupCancellationService } from 'src/backup/runner/backup-cancellation.service';
 import { ConversationBackupService } from 'src/backup/runner/conversation-backup.service';
+import { Logger } from 'src/common/logger/logger';
 
 const mockChannel1: Channel = Object.freeze({
   id: 'C1000',
@@ -48,6 +49,10 @@ describe('Backup conversations', () => {
           provide: SlackApiProvider,
           useValue: { getConversations: jest.fn() },
         },
+        {
+          provide: Logger,
+          useValue: { error: jest.fn() },
+        },
       ],
     }).compile();
 
@@ -60,6 +65,7 @@ describe('Backup conversations', () => {
   });
 
   it('should backup conversations', async () => {
+    const accessToken = '1111';
     const mockChannels: Channel[] = [mockChannel1, mockChannel2];
 
     jest.mocked(backupRespository.shouldCancel).mockResolvedValue(false);
@@ -69,7 +75,7 @@ describe('Backup conversations', () => {
       channels: mockChannels,
     });
 
-    await service.runBackup('1234');
+    await service.runBackup('1234', accessToken);
 
     expect(conversationRepository.save).toHaveBeenCalledWith(
       mockChannels.map(
@@ -81,9 +87,14 @@ describe('Backup conversations', () => {
           } as Conversation),
       ),
     );
+
+    expect(slackApiProvider.getConversations).toHaveBeenCalledWith({
+      token: accessToken,
+    });
   });
 
   it('should handle paginated conversations', async () => {
+    const accessToken = '1111';
     const cursor = '1234';
 
     jest.mocked(backupRespository.shouldCancel).mockResolvedValue(false);
@@ -102,7 +113,7 @@ describe('Backup conversations', () => {
         channels: [mockChannel2],
       });
 
-    await service.runBackup('1234');
+    await service.runBackup('1234', accessToken);
 
     expect(conversationRepository.save).toHaveBeenCalledWith([
       {
@@ -120,7 +131,10 @@ describe('Backup conversations', () => {
       } as Conversation,
     ]);
 
-    expect(slackApiProvider.getConversations).toHaveBeenCalledWith({ cursor });
+    expect(slackApiProvider.getConversations).toHaveBeenCalledWith({
+      token: accessToken,
+      cursor,
+    });
   });
 
   it('should handle cancellation mid-backup', async () => {
@@ -146,7 +160,7 @@ describe('Backup conversations', () => {
         };
       });
 
-    await service.runBackup(backupId);
+    await service.runBackup(backupId, '1111');
 
     expect(backupRespository.shouldCancel).toHaveBeenCalledWith(backupId);
     expect(backupRespository.update).toBeCalledWith(backupId, {

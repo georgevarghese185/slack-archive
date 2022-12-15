@@ -1,6 +1,8 @@
 import { Injectable } from '@nestjs/common';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 import { ConversationService } from 'src/conversation/conversation.service';
 import { MessageService } from 'src/message/message.service';
+import { BackupEventPayload } from '.';
 import { BackupInProgressError, BackupNotFoundError } from './backup.errors';
 import { BackupRepository } from './backup.repository';
 import { BackupStats, BackupStatus } from './backup.types';
@@ -12,6 +14,7 @@ export class BackupService {
     private messageService: MessageService,
     private conversationService: ConversationService,
     private backupRepository: BackupRepository,
+    private eventEmitter: EventEmitter2,
   ) {}
 
   async getBackupStats(): Promise<BackupStats> {
@@ -28,7 +31,10 @@ export class BackupService {
     };
   }
 
-  async createBackup(createdBy: string): Promise<BackupDto> {
+  async createBackup(
+    createdBy: string,
+    accessToken: string,
+  ): Promise<BackupDto> {
     const activeBackup = await this.backupRepository.getActive();
 
     if (activeBackup) {
@@ -47,6 +53,11 @@ export class BackupService {
       status: BackupStatus.CollectingInfo,
       startedAt: new Date(),
     });
+
+    this.eventEmitter.emit('backup.created', {
+      backupId: backup.id,
+      accessToken,
+    } as BackupEventPayload);
 
     return BackupDto.fromBackup(backup);
   }

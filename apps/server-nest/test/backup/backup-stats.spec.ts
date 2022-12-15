@@ -6,6 +6,7 @@ import { ConversationRepository } from 'src/conversation/conversation.repository
 import { BackupStatus } from 'src/backup/backup.types';
 import { MessageService } from 'src/message/message.service';
 import { ConversationService } from 'src/conversation/conversation.service';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 
 describe('Backup stats', () => {
   let service: BackupService;
@@ -22,6 +23,7 @@ describe('Backup stats', () => {
         { provide: BackupRepository, useValue: { getLast: jest.fn() } },
         { provide: MessageRepository, useValue: { getCount: jest.fn() } },
         { provide: ConversationRepository, useValue: { getCount: jest.fn() } },
+        { provide: EventEmitter2, useValue: { emit: jest.fn() } },
       ],
     }).compile();
 

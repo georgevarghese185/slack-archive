@@ -1,5 +1,6 @@
 import { Controller, Get, Param, Post } from '@nestjs/common';
 import { UserId } from 'src/auth';
+import { AccessToken } from 'src/auth/decorator/access-token.decorator';
 import { BackupService } from './backup.service';
 
 @Controller('/v1/backups')
@@ -26,8 +27,11 @@ export class BackupController {
   }
 
   @Post('new')
-  async startBackup(@UserId() userId: string) {
-    const backup = await this.backupService.createBackup(userId);
+  async startBackup(
+    @UserId() userId: string,
+    @AccessToken() accessToken: string,
+  ) {
+    const backup = await this.backupService.createBackup(userId, accessToken);
     return {
       backupId: backup.id,
     };

@@ -1,5 +1,6 @@
 import { INestApplication, Module } from '@nestjs/common';
 import { APP_FILTER } from '@nestjs/core';
+import { EventEmitterModule } from '@nestjs/event-emitter';
 import { AppController } from './app.controller';
 import { AuthModule } from './auth/auth.module';
 import { DefaultExceptionFilter } from './common/error';
@@ -14,6 +15,7 @@ import cookieParser from 'cookie-parser';
 
 @Module({
   imports: [
+    EventEmitterModule.forRoot(),
     AuthModule,
     ConfigModule,
     SlackModule,

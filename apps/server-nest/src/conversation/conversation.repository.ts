@@ -15,8 +15,8 @@ export class ConversationRepository {
     return this.repository.count();
   }
 
-  async save(_conversations: Conversation[]) {
-    throw new Error('Not Implemented');
+  async save(conversations: Conversation[]) {
+    await this.repository.save(conversations.map(ConversationEntity.create));
   }
 
   async list(): Promise<Conversation[]> {

@@ -6,9 +6,11 @@ import { BackupController } from './backup.controller';
 import BackupEntity from './backup.entity';
 import { BackupRepository } from './backup.repository';
 import { BackupService } from './backup.service';
+import { BackupRunnerModule } from './runner/backup-runner.module';
 
 @Module({
   imports: [
+    BackupRunnerModule,
     MessageModule,
     ConversationModule,
     TypeOrmModule.forFeature([BackupEntity]),

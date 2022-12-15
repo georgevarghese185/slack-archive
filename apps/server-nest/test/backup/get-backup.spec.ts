@@ -7,6 +7,7 @@ import { Backup } from 'src/backup/backup.types';
 import { MessageService } from 'src/message/message.service';
 import { ConversationService } from 'src/conversation/conversation.service';
 import { BackupNotFoundError } from 'src/backup/backup.errors';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 
 const mockBackup = Object.freeze({
   id: '1234',
@@ -38,6 +39,7 @@ describe('Get Backup', () => {
         },
         { provide: MessageRepository, useValue: {} },
         { provide: ConversationRepository, useValue: {} },
+        { provide: EventEmitter2, useValue: { emit: jest.fn() } },
       ],
     }).compile();
 
