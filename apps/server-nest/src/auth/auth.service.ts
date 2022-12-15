@@ -101,7 +101,7 @@ export class AuthService {
       const { accessToken } = await this.tokenService.verify(token, true);
       await this.slackProvider.revokeAuth({ token: accessToken });
     } catch (e) {
-      this.logger.error(e);
+      this.logger.error('Could not revoke token', e);
     }
   }
 

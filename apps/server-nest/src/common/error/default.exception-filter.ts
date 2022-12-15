@@ -36,7 +36,7 @@ export class DefaultExceptionFilter implements ExceptionFilter {
     }
 
     if (status >= HttpStatus.INTERNAL_SERVER_ERROR) {
-      this.logger.error(error.stack || error);
+      this.logger.error('Internal error', error);
     }
 
     response.status(status).json({
