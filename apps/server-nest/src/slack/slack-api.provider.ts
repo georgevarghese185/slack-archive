@@ -15,29 +15,29 @@ import { SlackArchiveError } from 'src/common';
 
 @Injectable()
 export class SlackApiProvider {
-  constructor(private configService: ConfigService) {}
+  constructor(private config: ConfigService) {}
 
   async exchangeCode(
     request: ExchangeCodeRequest,
   ): Promise<SlackApiResponse<ExchangeCodeResponse>> {
-    return this.post({
+    return this.request({
       method: 'POST',
-      url: `${this.configService.slack.baseUrl}/api/oauth.access`,
+      url: '/api/oauth.access',
       headers: {
         'content-type': 'application/x-www-form-urlencoded',
       },
       auth: {
-        username: this.configService.slack.clientId,
-        password: this.configService.slack.clientSecret,
+        username: this.config.slack.clientId,
+        password: this.config.slack.clientSecret,
       },
       data: stringify(request),
     });
   }
 
   async testAuth(request: TestAuthRequest): Promise<SlackApiResponse> {
-    return this.post({
+    return this.request({
       method: 'POST',
-      url: `${this.configService.slack.baseUrl}/api/auth.test`,
+      url: '/api/auth.test',
       headers: {
         authorization: `Bearer ${request.token}`,
       },
@@ -45,9 +45,9 @@ export class SlackApiProvider {
   }
 
   async revokeAuth(request: RevokeAuthRequest): Promise<SlackApiResponse> {
-    return this.post({
+    return this.request({
       method: 'POST',
-      url: `${this.configService.slack.baseUrl}/api/auth.revoke`,
+      url: '/api/auth.revoke',
       headers: {
         authorization: `Bearer ${request.token}`,
       },
@@ -62,11 +62,15 @@ export class SlackApiProvider {
     // TODO: handle rate limiting
   }
 
-  private async post<R>(
+  private async request<R>(
     config: AxiosRequestConfig,
   ): Promise<SlackApiResponse<R>> {
     try {
-      const response = await axios(config);
+      const axiosInstance = axios.create({
+        baseURL: this.config.slack.baseUrl,
+      });
+
+      const response = await axiosInstance(config);
 
       return response.data;
     } catch (e) {
