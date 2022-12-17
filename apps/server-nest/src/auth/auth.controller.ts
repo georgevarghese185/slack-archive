@@ -7,14 +7,11 @@ import {
   HttpCode,
   Post,
   Res,
-  SetMetadata,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto';
 import { ConfigService } from 'src/config/config.service';
-import { Token } from './decorator';
-
-export const Public = () => SetMetadata('isPublic', true);
+import { Token, Public } from './decorator';
 
 @Controller('/v1/login')
 export class AuthController {

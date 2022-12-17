@@ -1,6 +1,6 @@
 import { Controller, Get, Param, Post } from '@nestjs/common';
 import { UserId } from 'src/auth';
-import { AccessToken } from 'src/auth/decorator/access-token.decorator';
+import { AccessToken } from 'src/auth';
 import { BackupService } from './backup.service';
 
 @Controller('/v1/backups')
