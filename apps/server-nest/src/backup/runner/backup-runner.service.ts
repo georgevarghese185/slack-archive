@@ -6,11 +6,13 @@ import { ConversationBackupService } from './conversation-backup.service';
 import { BackupRepository } from '../backup.repository';
 import { BackupEventPayload, BackupStatus } from '..';
 import { Logger } from 'src/common/logger/logger';
+import { MemberBackupService } from './member-backup.service';
 
 @Injectable()
 export class BackupRunnerService {
   constructor(
     private conversationBackupService: ConversationBackupService,
+    private memberBackupService: MemberBackupService,
     private cancelService: BackupCancellationService,
     private backupRepository: BackupRepository,
     private logger: Logger,
@@ -24,6 +26,7 @@ export class BackupRunnerService {
   async runBackup(backupId: string, accessToken: string): Promise<void> {
     try {
       await this.conversationBackupService.backup(backupId, accessToken);
+      await this.memberBackupService.backup(backupId, accessToken);
       await this.completeBackup(backupId);
     } catch (e) {
       if (e instanceof BackupCancelledError) {

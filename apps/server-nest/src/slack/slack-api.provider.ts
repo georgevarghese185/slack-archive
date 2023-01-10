@@ -6,6 +6,8 @@ import {
   RevokeAuthRequest,
   SlackApiResponse,
   TestAuthRequest,
+  MembersRequest,
+  MembersResponse,
 } from './slack.types';
 import { HttpStatus, Injectable, Logger } from '@nestjs/common';
 import axios, { AxiosRequestConfig } from 'axios';
@@ -72,6 +74,25 @@ export class SlackApiProvider {
     return this.request({
       method: 'GET',
       url: '/api/conversations.list',
+      headers: {
+        authorization: `Bearer ${request.token}`,
+      },
+      params,
+    });
+  }
+
+  async getMembers(
+    request: MembersRequest,
+  ): Promise<SlackApiResponse<MembersResponse>> {
+    const params: Record<string, string> = {};
+
+    if (request.cursor) {
+      params['cursor'] = request.cursor;
+    }
+
+    return this.request({
+      method: 'GET',
+      url: '/api/users.list',
       headers: {
         authorization: `Bearer ${request.token}`,
       },

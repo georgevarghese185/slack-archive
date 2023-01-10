@@ -3,32 +3,31 @@ import { BackupRunnerService } from 'src/backup/runner/backup-runner.service';
 import { BackupRepository } from 'src/backup/backup.repository';
 import { ConversationRepository } from 'src/conversation/conversation.repository';
 import { ConversationService } from 'src/conversation/conversation.service';
-import { Conversation } from 'src/conversation';
 import { SlackApiProvider } from 'src/slack/slack-api.provider';
-import { Channel } from 'src/slack';
+import { Member } from 'src/slack';
 import { BackupCancellationService } from 'src/backup/runner/backup-cancellation.service';
 import { ConversationBackupService } from 'src/backup/runner/conversation-backup.service';
+import { MemberRepository } from 'src/member/member.repository';
 import { Logger } from 'src/common/logger/logger';
 import { MemberBackupService } from 'src/backup/runner/member-backup.service';
-import { MemberRepository } from 'src/member/member.repository';
 import { MemberService } from 'src/member/member.service';
 
-const mockChannel1: Channel = Object.freeze({
-  id: 'C1000',
-  name: 'general',
-  purpose: 'War Generals only',
+const mockMember1 = Object.freeze({
+  id: 'UVJ5N8NND',
+  name: 'darcey',
+  real_name: 'Darcey Warner',
 });
 
-const mockChannel2: Channel = Object.freeze({
-  id: 'C1001',
-  name: 'random',
-  purpose: 'weed eater',
+const mockMember2 = Object.freeze({
+  id: 'UKBK2B032',
+  name: 'bret',
+  real_name: 'Bret Delgado',
 });
 
-describe('Backup conversations', () => {
+describe('Backup members', () => {
   let service: BackupRunnerService;
   let slackApiProvider: SlackApiProvider;
-  let conversationRepository: ConversationRepository;
+  let memberRepository: MemberRepository;
   let backupRespository: BackupRepository;
 
   beforeEach(async () => {
@@ -46,13 +45,13 @@ describe('Backup conversations', () => {
         },
         {
           provide: ConversationRepository,
-          useValue: {
-            save: jest.fn(),
-          },
+          useValue: {},
         },
         {
           provide: MemberRepository,
-          useValue: {},
+          useValue: {
+            save: jest.fn(),
+          },
         },
         {
           provide: SlackApiProvider,
@@ -66,92 +65,91 @@ describe('Backup conversations', () => {
     }).compile();
 
     service = module.get<BackupRunnerService>(BackupRunnerService);
-    conversationRepository = module.get<ConversationRepository>(
-      ConversationRepository,
-    );
+    memberRepository = module.get<MemberRepository>(MemberRepository);
     slackApiProvider = module.get<SlackApiProvider>(SlackApiProvider);
     backupRespository = module.get<BackupRepository>(BackupRepository);
 
-    jest.mocked(slackApiProvider.getMembers).mockResolvedValue({
+    jest.mocked(slackApiProvider.getConversations).mockResolvedValueOnce({
       ok: true,
-      members: [],
+      channels: [],
     });
   });
 
-  it('should backup conversations', async () => {
+  it('should backup members', async () => {
     const accessToken = '1111';
-    const mockChannels: Channel[] = [mockChannel1, mockChannel2];
+    const mockMembers: Member[] = [mockMember1, mockMember2];
 
     jest.mocked(backupRespository.shouldCancel).mockResolvedValue(false);
 
-    jest.mocked(slackApiProvider.getConversations).mockResolvedValueOnce({
+    jest.mocked(slackApiProvider.getMembers).mockResolvedValueOnce({
       ok: true,
-      channels: mockChannels,
+      members: mockMembers,
     });
 
     await service.runBackup('1234', accessToken);
 
-    expect(conversationRepository.save).toHaveBeenCalledWith(
-      mockChannels.map(
-        (channel) =>
+    expect(memberRepository.save).toHaveBeenCalledWith(
+      mockMembers.map(
+        (member) =>
           ({
-            id: channel.id,
-            name: channel.name,
-            json: channel,
-          } as Conversation),
+            id: member.id,
+            name: member.name,
+            json: member,
+          } as Member),
       ),
     );
 
-    expect(slackApiProvider.getConversations).toHaveBeenCalledWith({
+    expect(slackApiProvider.getMembers).toHaveBeenCalledWith({
       token: accessToken,
     });
   });
 
-  it('should handle paginated conversations', async () => {
+  it('should handle paginated members', async () => {
     const accessToken = '1111';
     const cursor = '1234';
 
     jest.mocked(backupRespository.shouldCancel).mockResolvedValue(false);
 
     jest
-      .mocked(slackApiProvider.getConversations)
+      .mocked(slackApiProvider.getMembers)
       .mockResolvedValueOnce({
         ok: true,
-        channels: [mockChannel1],
+        members: [mockMember1],
         response_metadata: {
           next_cursor: cursor,
         },
       })
       .mockResolvedValueOnce({
         ok: true,
-        channels: [mockChannel2],
+        members: [mockMember2],
       });
 
     await service.runBackup('1234', accessToken);
 
-    expect(conversationRepository.save).toHaveBeenCalledWith([
+    expect(memberRepository.save).toHaveBeenCalledWith([
       {
-        id: mockChannel1.id,
-        name: mockChannel1.name,
-        json: mockChannel1,
-      } as Conversation,
+        id: mockMember1.id,
+        name: mockMember1.name,
+        json: mockMember1,
+      } as Member,
     ]);
 
-    expect(conversationRepository.save).toHaveBeenCalledWith([
+    expect(memberRepository.save).toHaveBeenCalledWith([
       {
-        id: mockChannel2.id,
-        name: mockChannel2.name,
-        json: mockChannel2,
-      } as Conversation,
+        id: mockMember2.id,
+        name: mockMember2.name,
+        json: mockMember2,
+      } as Member,
     ]);
 
-    expect(slackApiProvider.getConversations).toHaveBeenCalledWith({
+    expect(slackApiProvider.getMembers).toHaveBeenCalledWith({
       token: accessToken,
       cursor,
     });
   });
 
   it('should handle cancellation mid-backup', async () => {
+    const accessToken = '1111';
     const backupId = '1234';
     let shouldCancel = false;
 
@@ -160,21 +158,21 @@ describe('Backup conversations', () => {
       .mockImplementation(async () => shouldCancel);
 
     jest
-      .mocked(slackApiProvider.getConversations)
+      .mocked(slackApiProvider.getMembers)
       .mockImplementationOnce(async () => {
         // cancel backup
         shouldCancel = true;
 
         return {
           ok: true,
-          channels: [mockChannel1],
+          members: [mockMember1],
           response_metadata: {
             next_cursor: '1234',
           },
         };
       });
 
-    await service.runBackup(backupId, '1111');
+    await service.runBackup(backupId, accessToken);
 
     expect(backupRespository.shouldCancel).toHaveBeenCalledWith(backupId);
     expect(backupRespository.update).toBeCalledWith(backupId, {

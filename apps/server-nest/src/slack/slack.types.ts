@@ -31,6 +31,21 @@ export type Channel = {
   [key: string]: unknown;
 };
 
+export type MembersRequest = {
+  token: string;
+  cursor?: string;
+};
+
+export type MembersResponse = {
+  members: Member[];
+};
+
+export type Member = {
+  id: string;
+  name: string;
+  [key: string]: unknown;
+};
+
 export type SlackApiResponse<R = unknown> =
   | {
       ok: false;

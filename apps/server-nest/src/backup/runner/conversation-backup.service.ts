@@ -42,6 +42,10 @@ export class ConversationBackupService {
   }
 
   private async saveConversations(channels: Channel[]) {
+    if (!channels.length) {
+      return;
+    }
+
     await this.conversationService.add(
       channels.map((channel) => ({
         id: channel.id,
