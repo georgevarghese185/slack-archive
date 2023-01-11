@@ -10,6 +10,10 @@ export class MemberRepository {
     @InjectRepository(MemberEntity) private reposistory: Repository<Member>,
   ) {}
 
+  async list(): Promise<Member[]> {
+    return this.reposistory.find();
+  }
+
   async save(members: Member[]) {
     await this.reposistory.save(
       members.map((member) => MemberEntity.create(member)),
