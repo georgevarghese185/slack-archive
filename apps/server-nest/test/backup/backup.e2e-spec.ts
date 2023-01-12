@@ -1,14 +1,12 @@
 import { INestApplication } from '@nestjs/common';
-import { getRepositoryToken } from '@nestjs/typeorm';
-import BackupEntity from 'src/backup/backup.entity';
-import { BackupStatus } from 'src/backup/backup.types';
 import request from 'supertest';
 import { login } from 'test/auth/auth.util';
 import { createTestApp } from 'test/test-app.module';
-import { In, Not, Repository } from 'typeorm';
+import { startBackup, stopAllBackups } from './backup.util';
 
 describe('Backup (e2e)', () => {
   let app: INestApplication;
+  let cookie: string;
 
   beforeAll(async () => {
     app = await createTestApp();
@@ -18,10 +16,17 @@ describe('Backup (e2e)', () => {
     await app.close();
   });
 
-  describe('/v1/backups/stats', () => {
-    it('should get stats', async () => {
-      const { cookie } = await login(app);
+  beforeEach(async () => {
+    const response = await login(app);
+    cookie = response.cookie;
+  });
 
+  afterEach(async () => {
+    await stopAllBackups(app);
+  });
+
+  describe('/v1/backups/stats (GET)', () => {
+    it('should get stats', async () => {
       return request(app.getHttpServer())
         .get('/v1/backups/stats')
         .set('cookie', cookie)
@@ -40,22 +45,34 @@ describe('Backup (e2e)', () => {
     });
   });
 
-  describe('/v1/backups/:id', () => {
-    it('should not allow unauthenticated call', async () => {
-      return request(app.getHttpServer()).get('/v1/backups/1234').expect(401);
-    });
-  });
+  describe('/v1/backups/new (POST)', () => {
+    it('should start a new backup', async () => {
+      const response = await request(app.getHttpServer())
+        .post('/v1/backups/new')
+        .set('cookie', cookie);
 
-  describe('/v1/backups/new', () => {
+      expect(response.statusCode).toEqual(201);
+      expect(response.body).toEqual({
+        backupId: expect.any(String),
+      });
+    });
+
+    it('should not start parallel backups', async () => {
+      await startBackup(app, cookie);
+
+      return await request(app.getHttpServer())
+        .post('/v1/backups/new')
+        .set('cookie', cookie)
+        .expect(409);
+    });
+
     it('should not allow unauthenticated call', async () => {
       return request(app.getHttpServer()).post('/v1/backups/new').expect(401);
     });
   });
 
-  describe('/v1/backups/running', () => {
+  describe('/v1/backups/running (GET)', () => {
     it('should not have any running backups', async () => {
-      const { cookie } = await login(app);
-
       return request(app.getHttpServer())
         .get('/v1/backups/running')
         .set('cookie', cookie)
@@ -65,53 +82,9 @@ describe('Backup (e2e)', () => {
         });
     });
 
-    it('should not allow unauthenticated call', async () => {
-      return request(app.getHttpServer())
-        .get('/v1/backups/running')
-        .expect(401);
-    });
-  });
-
-  describe('Backup', () => {
-    let cookie: string;
-    let backupId: string;
-    let backupRepository: Repository<BackupEntity>;
-
-    beforeAll(async () => {
-      const loginResponse = await login(app);
-      cookie = loginResponse.cookie;
-      backupRepository = app.get(getRepositoryToken(BackupEntity));
-    });
-
-    afterAll(async () => {
-      await backupRepository.update(
-        {
-          status: Not(
-            In([
-              BackupStatus.Cancelled,
-              BackupStatus.Completed,
-              BackupStatus.Failed,
-            ]),
-          ),
-        },
-        { status: BackupStatus.Failed, error: 'Stopping test backup' },
-      );
-    });
-
-    it('should start a new backup', async () => {
-      const response = await request(app.getHttpServer())
-        .post('/v1/backups/new')
-        .set('cookie', cookie);
-
-      backupId = response.body.backupId;
-
-      expect(response.statusCode).toEqual(201);
-      expect(response.body).toEqual({
-        backupId: expect.any(String),
-      });
-    });
-
     it('should return running backup', async () => {
+      const backupId = await startBackup(app, cookie);
+
       return await request(app.getHttpServer())
         .get('/v1/backups/running')
         .set('cookie', cookie)
@@ -135,14 +108,21 @@ describe('Backup (e2e)', () => {
         );
     });
 
-    it('should not start a parallel backup', async () => {
-      return await request(app.getHttpServer())
-        .post('/v1/backups/new')
-        .set('cookie', cookie)
-        .expect(409);
+    it('should not allow unauthenticated call', async () => {
+      return request(app.getHttpServer())
+        .get('/v1/backups/running')
+        .expect(401);
+    });
+  });
+
+  describe('/v1/backups/:id (GET)', () => {
+    it('should not allow unauthenticated call', async () => {
+      return request(app.getHttpServer()).get('/v1/backups/1234').expect(401);
     });
 
     it('should get backup by id', async () => {
+      const backupId = await startBackup(app, cookie);
+
       return await request(app.getHttpServer())
         .get(`/v1/backups/${backupId}`)
         .set('cookie', cookie)
@@ -158,23 +138,25 @@ describe('Backup (e2e)', () => {
           }),
         );
     });
+  });
 
-    it('should complete backup', async () => {
-      let response;
+  it('should complete backup', async () => {
+    const backupId = await startBackup(app, cookie);
 
-      for (let i = 0; i < 4; i++) {
-        response = await request(app.getHttpServer())
-          .get(`/v1/backups/${backupId}`)
-          .set('cookie', cookie);
+    let response;
 
-        if (response.body.status === 'COMPLETED') {
-          break;
-        }
+    for (let i = 0; i < 4; i++) {
+      response = await request(app.getHttpServer())
+        .get(`/v1/backups/${backupId}`)
+        .set('cookie', cookie);
 
-        await new Promise((resolve) => setTimeout(resolve, 1000));
+      if (response.body.status === 'COMPLETED') {
+        break;
       }
 
-      expect(response?.body.status).toEqual('COMPLETED');
-    });
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+    }
+
+    expect(response?.body.status).toEqual('COMPLETED');
   });
 });

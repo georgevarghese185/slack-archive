@@ -1,5 +1,9 @@
 import { INestApplication } from '@nestjs/common';
+import { getRepositoryToken } from '@nestjs/typeorm';
+import { BackupStatus } from 'src/backup';
+import BackupEntity from 'src/backup/backup.entity';
 import request from 'supertest';
+import { In, Not } from 'typeorm';
 
 export const startBackup = async (app: INestApplication, cookie: string) => {
   const response = await request(app.getHttpServer())
@@ -33,4 +37,20 @@ export const runBackup = async (
   expect(backupStatusResponse?.body.status).toEqual('COMPLETED');
 
   return backupId;
+};
+
+export const stopAllBackups = async (app: INestApplication) => {
+  const backupRepository = app.get(getRepositoryToken(BackupEntity));
+  await backupRepository.update(
+    {
+      status: Not(
+        In([
+          BackupStatus.Cancelled,
+          BackupStatus.Completed,
+          BackupStatus.Failed,
+        ]),
+      ),
+    },
+    { status: BackupStatus.Failed, error: 'Stopping test backup' },
+  );
 };
