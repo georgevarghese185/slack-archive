@@ -12,6 +12,7 @@ import { BackupModule } from './backup/backup.module';
 import { MessageModule } from './message/message.module';
 import { ConversationModule } from './conversation/conversation.module';
 import cookieParser from 'cookie-parser';
+import { MemberModule } from './member/member.module';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import cookieParser from 'cookie-parser';
     BackupModule,
     MessageModule,
     ConversationModule,
+    MemberModule,
   ],
   controllers: [AppController],
   providers: [

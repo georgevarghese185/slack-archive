@@ -25,7 +25,7 @@ describe('Get Conversations', () => {
   });
 
   it('should get conversations', async () => {
-    const expectedConversations: Conversation[] = [
+    const mockConversations: Conversation[] = [
       {
         id: 'C1000',
         name: 'general',
@@ -39,9 +39,14 @@ describe('Get Conversations', () => {
 
     jest
       .mocked(conversationRepository.list)
-      .mockResolvedValue(expectedConversations);
+      .mockResolvedValue(mockConversations);
 
     const conversations = await service.list();
-    expect(conversations).toEqual(expectedConversations);
+    expect(conversations).toEqual(
+      mockConversations.map((conversation) => ({
+        id: conversation.id,
+        name: conversation.name,
+      })),
+    );
   });
 });
