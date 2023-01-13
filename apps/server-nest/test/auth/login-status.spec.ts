@@ -135,14 +135,9 @@ describe('Login status', () => {
         .mocked(slackApiProvider.testAuth)
         .mockResolvedValueOnce({ ok: false, error: slackErrorCode });
 
-      try {
-        await service.validateToken(token);
-        throw new Error('Should have failed');
-      } catch (e) {
-        expect(e).toBeInstanceOf(SlackApiError);
-        expect((e as SlackApiError).code).toEqual('slack_error');
-        expect((e as SlackApiError).message).toContain(slackErrorCode);
-      }
+      await expect(service.validateToken(token)).rejects.toEqual(
+        new SlackApiError(slackErrorCode, '/api/auth.test'),
+      );
     });
   });
 });

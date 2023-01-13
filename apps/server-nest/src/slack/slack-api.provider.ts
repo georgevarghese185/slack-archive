@@ -20,12 +20,14 @@ import { withRateLimiting } from 'src/common/axios/with-rate-limiting';
 export class SlackApiProvider {
   constructor(private config: ConfigService) {}
 
+  public static readonly API_EXCHANGE_CODE = '/api/oauth.access';
+
   async exchangeCode(
     request: ExchangeCodeRequest,
   ): Promise<SlackApiResponse<ExchangeCodeResponse>> {
     return this.request({
       method: 'POST',
-      url: '/api/oauth.access',
+      url: SlackApiProvider.API_EXCHANGE_CODE,
       headers: {
         'content-type': 'application/x-www-form-urlencoded',
       },
@@ -37,10 +39,12 @@ export class SlackApiProvider {
     });
   }
 
+  public static readonly API_TEST_AUTH = '/api/auth.test';
+
   async testAuth(request: TestAuthRequest): Promise<SlackApiResponse> {
     return this.request({
       method: 'POST',
-      url: '/api/auth.test',
+      url: SlackApiProvider.API_TEST_AUTH,
       headers: {
         authorization: `Bearer ${request.token}`,
       },
@@ -56,6 +60,8 @@ export class SlackApiProvider {
       },
     });
   }
+
+  public static readonly API_GET_CONVERSATIONS = '/api/conversations.list';
 
   async getConversations(
     request: ConversationsRequest,
@@ -73,13 +79,15 @@ export class SlackApiProvider {
 
     return this.request({
       method: 'GET',
-      url: '/api/conversations.list',
+      url: SlackApiProvider.API_GET_CONVERSATIONS,
       headers: {
         authorization: `Bearer ${request.token}`,
       },
       params,
     });
   }
+
+  public static readonly API_GET_MEMBERS = '/api/users.list';
 
   async getMembers(
     request: MembersRequest,
@@ -92,7 +100,7 @@ export class SlackApiProvider {
 
     return this.request({
       method: 'GET',
-      url: '/api/users.list',
+      url: SlackApiProvider.API_GET_MEMBERS,
       headers: {
         authorization: `Bearer ${request.token}`,
       },

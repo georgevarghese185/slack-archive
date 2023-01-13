@@ -35,7 +35,7 @@ export class BackupRunnerService {
 
       this.logger.error('Backup error', e);
 
-      throw new Error('Error handling not implemented');
+      throw e;
     }
   }
 

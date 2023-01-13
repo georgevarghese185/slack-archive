@@ -5,7 +5,7 @@ import { ConversationRepository } from 'src/conversation/conversation.repository
 import { ConversationService } from 'src/conversation/conversation.service';
 import { Conversation } from 'src/conversation';
 import { SlackApiProvider } from 'src/slack/slack-api.provider';
-import { Channel } from 'src/slack';
+import { Channel, SlackApiError } from 'src/slack';
 import { BackupCancellationService } from 'src/backup/runner/backup-cancellation.service';
 import { ConversationBackupService } from 'src/backup/runner/conversation-backup.service';
 import { Logger } from 'src/common/logger/logger';
@@ -180,5 +180,20 @@ describe('Backup conversations', () => {
     expect(backupRespository.update).toBeCalledWith(backupId, {
       status: 'CANCELED',
     });
+  });
+
+  it('should handle slack errors', async () => {
+    const slackErrorCode = 'some_error';
+
+    jest.mocked(backupRespository.shouldCancel).mockResolvedValue(false);
+
+    jest.mocked(slackApiProvider.getConversations).mockResolvedValueOnce({
+      ok: false,
+      error: slackErrorCode,
+    });
+
+    await expect(service.runBackup('1234', '1111')).rejects.toEqual(
+      new SlackApiError(slackErrorCode, '/api/conversations.list'),
+    );
   });
 });

@@ -78,8 +78,10 @@ export class AuthService {
         throw new InvalidTokenError();
       }
 
-      this.logger.error(`Error validating Slack token: ${testResponse.error}`);
-      throw new SlackApiError(testResponse.error);
+      throw new SlackApiError(
+        testResponse.error,
+        SlackApiProvider.API_TEST_AUTH,
+      );
     }
   }
 
@@ -114,10 +116,9 @@ export class AuthService {
       return new SpentVerificationCodeError();
     }
 
-    this.logger.error(
-      `Error trying to exchange verification code with Slack: ${slackErrorCode}`,
+    return new SlackApiError(
+      slackErrorCode,
+      SlackApiProvider.API_EXCHANGE_CODE,
     );
-
-    return new SlackApiError(slackErrorCode);
   }
 }

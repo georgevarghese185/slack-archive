@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { ConversationService } from 'src/conversation/conversation.service';
-import { Channel } from 'src/slack';
+import { Channel, SlackApiError } from 'src/slack';
 import { SlackApiProvider } from 'src/slack/slack-api.provider';
 import { BackupCancellationService } from './backup-cancellation.service';
 
@@ -22,7 +22,10 @@ export class ConversationBackupService {
     const response = await this.getConversations(accessToken, cursor);
 
     if (!response.ok) {
-      throw new Error('Not Implemented');
+      throw new SlackApiError(
+        response.error,
+        SlackApiProvider.API_GET_CONVERSATIONS,
+      );
     }
 
     const channels = response.channels;

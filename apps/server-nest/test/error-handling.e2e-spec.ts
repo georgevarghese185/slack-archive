@@ -20,7 +20,8 @@ describe('Error Handling (e2e)', () => {
       .expect(502)
       .expect({
         errorCode: 'slack_error',
-        message: 'Received error from Slack: fake_error_code',
+        message:
+          'Received error from Slack API /api/oauth.access: fake_error_code',
       });
   });
 });

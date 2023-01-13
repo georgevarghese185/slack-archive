@@ -97,7 +97,7 @@ describe('Login', () => {
       });
 
       await expect(service.login(verificationCode)).rejects.toEqual(
-        new SlackApiError(errorCode),
+        new SlackApiError(errorCode, '/api/oauth.access'),
       );
     });
   });

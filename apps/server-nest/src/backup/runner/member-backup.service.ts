@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { MemberService } from 'src/member/member.service';
-import { Member } from 'src/slack';
+import { Member, SlackApiError } from 'src/slack';
 import { SlackApiProvider } from 'src/slack/slack-api.provider';
 import { BackupCancellationService } from './backup-cancellation.service';
 
@@ -22,7 +22,7 @@ export class MemberBackupService {
     const response = await this.getMembers(accessToken, cursor);
 
     if (!response.ok) {
-      throw new Error('Not Implemented');
+      throw new SlackApiError(response.error, SlackApiProvider.API_GET_MEMBERS);
     }
 
     const members = response.members;
