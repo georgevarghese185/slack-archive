@@ -17,12 +17,32 @@ const mockChannel: Channel = Object.freeze({
   id: 'C1000',
   name: 'general',
   purpose: 'War Generals only',
+  profile: {
+    display_name: 'Darcey Warner',
+    image_24: 'https://slack-archive/24.png',
+    image_32: 'https://slack-archive/32.png',
+    image_48: 'https://slack-archive/48.png',
+    image_72: 'https://slack-archive/72.png',
+    image_192: 'https://slack-archive/192.png',
+    image_512: 'https://slack-archive/512.png',
+    image_1024: 'https://slack-archive/1024.png',
+  },
 });
 
 const mockMember = Object.freeze({
   id: 'UVJ5N8NND',
   name: 'darcey',
   real_name: 'Darcey Warner',
+  profile: {
+    display_name: 'Bret Delgado',
+    image_24: 'https://slack-archive/24.png',
+    image_32: 'https://slack-archive/32.png',
+    image_48: 'https://slack-archive/48.png',
+    image_72: 'https://slack-archive/72.png',
+    image_192: 'https://slack-archive/192.png',
+    image_512: 'https://slack-archive/512.png',
+    image_1024: 'https://slack-archive/1024.png',
+  },
 });
 
 describe('Backup', () => {

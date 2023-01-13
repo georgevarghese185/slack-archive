@@ -5,7 +5,7 @@ import { createTestApp } from 'test/test-app.module';
 import axios from 'axios';
 import { runBackup } from 'test/backup/backup.util';
 
-describe('Conversations (e2e)', () => {
+describe('Get Conversations (e2e)', () => {
   let cookie: string;
   let app: INestApplication;
 

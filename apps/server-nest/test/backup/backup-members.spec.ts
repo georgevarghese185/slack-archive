@@ -16,12 +16,32 @@ const mockMember1 = Object.freeze({
   id: 'UVJ5N8NND',
   name: 'darcey',
   real_name: 'Darcey Warner',
+  profile: {
+    display_name: 'Darcey Warner',
+    image_24: 'https://slack-archive/24.png',
+    image_32: 'https://slack-archive/32.png',
+    image_48: 'https://slack-archive/48.png',
+    image_72: 'https://slack-archive/72.png',
+    image_192: 'https://slack-archive/192.png',
+    image_512: 'https://slack-archive/512.png',
+    image_1024: 'https://slack-archive/1024.png',
+  },
 });
 
 const mockMember2 = Object.freeze({
   id: 'UKBK2B032',
   name: 'bret',
   real_name: 'Bret Delgado',
+  profile: {
+    display_name: 'Bret Delgado',
+    image_24: 'https://slack-archive/24.png',
+    image_32: 'https://slack-archive/32.png',
+    image_48: 'https://slack-archive/48.png',
+    image_72: 'https://slack-archive/72.png',
+    image_192: 'https://slack-archive/192.png',
+    image_512: 'https://slack-archive/512.png',
+    image_1024: 'https://slack-archive/1024.png',
+  },
 });
 
 describe('Backup members', () => {
@@ -89,14 +109,11 @@ describe('Backup members', () => {
     await service.runBackup('1234', accessToken);
 
     expect(memberRepository.save).toHaveBeenCalledWith(
-      mockMembers.map(
-        (member) =>
-          ({
-            id: member.id,
-            name: member.name,
-            json: member,
-          } as Member),
-      ),
+      mockMembers.map((member) => ({
+        id: member.id,
+        name: member.name,
+        json: member,
+      })),
     );
 
     expect(slackApiProvider.getMembers).toHaveBeenCalledWith({
@@ -131,7 +148,7 @@ describe('Backup members', () => {
         id: mockMember1.id,
         name: mockMember1.name,
         json: mockMember1,
-      } as Member,
+      },
     ]);
 
     expect(memberRepository.save).toHaveBeenCalledWith([
@@ -139,7 +156,7 @@ describe('Backup members', () => {
         id: mockMember2.id,
         name: mockMember2.name,
         json: mockMember2,
-      } as Member,
+      },
     ]);
 
     expect(slackApiProvider.getMembers).toHaveBeenCalledWith({
