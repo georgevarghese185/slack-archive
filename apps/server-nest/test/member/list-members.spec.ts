@@ -3,7 +3,7 @@ import { Member } from 'src/member';
 import { MemberRepository } from 'src/member/member.repository';
 import { MemberService } from 'src/member/member.service';
 
-describe('Get Members', () => {
+describe('List Members', () => {
   let service: MemberService;
   let memberRepository: MemberRepository;
 
@@ -22,7 +22,7 @@ describe('Get Members', () => {
     memberRepository = module.get<MemberRepository>(MemberRepository);
   });
 
-  it('should get members', async () => {
+  it('should list members', async () => {
     const mockMembers: Member[] = [
       {
         id: 'UVJ5N8NND',

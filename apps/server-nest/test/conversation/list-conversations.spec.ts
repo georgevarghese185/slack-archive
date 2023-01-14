@@ -3,7 +3,7 @@ import { Conversation } from 'src/conversation';
 import { ConversationRepository } from 'src/conversation/conversation.repository';
 import { ConversationService } from 'src/conversation/conversation.service';
 
-describe('Get Conversations', () => {
+describe('List Conversations', () => {
   let service: ConversationService;
   let conversationRepository: ConversationRepository;
 
@@ -24,7 +24,7 @@ describe('Get Conversations', () => {
     );
   });
 
-  it('should get conversations', async () => {
+  it('should list conversations', async () => {
     const mockConversations: Conversation[] = [
       {
         id: 'C1000',
