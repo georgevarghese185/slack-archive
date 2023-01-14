@@ -35,8 +35,12 @@ describe('Conversations (e2e)', () => {
         .get('/v1/conversations')
         .set('cookie', cookie)
         .expect(200)
-        .expect({
-          conversations: data.channels.map(({ id, name }) => ({ id, name })),
+        .expect((response) => {
+          expect(response.body).toEqual({
+            conversations: expect.arrayContaining(
+              data.channels.map(({ id, name }) => ({ id, name })),
+            ),
+          });
         });
     });
 

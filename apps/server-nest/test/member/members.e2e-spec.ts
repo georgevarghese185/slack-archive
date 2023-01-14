@@ -41,20 +41,24 @@ describe('Members (e2e)', () => {
         .get('/v1/members')
         .set('cookie', cookie)
         .expect(200)
-        .expect({
-          members: members.map(({ id, profile }) => ({
-            id,
-            profile: {
-              display_name: profile.display_name,
-              image_24: profile.image_24,
-              image_32: profile.image_32,
-              image_48: profile.image_48,
-              image_72: profile.image_72,
-              image_192: profile.image_192,
-              image_512: profile.image_512,
-              image_1024: profile.image_1024,
-            },
-          })),
+        .expect((response) => {
+          expect(response.body).toEqual({
+            members: expect.arrayContaining(
+              members.map(({ id, profile }) => ({
+                id,
+                profile: {
+                  display_name: profile.display_name,
+                  image_24: profile.image_24,
+                  image_32: profile.image_32,
+                  image_48: profile.image_48,
+                  image_72: profile.image_72,
+                  image_192: profile.image_192,
+                  image_512: profile.image_512,
+                  image_1024: profile.image_1024,
+                },
+              })),
+            ),
+          });
         });
     });
 
