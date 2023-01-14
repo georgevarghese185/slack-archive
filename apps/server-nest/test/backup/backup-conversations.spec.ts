@@ -12,18 +12,10 @@ import { Logger } from 'src/common/logger/logger';
 import { MemberBackupService } from 'src/backup/runner/member-backup.service';
 import { MemberRepository } from 'src/member/member.repository';
 import { MemberService } from 'src/member/member.service';
-
-const mockChannel1: Channel = Object.freeze({
-  id: 'C1000',
-  name: 'general',
-  purpose: 'War Generals only',
-});
-
-const mockChannel2: Channel = Object.freeze({
-  id: 'C1001',
-  name: 'random',
-  purpose: 'weed eater',
-});
+import {
+  createSlackChannel,
+  createSlackChannels,
+} from 'test/conversation/fixture';
 
 describe('Backup conversations', () => {
   let service: BackupRunnerService;
@@ -80,7 +72,7 @@ describe('Backup conversations', () => {
 
   it('should backup conversations', async () => {
     const accessToken = '1111';
-    const mockChannels: Channel[] = [mockChannel1, mockChannel2];
+    const mockChannels: Channel[] = createSlackChannels(2);
 
     jest.mocked(backupRespository.shouldCancel).mockResolvedValue(false);
 
@@ -110,6 +102,8 @@ describe('Backup conversations', () => {
   it('should handle paginated conversations', async () => {
     const accessToken = '1111';
     const cursor = '1234';
+    const mockChannel1 = createSlackChannel();
+    const mockChannel2 = createSlackChannel();
 
     jest.mocked(backupRespository.shouldCancel).mockResolvedValue(false);
 
@@ -167,7 +161,7 @@ describe('Backup conversations', () => {
 
         return {
           ok: true,
-          channels: [mockChannel1],
+          channels: [createSlackChannel()],
           response_metadata: {
             next_cursor: '1234',
           },

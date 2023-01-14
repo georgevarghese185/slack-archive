@@ -2,6 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { Conversation } from 'src/conversation';
 import { ConversationRepository } from 'src/conversation/conversation.repository';
 import { ConversationService } from 'src/conversation/conversation.service';
+import { createConversations } from './fixture';
 
 describe('List Conversations', () => {
   let service: ConversationService;
@@ -25,17 +26,7 @@ describe('List Conversations', () => {
   });
 
   it('should list conversations', async () => {
-    const mockConversations: Conversation[] = [
-      {
-        id: 'C1000',
-        name: 'general',
-        json: {
-          id: 'C1000',
-          name: 'general',
-          purpose: 'War Generals only',
-        },
-      },
-    ];
+    const mockConversations: Conversation[] = createConversations(2);
 
     jest
       .mocked(conversationRepository.list)

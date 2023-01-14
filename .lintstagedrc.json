@@ -1,4 +1,5 @@
 {
   "apps/server-nest/{src,test}/**/*.{ts,js}": "yarn run:server-nest lint:fix",
-  "apps/server-nest/**/*.{ts,js,json,css}": "yarn run:server-nest format:fix"
+  "apps/server-nest/**/*.{ts,js,json,css}": "yarn run:server-nest format:fix",
+  "apps/mock-slack/**/*.{ts,js,json,css}": "yarn run:mock-slack format:fix"
 }

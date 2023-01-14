@@ -1,5 +1,5 @@
-const conversations =
-  require('../../generated/conversations.json').conversations;
+const conversations = require('../../generated/conversations.json')
+  .conversations;
 const members = require('../../generated/members.json').members;
 const messages = require('../../generated/messages.json');
 const replies = require('../../generated/replies.json');
@@ -162,7 +162,10 @@ app.post('/api/auth.revoke', (req, resp) => {
 // rate limiting simulation middleware
 app.use((req, resp, next) => {
   if (tooManyRequests) {
-    resp.status(429).set('Retry-After', '2').send();
+    resp
+      .status(429)
+      .set('Retry-After', '2')
+      .send();
     return;
   }
 

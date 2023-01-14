@@ -1,21 +1,12 @@
-const lipsums = require('./lipsums.json').lipsums;
+const { faker } = require('@faker-js/faker');
 
 class TextGenerator {
   generateAlphaNum(length) {
-    var options = '1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-    const randomChar = () =>
-      options[Math.floor(Math.random() * options.length)];
-    let s = '';
-
-    for (let i = 0; i < length; i++) {
-      s += randomChar();
-    }
-
-    return s;
+    return faker.random.alphaNumeric(length, { casing: 'upper' });
   }
 
   generateSentence() {
-    return lipsums[Math.floor(Math.random() * lipsums.length)];
+    return faker.lorem.sentences();
   }
 }
 

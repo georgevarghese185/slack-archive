@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { Member } from 'src/member';
 import { MemberRepository } from 'src/member/member.repository';
 import { MemberService } from 'src/member/member.service';
+import { createMembers } from './fixture';
 
 describe('List Members', () => {
   let service: MemberService;
@@ -23,27 +23,7 @@ describe('List Members', () => {
   });
 
   it('should list members', async () => {
-    const mockMembers: Member[] = [
-      {
-        id: 'UVJ5N8NND',
-        name: 'darcey',
-        json: {
-          id: 'UVJ5N8NND',
-          name: 'darcey',
-          real_name: 'Darcey Warner',
-          profile: {
-            display_name: 'Darcey Warner',
-            image_24: 'https://slack-archive/24.png',
-            image_32: 'https://slack-archive/32.png',
-            image_48: 'https://slack-archive/48.png',
-            image_72: 'https://slack-archive/72.png',
-            image_192: 'https://slack-archive/192.png',
-            image_512: 'https://slack-archive/512.png',
-            image_1024: 'https://slack-archive/1024.png',
-          },
-        },
-      },
-    ];
+    const mockMembers = createMembers(2);
 
     jest.mocked(memberRepository.list).mockResolvedValue(mockMembers);
 

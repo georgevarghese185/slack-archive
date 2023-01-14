@@ -1,21 +1,22 @@
 const memberTemplate = require('./member.json');
-const names = require('./names.json').names;
-const avatars = require('./avatars.json').avatars;
 const { TextGenerator } = require('../text');
-const { randomItems } = require('../random');
+const { faker } = require('@faker-js/faker');
 
 class MemberGenerator {
-  constructor(options, textGenerator) {
-    this.teamId = options.teamId;
-    this.maxMembers = options.maxMembers;
+  constructor(options = {}) {
+    this.teamId =
+      options.teamId ||
+      `T${faker.datatype.number({ min: '1000', max: '9999' })}`;
+    this.maxMembers = options.maxMembers || 5;
     this.generated = 0;
   }
 
-  generateMember(name, image) {
+  generateMember() {
     const textGenerator = new TextGenerator();
-    const firstName = name.first;
-    const lastName = name.last;
+    const firstName = faker.name.firstName();
+    const lastName = faker.name.lastName();
     const realName = firstName + ' ' + lastName;
+    const image = faker.internet.avatar();
 
     const member = JSON.parse(JSON.stringify(memberTemplate)); // deep copy TODO use a library
 
@@ -39,11 +40,9 @@ class MemberGenerator {
 
   generateMembers() {
     const members = [];
-    const memberNames = randomItems(names, this.maxMembers);
-    const memberAvatars = randomItems(avatars, this.maxMembers);
 
     for (let i = 0; i < this.maxMembers; i++) {
-      const member = this.generateMember(memberNames[i], memberAvatars[i]);
+      const member = this.generateMember();
       members.push(member);
     }
 
