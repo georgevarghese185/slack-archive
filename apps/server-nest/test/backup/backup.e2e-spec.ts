@@ -116,10 +116,6 @@ describe('Backup (e2e)', () => {
   });
 
   describe('/v1/backups/:id (GET)', () => {
-    it('should not allow unauthenticated call', async () => {
-      return request(app.getHttpServer()).get('/v1/backups/1234').expect(401);
-    });
-
     it('should get backup by id', async () => {
       const backupId = await startBackup(app, cookie);
 
@@ -137,6 +133,20 @@ describe('Backup (e2e)', () => {
             backedUpConversations: expect.toBeArray(),
           }),
         );
+    });
+
+    it('should return 404 for invalid id', async () => {
+      return await request(app.getHttpServer())
+        .get(`/v1/backups/0000`)
+        .set('cookie', cookie)
+        .expect(404)
+        .expect((response) =>
+          expect(response.body.errorCode).toEqual('backup_not_found'),
+        );
+    });
+
+    it('should not allow unauthenticated call', async () => {
+      return request(app.getHttpServer()).get('/v1/backups/1234').expect(401);
     });
   });
 

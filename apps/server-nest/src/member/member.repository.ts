@@ -10,6 +10,10 @@ export class MemberRepository {
     @InjectRepository(MemberEntity) private reposistory: Repository<Member>,
   ) {}
 
+  async findById(id: string): Promise<Member | null> {
+    return this.reposistory.findOneBy({ id });
+  }
+
   async list(): Promise<Member[]> {
     return this.reposistory.find();
   }

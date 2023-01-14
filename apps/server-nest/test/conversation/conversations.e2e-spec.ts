@@ -31,14 +31,17 @@ describe('Conversations (e2e)', () => {
         },
       );
 
-      const response = await request(app.getHttpServer())
+      return request(app.getHttpServer())
         .get('/v1/conversations')
         .set('cookie', cookie)
-        .expect(200);
+        .expect(200)
+        .expect({
+          conversations: data.channels.map(({ id, name }) => ({ id, name })),
+        });
+    });
 
-      expect(response.body.conversations).toEqual(
-        data.channels.map(({ id, name }) => ({ id, name })),
-      );
+    it('should not allow unauthenticated call', async () => {
+      return request(app.getHttpServer()).get('/v1/conversations').expect(401);
     });
   });
 });
