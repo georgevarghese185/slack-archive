@@ -1,5 +1,7 @@
 {
   "apps/server-nest/{src,test}/**/*.{ts,js}": "yarn run:server-nest lint:fix",
   "apps/server-nest/**/*.{ts,js,json,css}": "yarn run:server-nest format:fix",
-  "apps/mock-slack/**/*.{ts,js,json,css}": "yarn run:mock-slack format:fix"
+  "libs/mock-slack-generator/src/**/*.{ts,js}": "yarn run:generator lint:fix",
+  "libs/mock-slack-generator/**/*.{ts,js,json,css}": "yarn run:generator format:fix",
+  "apps/mock-slack/**/*.{ts,js,json,css}": "yarn run:slack format:fix"
 }

@@ -1,4 +1,4 @@
-import { MemberGenerator } from '@slack-archive/mock-slack/src/generator/member';
+import { MemberGenerator } from '@slack-archive/mock-slack-generator';
 import { Member } from 'src/member';
 import { Member as SlackMember } from 'src/slack';
 
@@ -17,7 +17,7 @@ export const createMember = (): Member => {
 };
 
 export const createSlackMembers = (n: number): SlackMember[] => {
-  return new MemberGenerator({ maxMembers: n }).generateMembers();
+  return new MemberGenerator().generateMembers(n);
 };
 
 export const createMembers = (n: number): Member[] => {

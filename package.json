@@ -9,7 +9,8 @@
         "postinstall": "husky install",
         "run:server": "yarn workspace @slack-archive/server",
         "run:server-nest": "yarn workspace @slack-archive/server-nest",
-        "run:mock-slack": "yarn workspace @slack-archive/mock-slack",
+        "run:slack": "yarn workspace @slack-archive/mock-slack",
+        "run:generator": "yarn workspace @slack-archive/mock-slack-generator",
         "run:web": "yarn workspace @slack-archive/web"
     },
     "engines": {
