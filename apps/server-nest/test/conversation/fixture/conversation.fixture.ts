@@ -1,4 +1,4 @@
-import { ConversationGenerator } from '@slack-archive/mock-slack/src/generator/conversation';
+import { ConversationGenerator } from '@slack-archive/mock-slack-generator';
 import { Conversation } from 'src/conversation';
 import { Channel } from 'src/slack';
 
@@ -15,9 +15,7 @@ export const createSlackChannel = (): Channel => {
 };
 
 export const createSlackChannels = (n: number): Channel[] => {
-  return new ConversationGenerator({
-    maxConversations: n,
-  }).generateConversations();
+  return new ConversationGenerator().generateConversations(n);
 };
 
 export const createConversations = (n: number): Conversation[] => {
