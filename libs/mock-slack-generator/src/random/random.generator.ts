@@ -25,6 +25,10 @@ export class RandomGenerator {
     return faker.lorem.sentence(5);
   }
 
+  message() {
+    return faker.lorem.sentences(this.number(1, 20));
+  }
+
   name() {
     return {
       firstName: faker.name.firstName(),
@@ -55,10 +59,24 @@ export class RandomGenerator {
     return faker.random.alphaNumeric(n, { casing: 'upper' });
   }
 
-  number(digits: number) {
+  number(digits: number): number;
+  number(min: number, max: number): number;
+  number(digitsOrMin: number, max?: number) {
+    let maxValue: number;
+    let minValue: number;
+
+    if (max == null) {
+      const digits = digitsOrMin;
+      minValue = Math.pow(10, digits);
+      maxValue = Math.pow(10, digits + 1) - 1;
+    } else {
+      minValue = digitsOrMin;
+      maxValue = max;
+    }
+
     return faker.datatype.number({
-      min: Math.pow(10, digits),
-      max: Math.pow(10, digits + 1) - 1,
+      min: minValue,
+      max: maxValue,
     });
   }
 }
