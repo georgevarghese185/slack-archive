@@ -79,4 +79,8 @@ export class RandomGenerator {
       max: maxValue,
     });
   }
+
+  probability(probability: number) {
+    return Math.random() <= probability;
+  }
 }
