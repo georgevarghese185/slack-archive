@@ -1,12 +1,30 @@
-const conversations = require('../../generated/conversations.json')
-  .conversations;
-const members = require('../../generated/members.json').members;
-const messages = require('../../generated/messages.json');
-const replies = require('../../generated/replies.json');
 const uuid = require('uuid').v4;
-
+const { existsSync, readFileSync } = require('fs');
 const express = require('express');
+const { generate } = require('../generator/generator');
+
+const MEMBERS_FILE = 'generated/members.json';
+const CONVERSATIONS_FILE = 'generated/conversations.json';
+const MESSAGES_FILE = 'generated/messages.json';
+const REPLIES_FILE = 'generated/replies.json';
+
 const app = express();
+
+if (
+  !existsSync(MEMBERS_FILE) ||
+  !existsSync(CONVERSATIONS_FILE) ||
+  !existsSync(MESSAGES_FILE) ||
+  !existsSync(REPLIES_FILE)
+) {
+  generate();
+}
+
+const members = JSON.parse(readFileSync(MEMBERS_FILE).toString()).members;
+const conversations = JSON.parse(
+  readFileSync(CONVERSATIONS_FILE).toString(),
+).conversations;
+const messages = JSON.parse(readFileSync(MESSAGES_FILE).toString());
+const replies = JSON.parse(readFileSync(REPLIES_FILE).toString());
 
 app.use(express.urlencoded({ extended: true }));
 
@@ -162,10 +180,7 @@ app.post('/api/auth.revoke', (req, resp) => {
 // rate limiting simulation middleware
 app.use((req, resp, next) => {
   if (tooManyRequests) {
-    resp
-      .status(429)
-      .set('Retry-After', '2')
-      .send();
+    resp.status(429).set('Retry-After', '2').send();
     return;
   }
 
