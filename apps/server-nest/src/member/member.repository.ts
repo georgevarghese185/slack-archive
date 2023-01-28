@@ -7,19 +7,19 @@ import { MemberEntity } from './member.entity';
 @Injectable()
 export class MemberRepository {
   constructor(
-    @InjectRepository(MemberEntity) private reposistory: Repository<Member>,
+    @InjectRepository(MemberEntity) private repository: Repository<Member>,
   ) {}
 
   async findById(id: string): Promise<Member | null> {
-    return this.reposistory.findOneBy({ id });
+    return this.repository.findOneBy({ id });
   }
 
   async list(): Promise<Member[]> {
-    return this.reposistory.find();
+    return this.repository.find();
   }
 
   async save(members: Member[]) {
-    await this.reposistory.save(
+    await this.repository.save(
       members.map((member) => MemberEntity.create(member)),
     );
   }

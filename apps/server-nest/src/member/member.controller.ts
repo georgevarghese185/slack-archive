@@ -1,4 +1,5 @@
 import { Controller, Get, Param } from '@nestjs/common';
+import { MemberDto } from './dto';
 import { MemberService } from './member.service';
 
 @Controller('/v1/members')
@@ -7,13 +8,15 @@ export class MemberController {
 
   @Get()
   async list() {
+    const members = await this.memberService.list();
     return {
-      members: await this.memberService.list(),
+      members: members.map(MemberDto.fromMember),
     };
   }
 
   @Get(':id')
   async get(@Param('id') id: string) {
-    return this.memberService.get(id);
+    const member = await this.memberService.get(id);
+    return MemberDto.fromMember(member);
   }
 }

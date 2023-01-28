@@ -5,8 +5,7 @@ import { MessageService } from 'src/message/message.service';
 import { BackupEventPayload } from '.';
 import { BackupInProgressError, BackupNotFoundError } from './backup.errors';
 import { BackupRepository } from './backup.repository';
-import { BackupStats, BackupStatus } from './backup.types';
-import { BackupDto } from './dto';
+import { Backup, BackupStats, BackupStatus } from './backup.types';
 
 @Injectable()
 export class BackupService {
@@ -31,10 +30,7 @@ export class BackupService {
     };
   }
 
-  async createBackup(
-    createdBy: string,
-    accessToken: string,
-  ): Promise<BackupDto> {
+  async createBackup(createdBy: string, accessToken: string): Promise<Backup> {
     const activeBackup = await this.backupRepository.getActive();
 
     if (activeBackup) {
@@ -59,26 +55,20 @@ export class BackupService {
       accessToken,
     } as BackupEventPayload);
 
-    return BackupDto.fromBackup(backup);
+    return backup;
   }
 
-  async getRunning(): Promise<BackupDto | null> {
-    const backup = await this.backupRepository.getActive();
-
-    if (!backup) {
-      return null;
-    }
-
-    return BackupDto.fromBackup(backup);
+  getRunning(): Promise<Backup | null> {
+    return this.backupRepository.getActive();
   }
 
-  async get(id: string): Promise<BackupDto> {
+  async get(id: string): Promise<Backup> {
     const backup = await this.backupRepository.findById(id);
 
     if (!backup) {
       throw new BackupNotFoundError();
     }
 
-    return BackupDto.fromBackup(backup);
+    return backup;
   }
 }

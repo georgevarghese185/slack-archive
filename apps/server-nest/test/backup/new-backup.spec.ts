@@ -37,11 +37,17 @@ describe('New Backup', () => {
   });
 
   it('should create a new backup task', async () => {
+    const expectedDate = new Date();
     const userId = 'U1234';
     const mockBackupId = '1234';
     const accessToken = '1111';
     const expectedBackup = {
       id: mockBackupId,
+      conversationErrors: [],
+      createdBy: userId,
+      endedAt: null,
+      shouldCancel: false,
+      startedAt: expectedDate,
       backedUpConversations: [],
       currentConversation: null,
       messagesBackedUp: 0,
@@ -55,6 +61,8 @@ describe('New Backup', () => {
         ...backup,
         id: mockBackupId,
       }));
+
+    jest.useFakeTimers().setSystemTime(expectedDate);
 
     const backup = await service.createBackup(userId, accessToken);
 

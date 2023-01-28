@@ -30,19 +30,7 @@ describe('Get Member', () => {
 
     const member = await service.get(mockMember.id);
 
-    expect(member).toEqual({
-      id: mockMember.id,
-      profile: {
-        display_name: mockMember.json.profile.display_name,
-        image_24: mockMember.json.profile.image_24,
-        image_32: mockMember.json.profile.image_32,
-        image_48: mockMember.json.profile.image_48,
-        image_72: mockMember.json.profile.image_72,
-        image_192: mockMember.json.profile.image_192,
-        image_512: mockMember.json.profile.image_512,
-        image_1024: mockMember.json.profile.image_1024,
-      },
-    });
+    expect(member).toEqual(mockMember);
   });
 
   it('should throw error for inavlid id', async () => {

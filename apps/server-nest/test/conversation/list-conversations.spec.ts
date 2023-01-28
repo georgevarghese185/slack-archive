@@ -33,11 +33,6 @@ describe('List Conversations', () => {
       .mockResolvedValue(mockConversations);
 
     const conversations = await service.list();
-    expect(conversations).toEqual(
-      mockConversations.map((conversation) => ({
-        id: conversation.id,
-        name: conversation.name,
-      })),
-    );
+    expect(conversations).toEqual(mockConversations);
   });
 });

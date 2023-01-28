@@ -2,6 +2,7 @@ import { Controller, Get, Param, Post } from '@nestjs/common';
 import { UserId } from 'src/auth';
 import { AccessToken } from 'src/auth';
 import { BackupService } from './backup.service';
+import { BackupDto } from './dto';
 
 @Controller('/v1/backups')
 export class BackupController {
@@ -17,13 +18,14 @@ export class BackupController {
     const running = await this.backupService.getRunning();
 
     return {
-      running: running ? [running] : [],
+      running: running ? [BackupDto.fromBackup(running)] : [],
     };
   }
 
   @Get(':id')
-  getBackup(@Param('id') id: string) {
-    return this.backupService.get(id);
+  async getBackup(@Param('id') id: string) {
+    const backup = await this.backupService.get(id);
+    return BackupDto.fromBackup(backup);
   }
 
   @Post('new')
