@@ -15,6 +15,7 @@ import { ConfigService } from 'src/config/config.service';
 import { stringify } from 'querystring';
 import { SlackArchiveError } from 'src/common';
 import { withRateLimiting } from 'src/common/axios/with-rate-limiting';
+import { ConversationHistoryRequest, ConversationHistoryResponse } from '.';
 
 @Injectable()
 export class SlackApiProvider {
@@ -106,6 +107,12 @@ export class SlackApiProvider {
       },
       params,
     });
+  }
+
+  async getConversationHistory(
+    _request: ConversationHistoryRequest,
+  ): Promise<SlackApiResponse<ConversationHistoryResponse>> {
+    throw new Error('Not implemented');
   }
 
   private async request<R>(

@@ -26,6 +26,7 @@ import { MemberModule } from './member/member.module';
     MessageModule,
     ConversationModule,
     MemberModule,
+    MessageModule,
   ],
   controllers: [AppController],
   providers: [

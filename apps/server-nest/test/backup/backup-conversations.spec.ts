@@ -16,6 +16,9 @@ import {
   createSlackChannel,
   createSlackChannels,
 } from 'test/conversation/fixture';
+import { MessageBackupService } from 'src/backup/runner/message-backup.service';
+import { MessageRepository } from 'src/message/message.repository';
+import { MessageService } from 'src/message/message.service';
 
 describe('Backup conversations', () => {
   let service: BackupRunnerService;
@@ -29,9 +32,11 @@ describe('Backup conversations', () => {
         BackupRunnerService,
         ConversationService,
         MemberService,
+        MessageService,
         BackupCancellationService,
         ConversationBackupService,
         MemberBackupService,
+        MessageBackupService,
         {
           provide: BackupRepository,
           useValue: { update: jest.fn(), shouldCancel: jest.fn() },
@@ -44,6 +49,10 @@ describe('Backup conversations', () => {
         },
         {
           provide: MemberRepository,
+          useValue: {},
+        },
+        {
+          provide: MessageRepository,
           useValue: {},
         },
         {

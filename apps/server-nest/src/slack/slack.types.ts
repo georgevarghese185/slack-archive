@@ -57,6 +57,22 @@ export type Member = {
   [key: string]: unknown;
 };
 
+export type ConversationHistoryRequest = {
+  token: string;
+  conversationId: string;
+  cursor?: string;
+};
+
+export type ConversationHistoryResponse = {
+  messages: Message[];
+};
+
+export type Message = {
+  ts: string;
+  thread_ts?: string;
+  [key: string]: unknown;
+};
+
 export type SlackApiResponse<R = unknown> =
   | {
       ok: false;

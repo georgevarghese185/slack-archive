@@ -12,6 +12,9 @@ import { Logger } from 'src/common/logger/logger';
 import { MemberBackupService } from 'src/backup/runner/member-backup.service';
 import { MemberService } from 'src/member/member.service';
 import { createSlackMember, createSlackMembers } from 'test/member/fixture';
+import { MessageService } from 'src/message/message.service';
+import { MessageRepository } from 'src/message/message.repository';
+import { MessageBackupService } from 'src/backup/runner/message-backup.service';
 
 describe('Backup members', () => {
   let service: BackupRunnerService;
@@ -25,9 +28,11 @@ describe('Backup members', () => {
         BackupRunnerService,
         ConversationService,
         MemberService,
+        MessageService,
         BackupCancellationService,
         ConversationBackupService,
         MemberBackupService,
+        MessageBackupService,
         {
           provide: BackupRepository,
           useValue: { update: jest.fn(), shouldCancel: jest.fn() },
@@ -41,6 +46,10 @@ describe('Backup members', () => {
           useValue: {
             save: jest.fn(),
           },
+        },
+        {
+          provide: MessageRepository,
+          useValue: {},
         },
         {
           provide: SlackApiProvider,
