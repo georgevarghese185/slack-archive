@@ -1,9 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { EventEmitter2 } from '@nestjs/event-emitter';
+import { Conversation } from 'src/conversation';
 import { ConversationService } from 'src/conversation/conversation.service';
 import { MessageService } from 'src/message/message.service';
 import { BackupEventPayload } from '.';
-import { BackupInProgressError, BackupNotFoundError } from './backup.errors';
+import {
+  BackupCancelledError,
+  BackupInProgressError,
+  BackupNotFoundError,
+} from './backup.errors';
 import { BackupRepository } from './backup.repository';
 import { Backup, BackupStats, BackupStatus } from './backup.types';
 
@@ -70,5 +75,60 @@ export class BackupService {
     }
 
     return backup;
+  }
+
+  async setStatus(backupId: string, status: BackupStatus) {
+    await this.backupRepository.update(backupId, { status });
+  }
+
+  async setCurrentConversation(backupId: string, conversation: Conversation) {
+    await this.backupRepository.update(backupId, {
+      currentConversation: conversation.id,
+    });
+  }
+
+  async setBackedUpMessages(backupId: string, backedUp: number) {
+    await this.backupRepository.update(backupId, {
+      messagesBackedUp: backedUp,
+    });
+  }
+
+  async setBackedUpConversations(
+    backupId: string,
+    conversations: Conversation[],
+  ) {
+    await this.backupRepository.update(backupId, {
+      backedUpConversations: conversations.map((c) => c.id),
+    });
+  }
+
+  /**
+   * Checks if a backup has been requested to be cancelled. If so, an error will be thrown.
+   * Use this function to halt the execution of a backup
+   */
+  async checkCancellation(backupId: string) {
+    if (await this.backupRepository.shouldCancel(backupId)) {
+      throw new BackupCancelledError();
+    }
+  }
+
+  async cancel(backupId: string) {
+    await this.backupRepository.update(backupId, {
+      status: BackupStatus.Cancelled,
+    });
+  }
+
+  async fail(backupId: string, message: string) {
+    await this.backupRepository.update(backupId, {
+      status: BackupStatus.Failed,
+      error: message,
+    });
+  }
+
+  async complete(backupId: string) {
+    await this.backupRepository.update(backupId, {
+      status: BackupStatus.Completed,
+      endedAt: new Date(),
+    });
   }
 }

@@ -6,7 +6,6 @@ import { ConversationService } from 'src/conversation/conversation.service';
 import { Conversation } from 'src/conversation';
 import { SlackApiProvider } from 'src/slack/slack-api.provider';
 import { Channel } from 'src/slack';
-import { BackupCancellationService } from 'src/backup/runner/backup-cancellation.service';
 import { ConversationBackupService } from 'src/backup/runner/conversation-backup.service';
 import { Logger } from 'src/common/logger/logger';
 import { MemberBackupService } from 'src/backup/runner/member-backup.service';
@@ -19,6 +18,8 @@ import {
 import { MessageBackupService } from 'src/backup/runner/message-backup.service';
 import { MessageRepository } from 'src/message/message.repository';
 import { MessageService } from 'src/message/message.service';
+import { BackupService } from 'src/backup/backup.service';
+import { EventEmitter2 as EventEmitter } from '@nestjs/event-emitter';
 
 describe('Backup conversations', () => {
   let service: BackupRunnerService;
@@ -33,7 +34,7 @@ describe('Backup conversations', () => {
         ConversationService,
         MemberService,
         MessageService,
-        BackupCancellationService,
+        BackupService,
         ConversationBackupService,
         MemberBackupService,
         MessageBackupService,
@@ -58,6 +59,10 @@ describe('Backup conversations', () => {
         {
           provide: SlackApiProvider,
           useValue: { getConversations: jest.fn(), getMembers: jest.fn() },
+        },
+        {
+          provide: EventEmitter,
+          useValue: {},
         },
         {
           provide: Logger,

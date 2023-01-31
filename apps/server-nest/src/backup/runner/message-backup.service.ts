@@ -3,9 +3,9 @@ import { ConversationService } from 'src/conversation/conversation.service';
 import { MessageService } from 'src/message/message.service';
 import { SlackApiProvider } from 'src/slack/slack-api.provider';
 import { BackupStatus } from '../backup.types';
-import { BackupRepository } from '../backup.repository';
 import { Conversation } from 'src/conversation';
 import { Message } from 'src/slack';
+import { BackupService } from '../backup.service';
 
 @Injectable()
 export class MessageBackupService {
@@ -13,11 +13,11 @@ export class MessageBackupService {
     private conversationService: ConversationService,
     private slackApiProvider: SlackApiProvider,
     private messageService: MessageService,
-    private backupRepository: BackupRepository,
+    private backupService: BackupService,
   ) {}
 
   async backup(backupId: string, accessToken: string): Promise<void> {
-    await this.setStatusBackingUp(backupId);
+    await this.backupService.setStatus(backupId, BackupStatus.BackingUp);
 
     const conversations = await this.conversationService.list();
     let backedUp = 0;
@@ -33,10 +33,10 @@ export class MessageBackupService {
       backedUp += messageCount;
       backedUpConversations = [...backedUpConversations, conversation];
 
-      await this.setBackedUpConversations(
+      await this.backupService.setBackedUpMessages(backupId, backedUp);
+      await this.backupService.setBackedUpConversations(
         backupId,
         backedUpConversations,
-        backedUp,
       );
     }
   }
@@ -46,7 +46,7 @@ export class MessageBackupService {
     accessToken: string,
     conversation: Conversation,
   ): Promise<number> {
-    await this.setCurrentConversation(backupId, conversation);
+    await this.backupService.setCurrentConversation(backupId, conversation);
 
     const response = await this.slackApiProvider.getConversationHistory({
       token: accessToken,
@@ -64,21 +64,6 @@ export class MessageBackupService {
     return messages.length;
   }
 
-  private async setStatusBackingUp(backupId: string) {
-    await this.backupRepository.update(backupId, {
-      status: BackupStatus.BackingUp,
-    });
-  }
-
-  private async setCurrentConversation(
-    backupId: string,
-    conversation: Conversation,
-  ) {
-    await this.backupRepository.update(backupId, {
-      currentConversation: conversation.id,
-    });
-  }
-
   private async addMessages(conversation: Conversation, messages: Message[]) {
     await this.messageService.add(
       messages.map((message) => ({
@@ -88,16 +73,5 @@ export class MessageBackupService {
         ...(message.thread_ts ? { threadTs: message.thread_ts } : {}),
       })),
     );
-  }
-
-  private async setBackedUpConversations(
-    backupId: string,
-    conversations: Conversation[],
-    backedUp: number,
-  ) {
-    await this.backupRepository.update(backupId, {
-      messagesBackedUp: backedUp,
-      backedUpConversations: conversations.map((c) => c.id),
-    });
   }
 }

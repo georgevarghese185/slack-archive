@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConversationModule } from 'src/conversation/conversation.module';
 import { MessageModule } from 'src/message/message.module';
@@ -10,12 +10,13 @@ import { BackupRunnerModule } from './runner/backup-runner.module';
 
 @Module({
   imports: [
-    BackupRunnerModule,
+    forwardRef(() => BackupRunnerModule),
     MessageModule,
     ConversationModule,
     TypeOrmModule.forFeature([BackupEntity]),
   ],
   controllers: [BackupController],
   providers: [BackupService, BackupRepository],
+  exports: [BackupService],
 })
 export class BackupModule {}

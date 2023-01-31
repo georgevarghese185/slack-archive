@@ -4,7 +4,6 @@ import { BackupRepository } from 'src/backup/backup.repository';
 import { ConversationRepository } from 'src/conversation/conversation.repository';
 import { ConversationService } from 'src/conversation/conversation.service';
 import { SlackApiProvider } from 'src/slack/slack-api.provider';
-import { BackupCancellationService } from 'src/backup/runner/backup-cancellation.service';
 import { ConversationBackupService } from 'src/backup/runner/conversation-backup.service';
 import { MemberRepository } from 'src/member/member.repository';
 import { Logger } from 'src/common/logger/logger';
@@ -16,6 +15,8 @@ import { Conversation } from 'src/conversation';
 import { MessageRepository } from 'src/message/message.repository';
 import { MessageService } from 'src/message/message.service';
 import { MessageBackupService } from 'src/backup/runner/message-backup.service';
+import { BackupService } from 'src/backup/backup.service';
+import { EventEmitter2 as EventEmitter } from '@nestjs/event-emitter';
 
 describe('Backup messages', () => {
   let service: BackupRunnerService;
@@ -31,7 +32,7 @@ describe('Backup messages', () => {
         ConversationService,
         MemberService,
         MessageService,
-        BackupCancellationService,
+        BackupService,
         ConversationBackupService,
         MemberBackupService,
         MessageBackupService,
@@ -58,6 +59,10 @@ describe('Backup messages', () => {
             getMembers: jest.fn(),
             getConversationHistory: jest.fn(),
           },
+        },
+        {
+          provide: EventEmitter,
+          useValue: {},
         },
         {
           provide: Logger,
@@ -149,6 +154,8 @@ describe('Backup messages', () => {
     });
     expect(backupRepository.update).toBeCalledWith(backupId, {
       messagesBackedUp: conversation1History.length,
+    });
+    expect(backupRepository.update).toBeCalledWith(backupId, {
       backedUpConversations: [conversation1.id],
     });
 
@@ -158,6 +165,8 @@ describe('Backup messages', () => {
     expect(backupRepository.update).toBeCalledWith(backupId, {
       messagesBackedUp:
         conversation1History.length + conversation2History.length,
+    });
+    expect(backupRepository.update).toBeCalledWith(backupId, {
       backedUpConversations: [conversation1.id, conversation2.id],
     });
   });

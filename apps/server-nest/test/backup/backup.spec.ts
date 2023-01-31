@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { Backup } from 'src/backup';
 import { BackupRepository } from 'src/backup/backup.repository';
-import { BackupCancellationService } from 'src/backup/runner/backup-cancellation.service';
+import { BackupService } from 'src/backup/backup.service';
 import { BackupRunnerService } from 'src/backup/runner/backup-runner.service';
 import { ConversationBackupService } from 'src/backup/runner/conversation-backup.service';
 import { MemberBackupService } from 'src/backup/runner/member-backup.service';
@@ -20,6 +20,7 @@ import {
 } from 'test/conversation/fixture';
 import { createSlackMembers } from 'test/member/fixture';
 import { createSlackMessages } from 'test/message/fixture';
+import { EventEmitter2 as EventEmitter } from '@nestjs/event-emitter';
 
 describe('Backup', () => {
   let service: BackupRunnerService;
@@ -34,7 +35,7 @@ describe('Backup', () => {
         ConversationService,
         MemberService,
         MessageService,
-        BackupCancellationService,
+        BackupService,
         ConversationBackupService,
         MemberBackupService,
         MessageBackupService,
@@ -68,6 +69,10 @@ describe('Backup', () => {
             getMembers: jest.fn(),
             getConversationHistory: jest.fn(),
           },
+        },
+        {
+          provide: EventEmitter,
+          useValue: {},
         },
         {
           provide: Logger,

@@ -2,14 +2,14 @@ import { Injectable } from '@nestjs/common';
 import { MemberService } from 'src/member/member.service';
 import { Member, SlackApiError } from 'src/slack';
 import { SlackApiProvider } from 'src/slack/slack-api.provider';
-import { BackupCancellationService } from './backup-cancellation.service';
+import { BackupService } from '../backup.service';
 
 @Injectable()
 export class MemberBackupService {
   constructor(
     private slackApiProvider: SlackApiProvider,
     private memberService: MemberService,
-    private cancelService: BackupCancellationService,
+    private backupService: BackupService,
   ) {}
 
   async backup(
@@ -17,7 +17,7 @@ export class MemberBackupService {
     accessToken: string,
     cursor?: string,
   ): Promise<void> {
-    await this.cancelService.checkCancellation(backupId);
+    await this.backupService.checkCancellation(backupId);
 
     const response = await this.getMembers(accessToken, cursor);
 
