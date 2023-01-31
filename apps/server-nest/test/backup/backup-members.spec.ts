@@ -4,7 +4,7 @@ import { BackupRepository } from 'src/backup/backup.repository';
 import { ConversationRepository } from 'src/conversation/conversation.repository';
 import { ConversationService } from 'src/conversation/conversation.service';
 import { SlackApiProvider } from 'src/slack/slack-api.provider';
-import { Member, SlackApiError } from 'src/slack';
+import { Member } from 'src/slack';
 import { BackupCancellationService } from 'src/backup/runner/backup-cancellation.service';
 import { ConversationBackupService } from 'src/backup/runner/conversation-backup.service';
 import { MemberRepository } from 'src/member/member.repository';
@@ -169,6 +169,7 @@ describe('Backup members', () => {
   });
 
   it('should handle slack errors', async () => {
+    const backupId = '1234';
     const slackErrorCode = 'some_error';
 
     jest.mocked(backupRespository.shouldCancel).mockResolvedValue(false);
@@ -178,8 +179,11 @@ describe('Backup members', () => {
       error: slackErrorCode,
     });
 
-    await expect(service.runBackup('1234', '1111')).rejects.toEqual(
-      new SlackApiError(slackErrorCode, '/api/users.list'),
-    );
+    await service.runBackup(backupId, '1111');
+
+    expect(backupRespository.update).toBeCalledWith(backupId, {
+      status: 'FAILED',
+      error: expect.stringContaining(slackErrorCode),
+    });
   });
 });

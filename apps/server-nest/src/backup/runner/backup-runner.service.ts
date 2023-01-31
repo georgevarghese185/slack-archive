@@ -35,7 +35,10 @@ export class BackupRunnerService {
 
       this.logger.error('Backup error', e);
 
-      throw e;
+      await this.backupRepository.update(backupId, {
+        status: BackupStatus.Failed,
+        error: e instanceof Error ? e.message : `Unknown error ${e}`,
+      });
     }
   }
 
