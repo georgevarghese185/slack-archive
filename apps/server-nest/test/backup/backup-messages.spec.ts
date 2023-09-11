@@ -9,7 +9,10 @@ import { MemberRepository } from 'src/member/member.repository';
 import { Logger } from 'src/common/logger/logger';
 import { MemberBackupService } from 'src/backup/runner/member-backup.service';
 import { MemberService } from 'src/member/member.service';
-import { createConversations } from 'test/conversation/fixture';
+import {
+  createConversation,
+  createConversations,
+} from 'test/conversation/fixture';
 import { createSlackMessages } from 'test/message/fixture';
 import { Conversation } from 'src/conversation';
 import { MessageRepository } from 'src/message/message.repository';
@@ -17,6 +20,8 @@ import { MessageService } from 'src/message/message.service';
 import { MessageBackupService } from 'src/backup/runner/message-backup.service';
 import { BackupService } from 'src/backup/backup.service';
 import { EventEmitter2 as EventEmitter } from '@nestjs/event-emitter';
+import { MessageGenerator } from '@slack-archive/mock-slack-generator';
+import { Message } from 'src/slack';
 
 describe('Backup messages', () => {
   let service: BackupRunnerService;
@@ -58,6 +63,7 @@ describe('Backup messages', () => {
             getConversations: jest.fn(),
             getMembers: jest.fn(),
             getConversationHistory: jest.fn(),
+            getConversationReplies: jest.fn(),
           },
         },
         {
@@ -171,7 +177,70 @@ describe('Backup messages', () => {
     });
   });
 
-  it.todo('should backup threads from conversations');
+  it('should backup threads from conversations', async () => {
+    const backupId = '1234';
+    const accessToken = '1111';
+    const mockConversation = createConversation();
+    const messageGenerator = new MessageGenerator();
+    const threadGenerator = messageGenerator.createThreadGenerator();
+    const thread = threadGenerator.getParent();
+    const reply1 = threadGenerator.generateReply();
+    const reply2 = threadGenerator.generateReply();
+    const broadcast = threadGenerator.generateBroadcast();
+
+    jest
+      .mocked(conversationRepository.list)
+      .mockResolvedValueOnce([mockConversation]);
+
+    jest.mocked(slackApiProvider.getConversationHistory).mockResolvedValueOnce({
+      ok: true,
+      messages: [broadcast, thread] as unknown as Message[], // try to fix this
+    });
+
+    jest.mocked(slackApiProvider.getConversationReplies).mockResolvedValueOnce({
+      ok: true,
+      messages: [thread, reply1, broadcast, reply2] as unknown as Message[],
+    });
+
+    await service.runBackup(backupId, accessToken);
+
+    expect(messageRepository.save).toBeCalledWith([
+      {
+        conversationId: mockConversation.id,
+        ts: broadcast.ts,
+        threadTs: thread.ts,
+        subtype: 'thread_broadcast',
+        json: broadcast,
+      },
+      {
+        conversationId: mockConversation.id,
+        ts: thread.ts,
+        threadTs: thread.ts,
+        json: thread,
+      },
+    ]);
+
+    expect(messageRepository.save).toBeCalledWith(
+      expect.arrayContaining([
+        {
+          conversationId: mockConversation.id,
+          ts: reply1.ts,
+          threadTs: thread.ts,
+          json: reply1,
+        },
+        {
+          conversationId: mockConversation.id,
+          ts: reply2.ts,
+          threadTs: thread.ts,
+          json: reply2,
+        },
+      ]),
+    );
+
+    expect(backupRepository.update).toBeCalledWith(backupId, {
+      messagesBackedUp: 4,
+    });
+  });
 
   it.todo('should handle paginated messages');
 

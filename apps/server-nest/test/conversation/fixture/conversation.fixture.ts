@@ -18,6 +18,10 @@ export const createSlackChannels = (n: number): Channel[] => {
   return new ConversationGenerator().generateConversations(n);
 };
 
+export const createConversation = (): Conversation => {
+  return fromSlackChannel(createSlackChannel());
+};
+
 export const createConversations = (n: number): Conversation[] => {
   return createSlackChannels(n).map(fromSlackChannel);
 };

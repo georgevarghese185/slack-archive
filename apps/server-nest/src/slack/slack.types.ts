@@ -67,9 +67,21 @@ export type ConversationHistoryResponse = {
   messages: Message[];
 };
 
+export type ConversationRepliesRequest = {
+  token: string;
+  conversationId: string;
+  threadTs: string;
+  cursor?: string;
+};
+
+export type ConversationRepliesResponse = {
+  messages: Message[];
+};
+
 export type Message = {
   ts: string;
   thread_ts?: string;
+  subtype?: 'thread_broadcast' | string;
   [key: string]: unknown;
 };
 

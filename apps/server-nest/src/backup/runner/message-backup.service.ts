@@ -6,6 +6,7 @@ import { BackupStatus } from '../backup.types';
 import { Conversation } from 'src/conversation';
 import { Message } from 'src/slack';
 import { BackupService } from '../backup.service';
+import { isBroadcast, isReply } from 'src/message';
 
 @Injectable()
 export class MessageBackupService {
@@ -47,6 +48,7 @@ export class MessageBackupService {
     conversation: Conversation,
   ): Promise<number> {
     await this.backupService.setCurrentConversation(backupId, conversation);
+    let count = 0;
 
     const response = await this.slackApiProvider.getConversationHistory({
       token: accessToken,
@@ -61,7 +63,47 @@ export class MessageBackupService {
 
     await this.addMessages(conversation, messages);
 
-    return messages.length;
+    count += messages.length;
+
+    for (const message of messages) {
+      if (message.thread_ts === message.ts) {
+        const repliesBackedUp = await this.backupThread(
+          accessToken,
+          conversation,
+          message.thread_ts,
+        );
+
+        count += repliesBackedUp;
+      }
+    }
+
+    return count;
+  }
+
+  private async backupThread(
+    accessToken: string,
+    conversation: Conversation,
+    threadTs: string,
+  ) {
+    const response = await this.slackApiProvider.getConversationReplies({
+      token: accessToken,
+      conversationId: conversation.id,
+      threadTs,
+    });
+
+    if (!response.ok) {
+      throw new Error('Not implemented');
+    }
+
+    const messages = response.messages;
+
+    await this.addMessages(conversation, messages);
+
+    const replyCount = messages.filter(
+      (m) => isReply(m) && !isBroadcast(m),
+    ).length;
+
+    return replyCount;
   }
 
   private async addMessages(conversation: Conversation, messages: Message[]) {
@@ -70,6 +112,7 @@ export class MessageBackupService {
         conversationId: conversation.id,
         ts: message.ts,
         json: message,
+        ...(message.subtype ? { subtype: message.subtype } : {}),
         ...(message.thread_ts ? { threadTs: message.thread_ts } : {}),
       })),
     );

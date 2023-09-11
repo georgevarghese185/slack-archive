@@ -1,4 +1,5 @@
 import { Column, Entity, Index, PrimaryColumn } from 'typeorm';
+import { isReply } from './message.util';
 import { Message } from './message.types';
 
 @Index('messages_pkey', ['ts', 'conversation_id'])
@@ -33,7 +34,7 @@ export default class MessageEntity {
     messageEntity.json = message;
     messageEntity.ts = message.ts;
     messageEntity.thread_ts = message.threadTs || null;
-    messageEntity.is_post = !message.threadTs;
+    messageEntity.is_post = !isReply(message);
 
     return messageEntity;
   }
