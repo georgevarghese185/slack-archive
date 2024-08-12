@@ -44,6 +44,30 @@ export class RandomGenerator {
     return faker.internet.avatar();
   }
 
+  fileId() {
+    return 'F' + this.alphanum(8);
+  }
+
+  file() {
+    const mimeTypes = faker.definitions.system?.mimeTypes || {};
+    const [mimeType, info] = this.item(Object.entries(mimeTypes));
+    const ext = faker.system.commonFileName(info.extensions?.[0] || 'jpg');
+    const filename = faker.system.commonFileName(ext);
+    const name = filename.substring(0, filename.lastIndexOf('.'));
+
+    return {
+      name,
+      filename,
+      ext,
+      mimeType,
+      size: faker.datatype.number({ min: 1000, max: 5 * 1000 * 1000 }),
+    };
+  }
+
+  fileUrl(filename: string) {
+    return `${faker.internet.url()}/${faker.system.directoryPath}/${filename}`;
+  }
+
   item<T>(items: T[]): T {
     const item =
       items[faker.datatype.number({ min: 0, max: items.length - 1 })];
