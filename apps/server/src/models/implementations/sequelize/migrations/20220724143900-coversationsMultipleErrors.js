@@ -5,7 +5,7 @@ module.exports = {
     const transaction = await queryInterface.sequelize.transaction();
 
     try {
-      await queryInterface.addColumn("backups", "conversation_errors", {
+      await queryInterface.addColumn({ tableName: "backups", schema: process.env.DB_SCHEMA }, "conversation_errors", {
         type: Sequelize.DataTypes.JSON,
         defaultValue: [],
       }, { transaction });
