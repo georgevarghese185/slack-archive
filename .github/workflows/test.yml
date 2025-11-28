@@ -26,7 +26,7 @@ jobs:
           docker tag georgevm185/slack-archive:$tag slack-archive_test:latest
 
       - name: Run tests
-        run: docker-compose -f docker-compose.test.yml -p slack-archive run --rm test
+        run: docker compose -f docker-compose.test.yml -p slack-archive run --rm test
 
   lint:
     name: Lint code
